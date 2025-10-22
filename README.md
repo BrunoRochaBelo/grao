@@ -1,7 +1,14 @@
-# grao
+# Baby Book App UI Kit
 
-> API do app **Livro do Bebê**. Modelo unificado (**tudo é Momento**) com **Templates**, **Capítulos** (visões filtradas) e **Séries** (recorrência).
-> Foco em **usabilidade**, **segurança (LGPD)**, **exportabilidade** e **escala**.
+This is a code bundle for Baby Book App UI Kit. The original project is available at https://www.figma.com/design/vvQvLxTuVu1vQHFEFVHdfn/Baby-Book-App-UI-Kit.
+
+## Running the code
+
+Run `npm i` to install the dependencies.
+
+Run `npm run dev` to start the development server.
+
+# grao
 
 ---
 
@@ -12,48 +19,48 @@ Conceito central: **Momento** (como um post de rede social). Templates aceleram 
 
 **Diferenciais técnicos**
 
-* Campos flexíveis em `momento.fields` (JSONB) + **índices GIN** (consultas rápidas).
-* Upload direto ao storage (S3/MinIO) via **Presigned URL**.
-* **Workers** (Celery) para tarefas pesadas (thumbs, transcode, PDFs).
-* Observabilidade pronta (logs JSON, Prometheus, OpenTelemetry, Sentry).
-* **ETag/If-Match** para concorrência otimista e **If-None-Match** para cache de GETs.
+- Campos flexíveis em `momento.fields` (JSONB) + **índices GIN** (consultas rápidas).
+- Upload direto ao storage (S3/MinIO) via **Presigned URL**.
+- **Workers** (Celery) para tarefas pesadas (thumbs, transcode, PDFs).
+- Observabilidade pronta (logs JSON, Prometheus, OpenTelemetry, Sentry).
+- **ETag/If-Match** para concorrência otimista e **If-None-Match** para cache de GETs.
 
 ---
 
 ## Sumário
 
-* [Stack](#stack)
-* [Arquitetura do Sistema](#arquitetura-do-sistema)
-* [Modelagem de Domínio](#modelagem-de-domínio)
-* [Estrutura de Pastas (Blueprint por Feature)](#estrutura-de-pastas-blueprint-por-feature)
-* [Configuração (env)](#configuração-env)
-* [Rodando Localmente](#rodando-localmente)
-* [Docker / Docker Compose](#docker--docker-compose)
-* [Migrações (Alembic)](#migrações-alembic)
-* [Testes](#testes)
-* [Comunicação & Segurança (API)](#comunicação--segurança-api)
-* [Segurança, LGPD & Privacidade](#segurança-lgpd--privacidade)
-* [Endpoints (REST v1)](#endpoints-rest-v1)
-* [Esquemas & Exemplos](#esquemas--exemplos)
-* [Observabilidade](#observabilidade)
-* [Roadmap](#roadmap)
-* [Licença](#licença)
+- [Stack](#stack)
+- [Arquitetura do Sistema](#arquitetura-do-sistema)
+- [Modelagem de Domínio](#modelagem-de-domínio)
+- [Estrutura de Pastas (Blueprint por Feature)](#estrutura-de-pastas-blueprint-por-feature)
+- [Configuração (env)](#configuração-env)
+- [Rodando Localmente](#rodando-localmente)
+- [Docker / Docker Compose](#docker--docker-compose)
+- [Migrações (Alembic)](#migrações-alembic)
+- [Testes](#testes)
+- [Comunicação & Segurança (API)](#comunicação--segurança-api)
+- [Segurança, LGPD & Privacidade](#segurança-lgpd--privacidade)
+- [Endpoints (REST v1)](#endpoints-rest-v1)
+- [Esquemas & Exemplos](#esquemas--exemplos)
+- [Observabilidade](#observabilidade)
+- [Roadmap](#roadmap)
+- [Licença](#licença)
 
 ---
 
 ## Stack
 
-* **Python:** 3.12+
-* **Web:** FastAPI + Uvicorn
-* **ORM:** SQLAlchemy 2.x + Alembic
-* **DB:** PostgreSQL 14+ (JSONB)
-* **Cache/Rate-limit/Fila:** Redis
-* **Jobs:** Celery (+ Redis)
-* **Storage de mídia:** S3 compatível (AWS S3 / MinIO)
-* **Imagens/Vídeos:** Pillow / FFmpeg
-* **Auth:** OAuth2 + JWT (access/refresh), Argon2
-* **Qualidade:** Ruff, Black, isort, mypy, pytest, pre-commit
-* **Observabilidade:** Logs JSON, Prometheus, OpenTelemetry, Sentry
+- **Python:** 3.12+
+- **Web:** FastAPI + Uvicorn
+- **ORM:** SQLAlchemy 2.x + Alembic
+- **DB:** PostgreSQL 14+ (JSONB)
+- **Cache/Rate-limit/Fila:** Redis
+- **Jobs:** Celery (+ Redis)
+- **Storage de mídia:** S3 compatível (AWS S3 / MinIO)
+- **Imagens/Vídeos:** Pillow / FFmpeg
+- **Auth:** OAuth2 + JWT (access/refresh), Argon2
+- **Qualidade:** Ruff, Black, isort, mypy, pytest, pre-commit
+- **Observabilidade:** Logs JSON, Prometheus, OpenTelemetry, Sentry
 
 ---
 
@@ -61,16 +68,16 @@ Conceito central: **Momento** (como um post de rede social). Templates aceleram 
 
 **Feature-first (blueprint)** com camadas internas por domínio:
 
-* **API** (APIRouter por feature): validação, autenticação, paginação, versionamento, ETag.
-* **Services**: regras de negócio (criar Momento, anexar a Série, idade calculada, growth stats).
-* **Repositories**: persistência (SQLAlchemy).
-* **Workers** (Celery): transcode/thumbnail, exportações (PDF), notificações.
-* **Storage**: S3/MinIO via URLs assinadas.
-* **Telemetry**: logging estruturado, métricas e tracing.
+- **API** (APIRouter por feature): validação, autenticação, paginação, versionamento, ETag.
+- **Services**: regras de negócio (criar Momento, anexar a Série, idade calculada, growth stats).
+- **Repositories**: persistência (SQLAlchemy).
+- **Workers** (Celery): transcode/thumbnail, exportações (PDF), notificações.
+- **Storage**: S3/MinIO via URLs assinadas.
+- **Telemetry**: logging estruturado, métricas e tracing.
 
 **Fronteiras**
 
-* api (stateless) · worker (jobs) · db (Postgres) · cache/queue (Redis) · object storage (S3/MinIO) · cdn (opcional)
+- api (stateless) · worker (jobs) · db (Postgres) · cache/queue (Redis) · object storage (S3/MinIO) · cdn (opcional)
 
 ---
 
@@ -78,29 +85,30 @@ Conceito central: **Momento** (como um post de rede social). Templates aceleram 
 
 **Entidades principais**
 
-* **User**: conta/autenticação; escopos.
-* **Child**: criança; associação User↔Child (membros).
-* **Moment** (antes “Post”): unidade de conteúdo.
+- **User**: conta/autenticação; escopos.
+- **Child**: criança; associação User↔Child (membros).
+- **Moment** (antes “Post”): unidade de conteúdo.
 
-  * `id, child_id, occurred_at (tz/UTC), age_days, type, subtype, status{published|draft},`
-  * `privacy{private|people|link}, people[] (referências), location{name, lat?, lng?},`
-  * `medias[] (foto/vídeo/áudio/doc), short_text, long_text, tags[], markers{},`
-  * `fields{…}, series_id?`
-* **Media**: arquivo no S3/MinIO (`object_key`, `mime`, `size`, `thumb`, `duration?`).
-* **Series**: recorrência (RRULE), progresso e ocorrências derivadas.
-* **Chapter (Capítulo)**: coleção/visão salva: filtros + `viewer` + `ordering`.
-* **Template**: catálogo dos tipos/subtipos & validações mínimas.
-* **Person/Contact**: pessoa envolvida (para “pessoas[]” nos Momentos).
-* **Comment**: comentários/áudios em um Momento (opcional).
-* **ShareLink**: link de compartilhamento com escopo/expiração/senha.
-* **AuditLog**: trilha de auditoria.
+  - `id, child_id, occurred_at (tz/UTC), age_days, type, subtype, status{published|draft},`
+  - `privacy{private|people|link}, people[] (referências), location{name, lat?, lng?},`
+  - `medias[] (foto/vídeo/áudio/doc), short_text, long_text, tags[], markers{},`
+  - `fields{…}, series_id?`
+
+- **Media**: arquivo no S3/MinIO (`object_key`, `mime`, `size`, `thumb`, `duration?`).
+- **Series**: recorrência (RRULE), progresso e ocorrências derivadas.
+- **Chapter (Capítulo)**: coleção/visão salva: filtros + `viewer` + `ordering`.
+- **Template**: catálogo dos tipos/subtipos & validações mínimas.
+- **Person/Contact**: pessoa envolvida (para “pessoas[]” nos Momentos).
+- **Comment**: comentários/áudios em um Momento (opcional).
+- **ShareLink**: link de compartilhamento com escopo/expiração/senha.
+- **AuditLog**: trilha de auditoria.
 
 > **Mudanças chave p/ alinhar ao front**
 >
-> * Renomeação pública: **Momento** (alias de Post) e **Capítulo** (alias de Shelf).
-> * Novos campos: `subtype`, `status`, `privacy=people`, `markers{}`, `viewer` e `ordering` em Capítulo, `lat/lng` em `location`.
-> * **ETag** (+ `updated_at`/`version`) para concorrência e cache.
-> * **/moments** e **/chapters** como rotas canônicas (mantidas aliases `/posts` e `/shelves`).
+> - Renomeação pública: **Momento** (alias de Post) e **Capítulo** (alias de Shelf).
+> - Novos campos: `subtype`, `status`, `privacy=people`, `markers{}`, `viewer` e `ordering` em Capítulo, `lat/lng` em `location`.
+> - **ETag** (+ `updated_at`/`version`) para concorrência e cache.
+> - **/moments** e **/chapters** como rotas canônicas (mantidas aliases `/posts` e `/shelves`).
 
 ---
 
@@ -335,9 +343,9 @@ pytest --cov=app tests/ -q
 
 Exceções controladas:
 
-* **Upload**: `POST /uploads/sign` → presigned URL (cliente faz PUT direto no S3).
-* **Jobs**: export/transcode via polling: `GET /export/pdf/:jobId`.
-* **Links**: `/share-links/{token}` com escopo mínimo e expiração.
+- **Upload**: `POST /uploads/sign` → presigned URL (cliente faz PUT direto no S3).
+- **Jobs**: export/transcode via polling: `GET /export/pdf/:jobId`.
+- **Links**: `/share-links/{token}` com escopo mínimo e expiração.
 
 **Proteções (default ON)**
 
@@ -352,25 +360,25 @@ Exceções controladas:
 
 **ETag (concorrência & cache)**
 
-* Toda resposta de `GET /moments/:id` retorna `ETag` (hash de `updated_at`/`version`).
-* `PATCH /moments/:id` exige `If-Match: "<etag>"` → 412 se divergente.
-* `GET` aceita `If-None-Match` → 304 Not Modified.
+- Toda resposta de `GET /moments/:id` retorna `ETag` (hash de `updated_at`/`version`).
+- `PATCH /moments/:id` exige `If-Match: "<etag>"` → 412 se divergente.
+- `GET` aceita `If-None-Match` → 304 Not Modified.
 
 **Privacidade (momento.privacy)**
 
-* `private`: somente membros da criança.
-* `people`: restrito a uma **ACL** (`allowed_user_ids[]` / `allowed_contact_ids[]`).
-* `link`: público por link assinado (expira; opcional senha).
+- `private`: somente membros da criança.
+- `people`: restrito a uma **ACL** (`allowed_user_ids[]` / `allowed_contact_ids[]`).
+- `link`: público por link assinado (expira; opcional senha).
 
 ---
 
 ## Segurança, LGPD & Privacidade
 
-* Direitos do titular: **exportar, corrigir, excluir** (rotas dedicadas).
-* Retenção: soft delete + purge; política documentada.
-* Criptografia: TLS; URLs assinadas; dados sensíveis minimizados.
-* Auditoria: `audit_log` (share, delete, export).
-* Backups & restauração testados.
+- Direitos do titular: **exportar, corrigir, excluir** (rotas dedicadas).
+- Retenção: soft delete + purge; política documentada.
+- Criptografia: TLS; URLs assinadas; dados sensíveis minimizados.
+- Auditoria: `audit_log` (share, delete, export).
+- Backups & restauração testados.
 
 ---
 
@@ -381,68 +389,68 @@ Exceções controladas:
 
 ### Children (Perfil do bebê)
 
-* `GET /children`
-* `GET /children/{id}`
-* `POST /children` | `PATCH /children/{id}` | `DELETE /children/{id}`
-* `GET /children/{id}/stats` → `{percentis, vacinasStatus, marcos[]}`
+- `GET /children`
+- `GET /children/{id}`
+- `POST /children` | `PATCH /children/{id}` | `DELETE /children/{id}`
+- `GET /children/{id}/stats` → `{percentis, vacinasStatus, marcos[]}`
 
 ### Moments (Momento)
 
-* `GET /moments?child={id}&view={viewer}&filters=...` → `{items[], nextCursor}`
+- `GET /moments?child={id}&view={viewer}&filters=...` → `{items[], nextCursor}`
   Filtros: `type, subtype, chapter_id, date_from/date_to, age_range, people[], location, tags[], markers{}, has_media, draft, privacy, series_id, q`
-* `GET /moments/{id}` (ETag)
-* `POST /moments`
-* `PATCH /moments/{id}` (If-Match obrigatório)
-* `DELETE /moments/{id}` (If-Match obrigatório)
-* `POST /moments/{id}/convert` (troca de tipo/subtipo)
-* `POST /moments/{id}/share-links` | `GET /share-links/{token}`
+- `GET /moments/{id}` (ETag)
+- `POST /moments`
+- `PATCH /moments/{id}` (If-Match obrigatório)
+- `DELETE /moments/{id}` (If-Match obrigatório)
+- `POST /moments/{id}/convert` (troca de tipo/subtipo)
+- `POST /moments/{id}/share-links` | `GET /share-links/{token}`
 
 ### Uploads (Presigned)
 
-* `POST /uploads/sign` → `{uploadUrl, fileUrl, expiresAt}`  *(compat com front)*
-* **Opcional**: `POST /media/attach` (fluxo 2 etapas)
+- `POST /uploads/sign` → `{uploadUrl, fileUrl, expiresAt}` _(compat com front)_
+- **Opcional**: `POST /media/attach` (fluxo 2 etapas)
 
 ### Media
 
-* `DELETE /media/{id}`
+- `DELETE /media/{id}`
 
 ### Series
 
-* `GET /series` | `POST /series`
-* `GET /series/{id}` | `PATCH /series/{id}` | `DELETE /series/{id}`
-* `GET /series/{id}/occurrences` (preenchidas/pendentes/futuras)
-* `POST /series/{id}/attach/{moment_id}` | `POST /series/{id}/detach/{moment_id}`
+- `GET /series` | `POST /series`
+- `GET /series/{id}` | `PATCH /series/{id}` | `DELETE /series/{id}`
+- `GET /series/{id}/occurrences` (preenchidas/pendentes/futuras)
+- `POST /series/{id}/attach/{moment_id}` | `POST /series/{id}/detach/{moment_id}`
 
 ### Chapters (Capítulos/Coleções)
 
-* `GET /chapters` | `POST /chapters`
-* `GET /chapters/{id}` | `PATCH /chapters/{id}` | `DELETE /chapters/{id}`
+- `GET /chapters` | `POST /chapters`
+- `GET /chapters/{id}` | `PATCH /chapters/{id}` | `DELETE /chapters/{id}`
   `viewer{list|grid|calendar|timeline|series|dashboard|people|reading|map}`,
   `ordering{recent|oldest|custom}`
-* `POST /chapters/{id}/share-links`
+- `POST /chapters/{id}/share-links`
 
 ### Templates (catálogo de tipos/subtipos)
 
-* `GET /templates`  *(com regras mínimas/validações por tipo)*
+- `GET /templates` _(com regras mínimas/validações por tipo)_
 
 ### People (Contatos/Pessoas dos Momentos)
 
-* `GET /people` | `POST /people`
-* `GET /people/{id}` | `PATCH /people/{id}` | `DELETE /people/{id}`
+- `GET /people` | `POST /people`
+- `GET /people/{id}` | `PATCH /people/{id}` | `DELETE /people/{id}`
 
 ### Comments
 
-* `GET /moments/{id}/comments` | `POST /moments/{id}/comments` | `DELETE /comments/{id}`
+- `GET /moments/{id}/comments` | `POST /moments/{id}/comments` | `DELETE /comments/{id}`
 
 ### Export
 
-* `POST /export/pdf` (momento/capítulo/série via body) → `{jobId}`
-* `GET /export/pdf/{jobId}` → `{status,url?}`
+- `POST /export/pdf` (momento/capítulo/série via body) → `{jobId}`
+- `GET /export/pdf/{jobId}` → `{status,url?}`
 
 ### Auth & Health
 
-* `POST /auth/signup` | `POST /auth/login` | `POST /auth/refresh` | `POST /auth/logout`
-* `GET /healthz` | `GET /readyz` | `/metrics` (Prometheus)
+- `POST /auth/signup` | `POST /auth/login` | `POST /auth/refresh` | `POST /auth/logout`
+- `GET /healthz` | `GET /readyz` | `/metrics` (Prometheus)
 
 **Paginação:** cursor/offset (config em `core/pagination.py`)
 **Versionamento:** `Accept: application/json;version=1` (opcional)
@@ -463,16 +471,31 @@ Exceções controladas:
   "subtype": "first_bath",
   "status": "published",
   "privacy": "private",
-  "people_ids": ["u1","p3"],
+  "people_ids": ["u1", "p3"],
   "location": { "name": "Recife, PE", "lat": -8.05, "lng": -34.9 },
   "medias": [
-    { "id":"m1","kind":"photo","object_key":"media/2025/03/12/banho.jpg","thumb":"...","mime_type":"image/jpeg","size_bytes":123456 }
+    {
+      "id": "m1",
+      "kind": "photo",
+      "object_key": "media/2025/03/12/banho.jpg",
+      "thumb": "...",
+      "mime_type": "image/jpeg",
+      "size_bytes": 123456
+    }
   ],
   "short_text": "Primeiro banho!",
   "long_text": "Detalhes...",
-  "tags": ["PrimeirasVezes","Banho"],
-  "markers": { "MarcoDeDesenvolvimento":"PrimeiroBanho", "TemAudio":false, "RequerAtencao":false },
-  "fields": { "given_by":"pai","towel":"amarela","experience":"tranquilo" },
+  "tags": ["PrimeirasVezes", "Banho"],
+  "markers": {
+    "MarcoDeDesenvolvimento": "PrimeiroBanho",
+    "TemAudio": false,
+    "RequerAtencao": false
+  },
+  "fields": {
+    "given_by": "pai",
+    "towel": "amarela",
+    "experience": "tranquilo"
+  },
   "series_id": null,
   "updated_at": "2025-03-12T17:02:10Z",
   "etag": "\"7c9e2f13\""
@@ -483,23 +506,23 @@ Exceções controladas:
 
 ```json
 {
-  "id":"chap-1",
-  "name":"Primeiras Vezes & Descobertas",
-  "description":"Marcos e primeiras vezes",
-  "cover_url":"https://.../cover.jpg",
-  "icon":"star",
-  "filters":{
-    "types":["discovery"],
-    "subtypes":["first_bath","first_smile"],
-    "people":["p3"],
-    "period":{"from":"2025-01-01","to":"2025-06-30"},
-    "age":{"minDays":0,"maxDays":365},
-    "tags":["PrimeirasVezes"],
-    "markers":{"MarcoDeDesenvolvimento":["PrimeiroBanho"]},
-    "privacy":null
+  "id": "chap-1",
+  "name": "Primeiras Vezes & Descobertas",
+  "description": "Marcos e primeiras vezes",
+  "cover_url": "https://.../cover.jpg",
+  "icon": "star",
+  "filters": {
+    "types": ["discovery"],
+    "subtypes": ["first_bath", "first_smile"],
+    "people": ["p3"],
+    "period": { "from": "2025-01-01", "to": "2025-06-30" },
+    "age": { "minDays": 0, "maxDays": 365 },
+    "tags": ["PrimeirasVezes"],
+    "markers": { "MarcoDeDesenvolvimento": ["PrimeiroBanho"] },
+    "privacy": null
   },
-  "viewer":"list",
-  "ordering":"recent"
+  "viewer": "list",
+  "ordering": "recent"
 }
 ```
 
@@ -507,14 +530,14 @@ Exceções controladas:
 
 ```json
 {
-  "id":"ser-1",
-  "child_id":"f6d2e6d1-8b21-4c3f-9f47-5e2c4e7a1a2b",
-  "name":"Mêsversário",
-  "rrule":"FREQ=MONTHLY;BYMONTHDAY=12",
-  "progress":{"filled":7,"pending":5},
-  "occurrences":[
-    {"index":1,"date":"2025-02-12","moment_id":"..."},
-    {"index":2,"date":"2025-03-12","moment_id":null}
+  "id": "ser-1",
+  "child_id": "f6d2e6d1-8b21-4c3f-9f47-5e2c4e7a1a2b",
+  "name": "Mêsversário",
+  "rrule": "FREQ=MONTHLY;BYMONTHDAY=12",
+  "progress": { "filled": 7, "pending": 5 },
+  "occurrences": [
+    { "index": 1, "date": "2025-02-12", "moment_id": "..." },
+    { "index": 2, "date": "2025-03-12", "moment_id": null }
   ]
 }
 ```
@@ -523,9 +546,9 @@ Exceções controladas:
 
 ```json
 {
-  "uploadUrl":"https://minio/.../presigned",
-  "fileUrl":"s3://livrobebe-media/2025/03/12/banho.jpg",
-  "expiresAt":"2025-03-12T17:00:00Z"
+  "uploadUrl": "https://minio/.../presigned",
+  "fileUrl": "s3://livrobebe-media/2025/03/12/banho.jpg",
+  "expiresAt": "2025-03-12T17:00:00Z"
 }
 ```
 
@@ -533,21 +556,21 @@ Exceções controladas:
 
 ## Observabilidade
 
-* **Logs** JSON com `trace_id`/`span_id`.
-* **/metrics** (Prometheus).
-* **Tracing** via OTLP.
-* **Erros** em Sentry (se `SENTRY_DSN`).
+- **Logs** JSON com `trace_id`/`span_id`.
+- **/metrics** (Prometheus).
+- **Tracing** via OTLP.
+- **Erros** em Sentry (se `SENTRY_DSN`).
 
 ---
 
 ## Roadmap
 
-* ✅ Alinhamento Momento/Capítulo/ETag/Markers/Subtipo/Viewer
-* 🔜 SSE/WebSocket para progresso de jobs
-* 🔜 Calendário oficial de vacinas (validações)
-* 🔜 Geocoding reverso (lat/lng → place name)
-* 🔜 Import/Export completo (zip+JSON)
-* 🔜 Reconhecimento de faces (sugestão de pessoas) on-device/edge
+- ✅ Alinhamento Momento/Capítulo/ETag/Markers/Subtipo/Viewer
+- 🔜 SSE/WebSocket para progresso de jobs
+- 🔜 Calendário oficial de vacinas (validações)
+- 🔜 Geocoding reverso (lat/lng → place name)
+- 🔜 Import/Export completo (zip+JSON)
+- 🔜 Reconhecimento de faces (sugestão de pessoas) on-device/edge
 
 ---
 
@@ -559,9 +582,8 @@ MIT (ou conforme política do projeto)
 
 ## Contribuição
 
-* Issues/PRs descritivos.
-* `make check` antes de abrir PR.
-* Conventional Commits.
+- Issues/PRs descritivos.
+- `make check` antes de abrir PR.
+- Conventional Commits.
 
 ---
-
