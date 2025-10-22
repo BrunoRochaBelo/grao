@@ -1,0 +1,981 @@
+openapi: 3.0.3
+info:
+  title: Livro do Bebê — API
+  version: "1.0.0"
+  description: >
+    API REST do **Livro do Bebê** — álbum digital interativo (Capítulos, Momentos, Galeria, Séries, Notificações).
+    Autenticação via **JWT Bearer**. Todas as rotas (exceto /auth) exigem header `Authorization: Bearer <token>`.
+
+servers:
+  - url: https://api.livrodobebe.com/v1
+    description: Produção
+  - url: http://localhost:8000/v1
+    description: Desenvolvimento
+
+tags:
+  - name: Auth
+  - name: Usuários
+  - name: Crianças
+  - name: Capítulos
+  - name: Momentos
+  - name: Mídias
+  - name: Séries
+  - name: Notificações
+  - name: Preferências
+  - name: Galeria
+  - name: Exportação
+  - name: Família
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login com email/senha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              exemplo:
+                value: { email: "ana@exemplo.com", senha: "minha-senha" }
+      responses:
+        "200":
+          description: Token JWT emitido
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+              examples:
+                ok:
+                  value:
+                    access_token: "jwt..."
+                    refresh_token: "jwt-refresh..."
+                    token_type: "bearer"
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Renovar tokens usando refresh_token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefreshRequest' }
+      responses:
+        "200":
+          description: Novo par de tokens
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /usuarios/me:
+    get:
+      tags: [Usuários]
+      summary: Dados do usuário autenticado
+      responses:
+        "200":
+          description: Perfil
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Usuario' }
+
+  /criancas:
+    get:
+      tags: [Crianças]
+      summary: Listar crianças do usuário
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        "200":
+          description: Lista paginada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedCrianca' }
+    post:
+      tags: [Crianças]
+      summary: Criar criança
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CriancaCreate' }
+            examples:
+              exemplo:
+                value:
+                  nome: "Aurora"
+                  data_nascimento: "2025-03-12"
+                  genero: "feminino"
+                  cidade: "Recife/PE"
+      responses:
+        "201":
+          description: Criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Crianca' }
+
+  /criancas/{id}:
+    get:
+      tags: [Crianças]
+      summary: Obter criança
+      parameters:
+        - $ref: '#/components/parameters/idPath'
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Crianca' }}}}
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Crianças]
+      summary: Atualizar criança
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CriancaUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Crianca' }}}}
+    delete:
+      tags: [Crianças]
+      summary: Remover criança
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Deletado }
+
+  /capitulos:
+    get:
+      tags: [Capítulos]
+      summary: Listar capítulos padrão e personalizados da criança
+      parameters:
+        - in: query
+          name: crianca_id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Lista de capítulos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Capitulo' }
+    post:
+      tags: [Capítulos]
+      summary: Criar capítulo personalizado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CapituloCreate' }
+      responses:
+        "201": { content: { application/json: { schema: { $ref: '#/components/schemas/Capitulo' }}}}
+
+  /capitulos/{id}:
+    get:
+      tags: [Capítulos]
+      summary: Obter capítulo
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Capitulo' }}}}
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Capítulos]
+      summary: Atualizar capítulo
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CapituloUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Capitulo' }}}}
+    delete:
+      tags: [Capítulos]
+      summary: Deletar capítulo
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Deletado }
+
+  /momentos:
+    get:
+      tags: [Momentos]
+      summary: Listar momentos com filtros (Galeriável)
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+        - in: query
+          name: crianca_id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: capitulo_id
+          schema: { type: string, format: uuid }
+        - in: query
+          name: tipo
+          schema: { $ref: '#/components/schemas/TipoMomento' }
+        - in: query
+          name: subtipo
+          schema: { type: string }
+        - in: query
+          name: pessoas
+          description: IDs separados por vírgula
+          schema: { type: string }
+        - in: query
+          name: tags
+          description: tags separadas por vírgula
+          schema: { type: string }
+        - in: query
+          name: midia
+          schema: { enum: ["foto","video","ambos"], type: string }
+        - in: query
+          name: privacidade
+          schema: { $ref: '#/components/schemas/Privacidade' }
+        - in: query
+          name: data_ini
+          schema: { type: string, format: date }
+        - in: query
+          name: data_fim
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: Lista paginada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedMomento' }
+    post:
+      tags: [Momentos]
+      summary: Criar novo momento (inclui retroativo)
+      description: >
+        Se `data_evento` for no passado, o backend calcula `idade_calculada` e reindexa na Galeria e Séries.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MomentoCreate' }
+            examples:
+              vacina:
+                value:
+                  crianca_id: "b7c4e2e1-..." 
+                  capitulo_id: "aa21..." 
+                  tipo: "vacina"
+                  subtipo: "Pentavalente"
+                  titulo: "Vacina de 6 meses"
+                  data_evento: "2025-09-05T10:00:00Z"
+                  privacidade: "privado"
+                  tags: ["saúde"]
+                  midias: []
+      responses:
+        "201":
+          description: Criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Momento' }
+
+  /momentos/{id}:
+    get:
+      tags: [Momentos]
+      summary: Detalhar momento
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Momento' }}}}
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Momentos]
+      summary: Atualizar momento
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MomentoUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Momento' }}}}
+    delete:
+      tags: [Momentos]
+      summary: Excluir momento
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Deletado }
+
+  /midias/upload-url:
+    post:
+      tags: [Mídias]
+      summary: Gerar URL assinada para upload (S3/MinIO)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename: { type: string }
+                content_type: { type: string, example: "image/jpeg" }
+                tamanho_bytes: { type: integer }
+      responses:
+        "200":
+          description: URL de upload e metadados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  upload_url: { type: string }
+                  public_url: { type: string }
+                  fields: { type: object, additionalProperties: true }
+
+  /series:
+    get:
+      tags: [Séries]
+      summary: Listar séries da criança
+      parameters:
+        - in: query
+          name: crianca_id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Serie' }
+    post:
+      tags: [Séries]
+      summary: Criar série
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SerieCreate' }
+      responses:
+        "201": { content: { application/json: { schema: { $ref: '#/components/schemas/Serie' }}}}
+
+  /series/{id}:
+    get:
+      tags: [Séries]
+      summary: Detalhar série (com progresso)
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Serie' }}}}
+    put:
+      tags: [Séries]
+      summary: Atualizar série
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SerieUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/Serie' }}}}
+    delete:
+      tags: [Séries]
+      summary: Excluir série
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Deletado }
+
+  /notificacoes:
+    get:
+      tags: [Notificações]
+      summary: Central de notificações (inbox)
+      parameters:
+        - in: query
+          name: crianca_id
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedNotificacao' }
+    post:
+      tags: [Notificações]
+      summary: Criar notificação manual (admin/opcional)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NotificacaoCreate' }
+      responses:
+        "201": { content: { application/json: { schema: { $ref: '#/components/schemas/Notificacao' }}}}
+
+  /notificacoes/{id}/leitura:
+    post:
+      tags: [Notificações]
+      summary: Marcar notificação como lida
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Marcado como lido }
+
+  /preferencias-notificacao:
+    get:
+      tags: [Preferências]
+      summary: Obter preferências do usuário
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/PreferenciasNotificacao' }}}}
+    put:
+      tags: [Preferências]
+      summary: Atualizar preferências do usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PreferenciasNotificacaoUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/PreferenciasNotificacao' }}}}
+
+  /galeria:
+    get:
+      tags: [Galeria]
+      summary: Consulta de mídia com filtros avançados
+      parameters:
+        - in: query
+          name: crianca_id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: capitulo_id
+          schema: { type: string, format: uuid }
+        - in: query
+          name: periodo
+          description: ISO8601 interval ex.: 2025-01-01/2025-12-31
+          schema: { type: string }
+        - in: query
+          name: pessoas
+          schema: { type: string, description: "IDs separados por vírgula" }
+        - in: query
+          name: tags
+          schema: { type: string }
+        - in: query
+          name: midia
+          schema: { enum: ["foto","video","ambos"], type: string }
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/page_size'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedMidia' }
+
+  /export/pdf:
+    post:
+      tags: [Exportação]
+      summary: Solicitar exportação em PDF (assíncrono)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ExportCapitulo'
+                - $ref: '#/components/schemas/ExportSerie'
+                - $ref: '#/components/schemas/ExportAlbum'
+      responses:
+        "202":
+          description: Job enfileirado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExportJob' }
+
+  /familia:
+    get:
+      tags: [Família]
+      summary: Obter árvore genealógica da criança
+      parameters:
+        - in: query
+          name: crianca_id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaTree' }
+    post:
+      tags: [Família]
+      summary: Adicionar membro na família
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamiliaMemberCreate' }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaMember' }
+
+  /familia/{id}:
+    put:
+      tags: [Família]
+      summary: Atualizar membro
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamiliaMemberUpdate' }
+      responses:
+        "200": { content: { application/json: { schema: { $ref: '#/components/schemas/FamiliaMember' }}}}
+    delete:
+      tags: [Família]
+      summary: Remover membro
+      parameters: [ { $ref: '#/components/parameters/idPath' } ]
+      responses:
+        "204": { description: Deletado }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    idPath:
+      in: path
+      name: id
+      required: true
+      schema: { type: string, format: uuid }
+    page:
+      in: query
+      name: page
+      schema: { type: integer, minimum: 1, default: 1 }
+    page_size:
+      in: query
+      name: page_size
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+
+  responses:
+    Unauthorized:
+      description: Não autorizado
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            err: { value: { detail: "Credenciais inválidas" } }
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    # Auth
+    LoginRequest:
+      type: object
+      required: [email, senha]
+      properties:
+        email: { type: string, format: email }
+        senha: { type: string, format: password }
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token: { type: string }
+    AuthResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        refresh_token: { type: string }
+        token_type: { type: string, example: bearer }
+
+    # Core entities
+    Usuario:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        email: { type: string, format: email }
+        foto_url: { type: string, nullable: true }
+        preferencias: { type: object, additionalProperties: true }
+
+    Crianca:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        usuario_id: { type: string, format: uuid }
+        nome: { type: string }
+        data_nascimento: { type: string, format: date }
+        genero:
+          type: string
+          enum: [feminino, masculino, outro]
+        foto_url: { type: string, nullable: true }
+        cidade: { type: string, nullable: true }
+        dados_extras: { type: object, additionalProperties: true }
+
+    CriancaCreate:
+      type: object
+      required: [nome, data_nascimento]
+      properties:
+        nome: { type: string }
+        data_nascimento: { type: string, format: date }
+        genero: { type: string, enum: [feminino, masculino, outro], nullable: true }
+        cidade: { type: string, nullable: true }
+        foto_url: { type: string, nullable: true }
+
+    CriancaUpdate:
+      allOf: [ { $ref: '#/components/schemas/CriancaCreate' } ]
+
+    Capitulo:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        descricao: { type: string }
+        icone: { type: string }
+        viewer:
+          type: string
+          enum: [grid, timeline, checklist, series, gallery]
+        filtros: { type: object, additionalProperties: true }
+        ordem: { type: integer }
+        ativo: { type: boolean }
+        progresso:
+          type: object
+          properties:
+            preenchidos: { type: integer }
+            pendentes: { type: integer }
+
+    CapituloCreate:
+      type: object
+      required: [nome]
+      properties:
+        nome: { type: string }
+        descricao: { type: string }
+        icone: { type: string }
+        viewer: { type: string, enum: [grid, timeline, checklist, series, gallery] }
+
+    CapituloUpdate:
+      allOf: [ { $ref: '#/components/schemas/CapituloCreate' } ]
+
+    TipoMomento:
+      type: string
+      enum: [nota, foto, video, vacina, consulta, marco, carta, visita, custom]
+
+    Privacidade:
+      type: string
+      enum: [privado, pessoas, link]
+
+    Momento:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        crianca_id: { type: string, format: uuid }
+        capitulo_id: { type: string, format: uuid }
+        serie_id: { type: string, format: uuid, nullable: true }
+        tipo: { $ref: '#/components/schemas/TipoMomento' }
+        subtipo: { type: string, nullable: true }
+        titulo: { type: string }
+        texto_curto: { type: string, nullable: true }
+        texto_longo: { type: string, nullable: true }
+        data_evento: { type: string, format: date-time }
+        idade_calculada: { type: string, example: "7m 4d" }
+        local: { type: string, nullable: true }
+        pessoas:
+          type: array
+          items: { type: string, format: uuid }
+        privacidade: { $ref: '#/components/schemas/Privacidade' }
+        tags:
+          type: array
+          items: { type: string }
+        status:
+          type: string
+          enum: [rascunho, publicado]
+        midias:
+          type: array
+          items: { $ref: '#/components/schemas/Midia' }
+        criado_em: { type: string, format: date-time }
+        atualizado_em: { type: string, format: date-time }
+
+    MomentoCreate:
+      type: object
+      required: [crianca_id, capitulo_id, tipo, data_evento]
+      properties:
+        crianca_id: { type: string, format: uuid }
+        capitulo_id: { type: string, format: uuid }
+        serie_id: { type: string, format: uuid, nullable: true }
+        tipo: { $ref: '#/components/schemas/TipoMomento' }
+        subtipo: { type: string, nullable: true }
+        titulo: { type: string, nullable: true }
+        texto_curto: { type: string, nullable: true }
+        texto_longo: { type: string, nullable: true }
+        data_evento: { type: string, format: date-time }
+        local: { type: string, nullable: true }
+        pessoas:
+          type: array
+          items: { type: string, format: uuid }
+        privacidade: { $ref: '#/components/schemas/Privacidade' }
+        tags:
+          type: array
+          items: { type: string }
+        status:
+          type: string
+          enum: [rascunho, publicado]
+        midias:
+          type: array
+          items:
+            type: object
+            properties:
+              url: { type: string }
+              thumb: { type: string, nullable: true }
+              tipo: { enum: ["foto","video"], type: string }
+              meta: { type: object, additionalProperties: true }
+
+    MomentoUpdate:
+      allOf: [ { $ref: '#/components/schemas/MomentoCreate' } ]
+
+    Midia:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        momento_id: { type: string, format: uuid }
+        tipo: { enum: ["foto","video"], type: string }
+        url: { type: string }
+        thumb: { type: string, nullable: true }
+        duracao: { type: integer, nullable: true }
+        meta: { type: object, additionalProperties: true }
+
+    Serie:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        crianca_id: { type: string, format: uuid }
+        nome: { type: string, example: "Mêsversário" }
+        regra_recorrencia: { type: string, example: "RRULE:FREQ=MONTHLY;BYMONTHDAY=12" }
+        ocorrencias:
+          type: array
+          items: { type: string, format: date }
+        progresso:
+          type: object
+          properties:
+            preenchidas: { type: integer }
+            pendentes: { type: integer }
+        ativo: { type: boolean }
+
+    SerieCreate:
+      type: object
+      required: [crianca_id, nome, regra_recorrencia]
+      properties:
+        crianca_id: { type: string, format: uuid }
+        nome: { type: string }
+        regra_recorrencia: { type: string }
+
+    SerieUpdate:
+      allOf: [ { $ref: '#/components/schemas/SerieCreate' } ]
+
+    Notificacao:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        usuario_id: { type: string, format: uuid }
+        crianca_id: { type: string, format: uuid, nullable: true }
+        tipo:
+          type: string
+          enum: [mesversario, vacina, marco, retroativo, digest, sistema]
+        titulo: { type: string }
+        mensagem: { type: string }
+        estado:
+          type: string
+          enum: [pendente, enviado, lido, resolvido]
+        data_agendada: { type: string, format: date-time }
+        acao: { type: object, additionalProperties: true }
+        criado_em: { type: string, format: date-time }
+
+    NotificacaoCreate:
+      type: object
+      required: [usuario_id, titulo, tipo]
+      properties:
+        usuario_id: { type: string, format: uuid }
+        crianca_id: { type: string, format: uuid, nullable: true }
+        tipo:
+          type: string
+          enum: [mesversario, vacina, marco, retroativo, digest, sistema]
+        titulo: { type: string }
+        mensagem: { type: string }
+        data_agendada: { type: string, format: date-time, nullable: true }
+        acao: { type: object, additionalProperties: true }
+
+    PreferenciasNotificacao:
+      type: object
+      properties:
+        frequencia: { enum: [imediato, diario, semanal, mensal], type: string }
+        silencio_inicio: { type: string, example: "22:00" }
+        silencio_fim: { type: string, example: "08:00" }
+        categorias:
+          type: object
+          additionalProperties: { type: boolean }
+
+    PreferenciasNotificacaoUpdate:
+      allOf: [ { $ref: '#/components/schemas/PreferenciasNotificacao' } ]
+
+    # Galeria & Export
+    ExportCapitulo:
+      type: object
+      required: [tipo, crianca_id, capitulo_id]
+      properties:
+        tipo: { type: string, enum: [capitulo] }
+        crianca_id: { type: string, format: uuid }
+        capitulo_id: { type: string, format: uuid }
+    ExportSerie:
+      type: object
+      required: [tipo, crianca_id, serie_id]
+      properties:
+        tipo: { type: string, enum: [serie] }
+        crianca_id: { type: string, format: uuid }
+        serie_id: { type: string, format: uuid }
+    ExportAlbum:
+      type: object
+      required: [tipo, crianca_id]
+      properties:
+        tipo: { type: string, enum: [album] }
+        crianca_id: { type: string, format: uuid }
+
+    ExportJob:
+      type: object
+      properties:
+        job_id: { type: string }
+        status: { enum: [enfileirado, processando, concluido, erro], type: string }
+
+    # Família
+    FamiliaTree:
+      type: object
+      properties:
+        crianca_id: { type: string, format: uuid }
+        membros:
+          type: array
+          items: { $ref: '#/components/schemas/FamiliaMember' }
+        relacoes:
+          type: array
+          items:
+            type: object
+            properties:
+              de: { type: string, format: uuid }
+              para: { type: string, format: uuid }
+              tipo: { type: string, enum: [pai, mae, avo, avó, tio, tia, padrinho, madrinha, irmao, irma, outro] }
+
+    FamiliaMember:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        crianca_id: { type: string, format: uuid }
+        nome: { type: string }
+        relacao: { type: string }
+        foto_url: { type: string, nullable: true }
+        nascimento: { type: string, format: date, nullable: true }
+
+    FamiliaMemberCreate:
+      type: object
+      required: [crianca_id, nome, relacao]
+      properties:
+        crianca_id: { type: string, format: uuid }
+        nome: { type: string }
+        relacao: { type: string }
+        foto_url: { type: string, nullable: true }
+        nascimento: { type: string, format: date, nullable: true }
+
+    FamiliaMemberUpdate:
+      allOf: [ { $ref: '#/components/schemas/FamiliaMemberCreate' } ]
+
+    # Pagination wrappers
+    PaginatedCrianca:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Crianca' }
+        page: { type: integer }
+        page_size: { type: integer }
+        total: { type: integer }
+
+    PaginatedMomento:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Momento' }
+        page: { type: integer }
+        page_size: { type: integer }
+        total: { type: integer }
+
+    PaginatedNotificacao:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Notificacao' }
+        page: { type: integer }
+        page_size: { type: integer }
+        total: { type: integer }
+
+    PaginatedMidia:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Midia' }
+        page: { type: integer }
+        page_size: { type: integer }
+        total: { type: integer }
+
+    Error:
+      type: object
+      properties:
+        detail: { type: string }
+
+## Exemplos rápidos de uso (cURL)
+
+**Login**
+
+```bash
+curl -X POST http://localhost:8000/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"ana@exemplo.com","senha":"minha-senha"}'
+```
+
+**Criar Momento Retroativo (Vacina)**
+
+```bash
+curl -X POST http://localhost:8000/v1/momentos \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{
+    "crianca_id":"b7c4e2e1-...",
+    "capitulo_id":"aa21-...",
+    "tipo":"vacina",
+    "subtipo":"Pentavalente",
+    "titulo":"Vacina de 6 meses",
+    "data_evento":"2025-09-05T10:00:00Z",
+    "privacidade":"privado",
+    "tags":["saúde"],
+    "midias":[]
+  }'
+```
+
+**Listar Galeria com filtros**
+
+```bash
+curl "http://localhost:8000/v1/galeria?crianca_id=b7c4e2e1-...&capitulo_id=aa21-...&midia=foto&tags=mesversario"
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Gerar URL de upload (S3)**
+
+```bash
+curl -X POST http://localhost:8000/v1/midias/upload-url \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"filename":"foto.jpg","content_type":"image/jpeg","tamanho_bytes":524288}'
+```
+
+**Solicitar exportação do capítulo**
+
+```bash
+curl -X POST http://localhost:8000/v1/export/pdf \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"tipo":"capitulo","crianca_id":"b7c4e2e1-...","capitulo_id":"aa21-..."}'
+```
