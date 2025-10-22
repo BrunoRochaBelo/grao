@@ -1,610 +1,193 @@
-# Grão — API do Livro do Bebê
+# Grão — Livro do Bebê (Front-end)
 
-> API do app **Livro do Bebê**. Modelo unificado (**tudo é Momento**) com **Templates**, **Capítulos** (visões filtradas) e **Séries** (recorrências).
-> Foco em **usabilidade**, **segurança (LGPD)**, **exportabilidade** e **escala**.
-
----
-
-## Sumário
-
-* [Visão Geral](#visão-geral)
-* [Stack](#stack)
-* [Arquitetura do Sistema](#arquitetura-do-sistema)
-* [Modelagem de Domínio](#modelagem-de-domínio)
-* [Estrutura de Pastas (Blueprint por Feature)](#estrutura-de-pastas-blueprint-por-feature)
-* [Configuração (env)](#configuração-env)
-* [Rodando Localmente](#rodando-localmente)
-* [Docker / Docker Compose](#docker--docker-compose)
-* [Migrações (Alembic)](#migrações-alembic)
-* [Testes](#testes)
-* [Comunicação & Segurança (API)](#comunicação--segurança-api)
-* [Segurança, LGPD & Privacidade](#segurança-lgpd--privacidade)
-* [Endpoints (REST v1)](#endpoints-rest-v1)
-* [Esquemas & Exemplos](#esquemas--exemplos)
-* [Observabilidade](#observabilidade)
-* [Roadmap](#roadmap)
-* [Licença](#licença)
-* [Contribuição](#contribuição)
+Aplicativo web para transformar memórias da infância em um diário colaborativo, bonito e seguro. Este README documenta a visão do produto, a stack e as diretrizes técnicas da camada **front-end** que consome a API descrita no [monorepo da plataforma](https://github.com/orgs/grao-livrodobebe) (FastAPI).
 
 ---
 
 ## Visão Geral
 
-O **Livro do Bebê** é um backend em Python (FastAPI) pensado para um diário moderno de memórias infantis. O conceito central é o **Momento** (como um post de rede social); templates aceleram o registro e **Capítulos** oferecem visões filtradas do mesmo feed (capítulos do livro). **Séries** lidam com recorrências (ex.: mêsversário) e mantêm o andamento de registros repetitivos.
+O Livro do Bebê permite que familiares registrem **Momentos** em diferentes formatos (texto, foto, vídeo, áudio), organizem essas memórias em **Capítulos** personalizados e acompanhem **Séries** recorrentes (ex.: mêsversário). O front-end é responsável por entregar uma experiência fluida, acessível e segura para:
 
-### Diferenciais técnicos
+- Criar e editar Momentos com templates dinâmicos.
+- Navegar por Capítulos (visões filtradas) com filtros avançados.
+- Configurar e acompanhar Séries (recorrências).
+- Compartilhar memórias com familiares através de links protegidos.
+- Controlar privacidade, membros e notificações.
 
-* Campos flexíveis em `momento.fields` (JSONB) com **índices GIN** para consultas rápidas.
-* Upload direto ao storage (S3/MinIO) via **presigned URL**.
-* **Workers** (Celery) para tarefas pesadas (thumbnails, transcode, PDFs).
-* Observabilidade pronta (logs JSON, Prometheus, OpenTelemetry, Sentry).
-* **ETag/If-Match** para concorrência otimista e **If-None-Match** para cache de GETs.
+### Princípios de UX
+
+1. **Primeiro mobile** (layouts responsivos a partir de 320px).
+2. **Feedback imediato** (optimistic UI, skeletons, toasts).
+3. **Acessibilidade** (WCAG 2.1 AA, navegação por teclado, aria-labels, contraste ≥ 4.5).
+4. **Internacionalização** (pt-BR como idioma padrão, infraestrutura pronta para en-US/es-ES).
+5. **Confiança e privacidade** (indicadores de visibilidade, revisão fácil de compartilhamentos).
 
 ---
 
 ## Stack
 
-* **Python:** 3.12+
-* **Web:** FastAPI + Uvicorn
-* **ORM:** SQLAlchemy 2.x + Alembic
-* **DB:** PostgreSQL 14+ (JSONB)
-* **Cache/Rate-limit/Fila:** Redis
-* **Jobs:** Celery (+ Redis)
-* **Storage de mídia:** S3 compatível (AWS S3 / MinIO)
-* **Imagens/Vídeos:** Pillow / FFmpeg
-* **Auth:** OAuth2 + JWT (access/refresh), Argon2
-* **Qualidade:** Ruff, Black, isort, mypy, pytest, pre-commit
-* **Observabilidade:** Logs JSON, Prometheus, OpenTelemetry, Sentry
+### Front-end
+
+| Camada                | Tecnologia / Racional                                                                 |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| **Framework**         | [Next.js 14](https://nextjs.org/) com App Router — SSR/SSG, roteamento aninhado e SEO. |
+| **Linguagem**         | TypeScript 5 — tipagem estática e DX consistente.                                      |
+| **UI**                | Tailwind CSS + Radix UI + design tokens do time de produto.                            |
+| **Estado remoto**     | TanStack Query (React Query) com persistência em IndexedDB.                            |
+| **Estado local**      | Zustand para dados de UI (modais, filtros em edição).                                  |
+| **Formulários**       | React Hook Form + Zod (validação compartilhada com backend).                           |
+| **Upload de mídia**   | Uppy + presigned URLs da API (S3/MinIO).                                               |
+| **Mapas & geocoding** | Mapbox GL JS + API de geocodificação reversa (quando habilitada pelo backend).         |
+| **Charts**            | Recharts para curvas de crescimento e comparativos.                                   |
+| **i18n**              | next-intl (mensagens carregadas por namespace).                                        |
+| **Autenticação**      | OAuth2/OIDC PKCE → tokens armazenados em cookies HTTPOnly (rotas protegidas).          |
+
+### Qualidade & Tooling
+
+- **Gerenciador de pacotes:** `pnpm`.
+- **Lint/format:** ESLint (config custom + `@next/eslint-plugin-next`), Prettier e Stylelint.
+- **Tipagem:** `tsc --noEmit` em CI.
+- **Tests unitários e de componentes:** Jest + Testing Library + MSW.
+- **Visual Regression e E2E:** Playwright (execução por projeto e em CI headless).
+- **Design System:** Storybook 8 com testes interativos (`@storybook/test-runner`).
+- **Commits:** Conventional Commits + Husky + lint-staged.
+- **CI/CD:** GitHub Actions (lint → test → build → preview deploy em Vercel).
+
+### Integrações externas
+
+- **API principal:** FastAPI (REST v1) hospedada no monorepo da plataforma. Endpoints `moments`, `chapters`, `series`, `media`.
+- **Observabilidade:** Sentry (front), LogRocket (session replay opcional) e PostHog (analytics orientada a produto).
+- **Feature flags:** LaunchDarkly (delimitação por segmento de usuário).
 
 ---
 
-## Arquitetura do Sistema
-
-### Camadas internas
-
-Arquitetura **feature-first (blueprint)** com módulos organizados por domínio:
-
-* **API** (APIRouter por feature): validação, autenticação, paginação, versionamento e ETag.
-* **Services:** regras de negócio (criar Momento, anexar Série, cálculo de idade, estatísticas de crescimento).
-* **Repositories:** persistência com SQLAlchemy.
-* **Workers** (Celery): transcodificação/thumbnail, exportações (PDF) e notificações.
-* **Storage:** integração com S3/MinIO via URLs assinadas.
-* **Telemetry:** logging estruturado, métricas e tracing.
-
-### Fronteiras
-
-* api (stateless) · worker (jobs) · db (Postgres) · cache/queue (Redis) · object storage (S3/MinIO) · cdn (opcional).
-
----
-
-## Modelagem de Domínio
-
-### Entidades principais
-
-* **User:** conta/autenticação e escopos.
-* **Child:** criança; associação `User↔Child` (membros).
-* **Moment** (antigo “Post”): unidade de conteúdo.
-  * `id, child_id, occurred_at (tz/UTC), age_days, type, subtype, status {published|draft}`
-  * `privacy {private|people|link}, people[] (referências), location {name, lat?, lng?}`
-  * `medias[] (foto/vídeo/áudio/doc), short_text, long_text, tags[], markers{}`
-  * `fields {…}, series_id?`
-* **Media:** arquivo no S3/MinIO (`object_key`, `mime`, `size`, `thumb`, `duration?`).
-* **Series:** recorrência (RRULE), progresso e ocorrências derivadas.
-* **Chapter (Capítulo):** coleção/visão salva com filtros, `viewer` e `ordering`.
-* **Template:** catálogo de tipos/subtipos e validações mínimas.
-* **Person/Contact:** pessoa envolvida (para `people[]` nos Momentos).
-* **Comment:** comentários/áudios em um Momento (opcional).
-* **ShareLink:** link de compartilhamento com escopo/expiração/senha.
-* **AuditLog:** trilha de auditoria.
-
-> **Mudanças chave para alinhar ao front**
->
-> * Renomeação pública: **Momento** (alias de Post) e **Capítulo** (alias de Shelf).
-> * Novos campos: `subtype`, `status`, `privacy=people`, `markers{}`, `viewer` e `ordering` em Capítulo, `lat/lng` em `location`.
-> * **ETag** (+ `updated_at`/`version`) para concorrência e cache.
-> * **/moments** e **/chapters** como rotas canônicas (mantidos aliases `/posts` e `/shelves`).
-
----
-
-## Estrutura de Pastas (Blueprint por Feature)
-
-> Estrutura planejada. Alguns arquivos podem ser gerados futuramente conforme as features avancem.
+## Arquitetura do Front
 
 ```bash
-.
-├── README.md
-├── .env.example
-├── docker-compose.yml
-├── Makefile
-├── pyproject.toml
-├── pre-commit-config.yaml
-├── alembic.ini
-├── app/
-│   ├── main.py
-│   ├── __init__.py
-│   ├── core/
-│   │   ├── config.py
-│   │   ├── security.py
-│   │   ├── errors.py
-│   │   ├── logging.py
-│   │   ├── pagination.py
-│   │   ├── rate_limit.py
-│   │   └── etag.py              # cálculo/validação de ETags
-│   ├── db/
-│   │   ├── session.py
-│   │   ├── base.py
-│   │   └── migrations/
-│   │       ├── env.py
-│   │       └── versions/
-│   │           └── 2025_01_01_000001_init.py
-│   ├── telemetry/
-│   │   ├── tracing.py
-│   │   └── metrics.py
-│   ├── workers/
-│   │   ├── celery_app.py
-│   │   └── tasks/
-│   │       ├── media_tasks.py
-│   │       ├── export_tasks.py
-│   │       └── notification_tasks.py
-│   ├── storage/
-│   │   ├── s3.py
-│   │   └── local.py
-│   ├── utils/
-│   │   ├── time.py
-│   │   ├── age.py
-│   │   ├── ids.py
-│   │   ├── sse.py
-│   │   └── lgpd.py
-│   └── features/
-│       ├── auth/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── __init__.py
-│       ├── children/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       ├── people/              # contatos/pessoas
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       ├── moments/             # alias de posts
-│       │   ├── router.py        # rotas /moments (e alias /posts)
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       ├── media/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── storage.py
-│       ├── series/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── rrule.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       ├── chapters/            # alias de shelves
-│       │   ├── router.py        # rotas /chapters (e alias /shelves)
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       ├── templates/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   └── schemas.py
-│       ├── shares/
-│       │   ├── router.py
-│       │   ├── service.py
-│       │   ├── repo.py
-│       │   ├── schemas.py
-│       │   └── models.py
-│       └── comments/
-│           ├── router.py
-│           ├── service.py
-│           ├── repo.py
-│           ├── schemas.py
-│           └── models.py
-├── tests/
-│   ├── conftest.py
-│   ├── features/
-│   │   ├── moments/
-│   │   ├── media/
-│   │   ├── series/
-│   │   └── chapters/
-│   └── e2e/
-└── scripts/
-    ├── dev.sh
-    └── load_sample_data.py
+src/
+  app/                    # Roteamento Next.js (App Router)
+    (auth)/               # Login, registro, convite
+    (dashboard)/          # Rotas autenticadas (layout com guard)
+      moments/
+      chapters/
+      series/
+      settings/
+    api/                  # Rotas Next para proxy/controladores edge
+  features/
+    moments/
+      components/
+      hooks/
+      services/
+      validations/
+    chapters/
+    series/
+    shared/
+  lib/
+    api/                  # Clientes REST gerados (OpenAPI)
+    analytics/
+    auth/
+    date/
+    upload/
+  styles/
+    globals.css
+    tokens.css
+  config/
+    env.ts                # Tipagem das variáveis
+  tests/
+    e2e/
+    mocks/
+  pages/preview/          # Conteúdo estático legado (se necessário)
+public/
+  icons/
+  locales/
 ```
 
-### Registro das rotas
+### Convenções
 
-```python
-# app/main.py
-from fastapi import FastAPI
-from app.core.config import settings
-from app.features.moments.router import router as moments_router
-from app.features.chapters.router import router as chapters_router
-from app.features.series.router import router as series_router
-from app.features.children.router import router as children_router
-from app.features.auth.router import router as auth_router
-# ...
-
-app = FastAPI(title="Livro do Bebê", version="1.0.0")
-
-app.include_router(auth_router,     prefix=settings.API_V1_PREFIX)
-app.include_router(children_router, prefix=settings.API_V1_PREFIX)
-app.include_router(moments_router,  prefix=settings.API_V1_PREFIX)
-app.include_router(chapters_router, prefix=settings.API_V1_PREFIX)
-app.include_router(series_router,   prefix=settings.API_V1_PREFIX)
-# Aliases de compatibilidade: /posts → /moments, /shelves → /chapters
-```
+- **Components by feature:** cada feature possui entrada pública `features/<feature>/index.ts` expondo hooks, componentes e serviços.
+- **UI primitives:** exportadas de `features/shared/ui` e documentadas no Storybook.
+- **Estilização:** Tailwind (utility-first) + CSS Modules opcionais para casos complexos.
+- **Data fetching:** hooks `useMomentsQuery`, `useMomentMutation` encapsulam TanStack Query.
+- **Erro padrão:** toasts contextuais e fallback pages (`app/error.tsx`, `app/(dashboard)/error.tsx`).
+- **Acessibilidade:** seguir checklist do Storybook + `eslint-plugin-jsx-a11y`.
 
 ---
 
-## Configuração (env)
+## Integração com a API
 
-Copie o arquivo base e ajuste credenciais conforme seu ambiente:
+- O contrato é gerado a partir do `openapi.json` do backend (`pnpm api:generate`).
+- Autenticação via OAuth PKCE → callback em `/auth/callback`. Tokens de acesso (JWT) residem em cookie HTTPOnly e são renovados por refresh token via rota `/auth/refresh` (API).
+- Requisições autenticadas passam por um client central `createApiClient` que injeta cabeçalhos (`Authorization`, `If-None-Match`, `If-Match`).
+- Uploads grandes usam presigned URL: front obtém URL pela API (`POST /media/uploads`), envia arquivo direto ao S3/MinIO e, ao finalizar, confirma com `PATCH /media/uploads/{id}`.
+- SSE/WebSocket (quando disponível) acompanha progresso de jobs (`/jobs/stream`).
+
+### Cache e sincronização
+
+- TanStack Query + persistência no `IndexedDB` (`PersistQueryClientProvider`).
+- Revalidação automática quando tab volta ao foco ou conexão restabelece.
+- Mutations com optimistic update respeitando ETag (rollback em conflito 412).
+
+---
+
+## Configuração de Ambiente
+
+Crie um arquivo `.env.local` com as variáveis mínimas:
 
 ```bash
-cp .env.example .env
+NEXT_PUBLIC_API_URL=https://api.grao.dev
+NEXT_PUBLIC_SENTRY_DSN=
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_LAUNCHDARKLY_CLIENT_ID=
+STORYBOOK_BASE_API_URL=http://localhost:8000
 ```
 
-Valores padrão sugeridos:
-
-```env
-APP_NAME=livro-bebe
-ENV=local
-API_V1_PREFIX=/api/v1
-SECRET_KEY=changeme
-JWT_ALG=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-REFRESH_TOKEN_EXPIRE_DAYS=30
-
-DB_URL=postgresql+psycopg://postgres:postgres@db:5432/livrobebe
-REDIS_URL=redis://redis:6379/0
-
-S3_ENDPOINT=http://minio:9000
-S3_REGION=us-east-1
-S3_BUCKET_MEDIA=livrobebe-media
-S3_ACCESS_KEY=minio
-S3_SECRET_KEY=minio123
-S3_SECURE=false
-
-CELERY_BROKER_URL=redis://redis:6379/1
-CELERY_RESULT_BACKEND=redis://redis:6379/2
-
-SENTRY_DSN=
-OTEL_EXPORTER_OTLP_ENDPOINT=
-ALLOWED_CORS_ORIGINS=http://localhost:5173,http://localhost:3000
-
-DEFAULT_TZ=America/Recife
-```
+Variáveis sensíveis (client secret, DSNs) são injetadas via `Vercel Environment Variables` ou `GitHub Actions secrets`.
 
 ---
 
-## Rodando Localmente
+## Scripts (pnpm)
 
-1. Crie e ative um ambiente virtual.
+| Comando                  | Descrição                                            |
+| ------------------------ | ---------------------------------------------------- |
+| `pnpm install`           | Instala dependências.                                |
+| `pnpm dev`               | Inicia servidor Next.js em `http://localhost:3000`.  |
+| `pnpm lint`              | Executa ESLint, Stylelint e `tsc --noEmit`.          |
+| `pnpm test`              | Executa Jest + Testing Library com cobertura.       |
+| `pnpm test:e2e`          | Executa Playwright (precisa da API em `localhost`).  |
+| `pnpm storybook`         | Sobe Storybook em `http://localhost:6006`.           |
+| `pnpm build`             | Gera build de produção (`.next/`).                   |
+| `pnpm api:generate`      | Regenera clientes a partir do OpenAPI do backend.   |
+| `pnpm analyze`           | Análise de bundle (`next build --profile`).          |
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -U pip
-   pip install -e .[dev]  # ou pip install -e .
-   ```
-
-2. Suba dependências externas necessárias.
-
-   ```bash
-docker compose up -d db redis minio create-bucket
-   ```
-
-3. Aplique as migrações e inicie a API.
-
-   ```bash
-   alembic upgrade head
-   uvicorn app.main:app --reload
-   ```
-
-4. Inicie o worker Celery (em outro terminal) e acesse a documentação interativa.
-
-   ```bash
-   celery -A app.workers.celery_app.celery_app worker -l INFO
-   # Docs: http://localhost:8000/docs
-   ```
+> _Observação:_ scripts podem variar conforme a implementação. Atualize esta tabela ao adicionar/remover comandos.
 
 ---
 
-## Docker / Docker Compose
-
-```bash
-docker compose up --build
-```
-
-Serviços incluídos: api, worker, db (Postgres), redis, minio (com criação automática de bucket).
-
----
-
-## Migrações (Alembic)
-
-```bash
-alembic revision -m "add moments model + chapters + people + markers + subtype + etag"
-alembic upgrade head
-```
-
----
-
-## Testes
-
-```bash
-pytest -q
-pytest --cov=app tests/ -q
-```
-
----
-
-## Comunicação & Segurança (API)
-
-Toda a comunicação ocorre via **API REST** em `/api/v1`.
-
-### Exceções controladas
-
-* **Upload:** `POST /uploads/sign` → presigned URL (cliente faz `PUT` direto no S3).
-* **Jobs:** export/transcode via polling (`GET /export/pdf/{jobId}`).
-* **Links:** `/share-links/{token}` com escopo mínimo e expiração.
-
-### Proteções habilitadas por padrão
-
-1. HTTPS/TLS (HSTS configurado no proxy).
-2. OAuth2 + **JWT** (access 15–30 min; refresh 15–30 dias).
-3. Autorização por **escopos** + membership por `child_id`.
-4. Rate limit (Redis), limite de payload e CORS restrito.
-5. S3 com **least privilege** + presigned curto (5 min).
-6. **ETag/If-Match** em `PATCH`/`DELETE` e **If-None-Match** em `GET`.
-7. Auditoria de ações sensíveis; logs JSON sem PII sensível.
-8. URLs de mídia assinadas (visualização com expiração).
-
-### ETag (concorrência & cache)
-
-* Toda resposta de `GET /moments/{id}` retorna `ETag` (hash de `updated_at`/`version`).
-* `PATCH /moments/{id}` exige `If-Match: "<etag>"` → 412 em caso de divergência.
-* `GET` aceita `If-None-Match` → `304 Not Modified`.
-
-### Privacidade (`moment.privacy`)
-
-* `private`: somente membros da criança.
-* `people`: restrito a uma ACL (`allowed_user_ids[]` / `allowed_contact_ids[]`).
-* `link`: público por link assinado (expira; opção de senha).
-
----
-
-## Segurança, LGPD & Privacidade
-
-* Direitos do titular: **exportar, corrigir, excluir** (rotas dedicadas).
-* Retenção: soft delete + purge com política documentada.
-* Criptografia: TLS, URLs assinadas e minimização de dados sensíveis.
-* Auditoria: `audit_log` para ações críticas (compartilhamento, exclusão, exportação).
-* Backups e restauração testados periodicamente.
-
----
-
-## Endpoints (REST v1)
-
-> Rotas canônicas (alinhadas ao front). Aliases legados: `/posts` ⇄ `/moments` e `/shelves` ⇄ `/chapters`.
-
-### Children (perfil do bebê)
-
-* `GET /children`
-* `GET /children/{id}`
-* `POST /children`
-* `PATCH /children/{id}`
-* `DELETE /children/{id}`
-* `GET /children/{id}/stats` → `{percentis, vacinasStatus, marcos[]}`
-
-### Moments (Momento)
-
-* `GET /moments?child={id}&view={viewer}&filters=...` → `{items[], nextCursor}`
-  * Filtros: `type`, `subtype`, `chapter_id`, `date_from/date_to`, `age_range`, `people[]`, `location`, `tags[]`, `markers{}`, `has_media`, `draft`, `privacy`, `series_id`, `q`.
-* `GET /moments/{id}` (retorna `ETag`)
-* `POST /moments`
-* `PATCH /moments/{id}` (If-Match obrigatório)
-* `DELETE /moments/{id}` (If-Match obrigatório)
-* `POST /moments/{id}/convert` (troca de tipo/subtipo)
-* `POST /moments/{id}/share-links` | `GET /share-links/{token}`
-
-### Uploads (presigned)
-
-* `POST /uploads/sign` → `{uploadUrl, fileUrl, expiresAt}` *(compatível com o front)*
-* **Opcional:** `POST /media/attach` (fluxo em duas etapas)
-
-### Media
-
-* `DELETE /media/{id}`
-
-### Series
-
-* `GET /series` | `POST /series`
-* `GET /series/{id}` | `PATCH /series/{id}` | `DELETE /series/{id}`
-* `GET /series/{id}/occurrences` (preenchidas/pendentes/futuras)
-* `POST /series/{id}/attach/{moment_id}` | `POST /series/{id}/detach/{moment_id}`
-
-### Chapters (Capítulos/Coleções)
-
-* `GET /chapters` | `POST /chapters`
-* `GET /chapters/{id}` | `PATCH /chapters/{id}` | `DELETE /chapters/{id}`
-  * `viewer {list|grid|calendar|timeline|series|dashboard|people|reading|map}`
-  * `ordering {recent|oldest|custom}`
-* `POST /chapters/{id}/share-links`
-
-### Templates (catálogo de tipos/subtipos)
-
-* `GET /templates` *(inclui regras mínimas/validações por tipo)*
-
-### People (Contatos/Pessoas dos Momentos)
-
-* `GET /people` | `POST /people`
-* `GET /people/{id}` | `PATCH /people/{id}` | `DELETE /people/{id}`
-
-### Comments
-
-* `GET /moments/{id}/comments` | `POST /moments/{id}/comments` | `DELETE /comments/{id}`
-
-### Export
-
-* `POST /export/pdf` (momento/capítulo/série via body) → `{jobId}`
-* `GET /export/pdf/{jobId}` → `{status, url?}`
-
-### Auth & Health
-
-* `POST /auth/signup` | `POST /auth/login` | `POST /auth/refresh` | `POST /auth/logout`
-* `GET /healthz` | `GET /readyz` | `/metrics` (Prometheus)
-
-**Paginação:** cursor/offset (config em `core/pagination.py`)
-
-**Versionamento:** `Accept: application/json;version=1` (opcional)
-
----
-
-## Esquemas & Exemplos
-
-### Momento (simplificado)
-
-```json
-{
-  "id": "b2f9c9a8-6d4f-42b8-9c0e-4f2a5c2e4a1a",
-  "child_id": "f6d2e6d1-8b21-4c3f-9f47-5e2c4e7a1a2b",
-  "occurred_at": "2025-03-12T16:45:00Z",
-  "age_days": 213,
-  "type": "discovery",
-  "subtype": "first_bath",
-  "status": "published",
-  "privacy": "private",
-  "people_ids": ["u1", "p3"],
-  "location": { "name": "Recife, PE", "lat": -8.05, "lng": -34.9 },
-  "medias": [
-    {
-      "id": "m1",
-      "kind": "photo",
-      "object_key": "media/2025/03/12/banho.jpg",
-      "thumb": "...",
-      "mime_type": "image/jpeg",
-      "size_bytes": 123456
-    }
-  ],
-  "short_text": "Primeiro banho!",
-  "long_text": "Detalhes...",
-  "tags": ["PrimeirasVezes", "Banho"],
-  "markers": {
-    "MarcoDeDesenvolvimento": "PrimeiroBanho",
-    "TemAudio": false,
-    "RequerAtencao": false
-  },
-  "fields": {
-    "given_by": "pai",
-    "towel": "amarela",
-    "experience": "tranquilo"
-  },
-  "series_id": null,
-  "updated_at": "2025-03-12T17:02:10Z",
-  "etag": "\"7c9e2f13\""
-}
-```
-
-### Capítulo (Coleção)
-
-```json
-{
-  "id": "chap-1",
-  "name": "Primeiras Vezes & Descobertas",
-  "description": "Marcos e primeiras vezes",
-  "cover_url": "https://.../cover.jpg",
-  "icon": "star",
-  "filters": {
-    "types": ["discovery"],
-    "subtypes": ["first_bath", "first_smile"],
-    "people": ["p3"],
-    "period": { "from": "2025-01-01", "to": "2025-06-30" },
-    "age": { "minDays": 0, "maxDays": 365 },
-    "tags": ["PrimeirasVezes"],
-    "markers": { "MarcoDeDesenvolvimento": ["PrimeiroBanho"] },
-    "privacy": null
-  },
-  "viewer": "list",
-  "ordering": "recent"
-}
-```
-
-### Série (Mêsversário)
-
-```json
-{
-  "id": "ser-1",
-  "child_id": "f6d2e6d1-8b21-4c3f-9f47-5e2c4e7a1a2b",
-  "name": "Mêsversário",
-  "rrule": "FREQ=MONTHLY;BYMONTHDAY=12",
-  "progress": { "filled": 7, "pending": 5 },
-  "occurrences": [
-    { "index": 1, "date": "2025-02-12", "moment_id": "..." },
-    { "index": 2, "date": "2025-03-12", "moment_id": null }
-  ]
-}
-```
-
-### Uploads — Presigned
-
-```json
-{
-  "uploadUrl": "https://minio/.../presigned",
-  "fileUrl": "s3://livrobebe-media/2025/03/12/banho.jpg",
-  "expiresAt": "2025-03-12T17:00:00Z"
-}
-```
-
----
-
-## Observabilidade
-
-* **Logs** JSON com `trace_id` e `span_id`.
-* **/metrics** (Prometheus).
-* **Tracing** via OTLP.
-* **Erros** reportados em Sentry (quando `SENTRY_DSN` estiver configurado).
-
----
-
-## Roadmap
-
-* ✅ Alinhamento Momento/Capítulo/ETag/Markers/Subtipo/Viewer
-* 🔜 SSE/WebSocket para progresso de jobs
-* 🔜 Calendário oficial de vacinas (validações)
-* 🔜 Geocoding reverso (lat/lng → nome do local)
-* 🔜 Import/Export completo (zip + JSON)
-* 🔜 Reconhecimento de faces (sugestão de pessoas) on-device/edge
-
----
-
-## Licença
-
-MIT (ou conforme política do projeto).
+## Roadmap do Front
+
+- [ ] Implementar autenticação com OAuth + PKCE.
+- [ ] Concluir feature Moments (CRUD completo com upload assíncrono).
+- [ ] Construir biblioteca de componentes compartilhados (Storybook).
+- [ ] Implementar Capítulos (filtros salvos, ordenação e compartilhamento).
+- [ ] Implementar Séries com calendário e lembretes.
+- [ ] Revisar acessibilidade (audit Lighthouse ≥ 95).
+- [ ] Adicionar dashboards de crescimento com gráficos responsivos.
+- [ ] Integração completa com feature flags (LaunchDarkly/PostHog Experiments).
 
 ---
 
 ## Contribuição
 
-* Issues/PRs descritivos.
-* `make check` antes de abrir PR.
-* Conventional Commits.
+1. Crie uma issue descrevendo claramente o problema/feature.
+2. Abra uma branch `feature/<descrição-curta>` ou `fix/<descrição>`.
+3. Execute `pnpm lint` e `pnpm test` antes do PR.
+4. Use Conventional Commits (`feat:`, `fix:`, `chore:`, ...).
+5. Abra PR com descrição detalhada, checklist e screenshots (quando UI mudar).
 
 ---
+
+## Licença
+
+MIT — consulte `LICENSE` (a ser adicionado junto com o código-fonte).
+
