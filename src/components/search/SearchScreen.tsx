@@ -88,7 +88,7 @@ export function SearchScreen() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-card rounded-xl p-3 shadow-sm border border-border hover:shadow-md transition-shadow cursor-pointer flex gap-3"
+                  className="card-surface p-3 cursor-pointer flex gap-3"
                 >
                   {hasMedia && (
                     <img

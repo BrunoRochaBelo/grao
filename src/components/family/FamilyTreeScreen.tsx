@@ -143,7 +143,7 @@ export function FamilyTreeScreen({ onBack, onSelectMember }: FamilyTreeScreenPro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="bg-card rounded-2xl p-4 shadow-sm border border-border"
+          className="card-surface p-4"
         >
           <h3 className="text-foreground mb-4">Todos os Membros</h3>
           <div className="space-y-3">

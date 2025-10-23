@@ -61,7 +61,7 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
             <div className="flex-1 overflow-y-auto p-4">
               <div className="max-w-2xl mx-auto">
                 <div className="mb-4">
-                  <button className="w-full bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left">
+                  <button className="w-full card-surface p-4 text-left">
                     <h3 className="text-foreground mb-1">📝 Nota Livre</h3>
                     <p className="text-muted-foreground text-sm">
                       Registre um momento especial sem template
@@ -82,7 +82,7 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
                         onSelectChapter(chapter);
                         onClose();
                       }}
-                      className="w-full bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left flex items-center gap-3"
+                      className="w-full card-surface p-4 text-left flex items-center gap-3"
                     >
                       <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
