@@ -4,6 +4,7 @@ import { Lock, Video, ChevronDown, ChevronUp, Filter, X, Calendar, Users, Tag, I
 import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '../ui/badge';
 import { MediaCarousel } from '../shared/MediaCarousel';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 const moments = getMoments();
 
@@ -23,6 +24,7 @@ interface FilterOption {
   icon: React.ReactNode;
   active: boolean;
   type: 'chapter' | 'type' | 'period' | 'people' | 'tags' | 'media' | 'privacy';
+  tone: HighlightTone;
 }
 
 function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
@@ -131,11 +133,32 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
   const [mediaFilter, setMediaFilter] = useState<'all' | 'photo' | 'video'>('all');
 
   const availableFilters: FilterOption[] = [
-    { id: 'chapter', label: 'Capítulo', icon: <FolderOpen className="w-4 h-4" />, active: !!selectedChapter, type: 'chapter' },
-    { id: 'period', label: 'Período', icon: <Calendar className="w-4 h-4" />, active: !!selectedPeriod, type: 'period' },
-    { id: 'media', label: 'Mídia', icon: <ImageIcon className="w-4 h-4" />, active: mediaFilter !== 'all', type: 'media' },
-    { id: 'people', label: 'Pessoas', icon: <Users className="w-4 h-4" />, active: false, type: 'people' },
-    { id: 'tags', label: 'Tags', icon: <Tag className="w-4 h-4" />, active: false, type: 'tags' },
+    {
+      id: 'chapter',
+      label: 'Capítulo',
+      icon: <FolderOpen className="w-4 h-4" />,
+      active: !!selectedChapter,
+      type: 'chapter',
+      tone: 'lavender',
+    },
+    {
+      id: 'period',
+      label: 'Período',
+      icon: <Calendar className="w-4 h-4" />,
+      active: !!selectedPeriod,
+      type: 'period',
+      tone: 'babyBlue',
+    },
+    {
+      id: 'media',
+      label: 'Mídia',
+      icon: <ImageIcon className="w-4 h-4" />,
+      active: mediaFilter !== 'all',
+      type: 'media',
+      tone: 'mint',
+    },
+    { id: 'people', label: 'Pessoas', icon: <Users className="w-4 h-4" />, active: false, type: 'people', tone: 'mint' },
+    { id: 'tags', label: 'Tags', icon: <Tag className="w-4 h-4" />, active: false, type: 'tags', tone: 'babyBlue' },
   ];
 
   const toggleFilter = (filterId: string) => {
@@ -199,22 +222,24 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2 mb-2">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
-            {availableFilters.map((filterOption) => (
-              <button
-                key={filterOption.id}
-                onClick={() => toggleFilter(filterOption.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
-                  filterOption.active
-                    ? 'bg-primary text-white'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
-              >
-                <div className={filterOption.active ? 'text-white' : 'text-muted-foreground'}>
-                  {filterOption.icon}
-                </div>
-                {filterOption.label}
-              </button>
-            ))}
+            {availableFilters.map(filterOption => {
+              const isActive = filterOption.active;
+              return (
+                <button
+                  key={filterOption.id}
+                  onClick={() => toggleFilter(filterOption.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors border ${
+                    isActive
+                      ? 'shadow-soft'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                  }`}
+                  style={isActive ? getHighlightStyle(filterOption.tone) : undefined}
+                >
+                  <div className={isActive ? 'text-inherit' : 'text-muted-foreground'}>{filterOption.icon}</div>
+                  {filterOption.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

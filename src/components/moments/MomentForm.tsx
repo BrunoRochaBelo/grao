@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, Camera, MapPin, Users, Lock, Tag, Check } from 'lucide-react';
+import { X, Camera, MapPin, Users, Lock, Tag, Check, Link as LinkIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -8,6 +9,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { PlaceholderTemplate, addMoment, calculateAge, currentBaby, Chapter } from '../../lib/mockData';
 import { toast } from 'sonner@2.0.3';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 interface MomentFormProps {
   isOpen: boolean;
@@ -16,6 +18,8 @@ interface MomentFormProps {
   chapter: Chapter;
   onSave?: () => void;
 }
+
+type PrivacyOption = 'private' | 'people' | 'link';
 
 export function MomentForm({ isOpen, onClose, template, chapter, onSave }: MomentFormProps) {
   const [title, setTitle] = useState(template.name);
@@ -27,10 +31,16 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
   const [noteLong, setNoteLong] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
-  const [privacy, setPrivacy] = useState<'private' | 'people' | 'link'>('private');
+  const [privacy, setPrivacy] = useState<PrivacyOption>('private');
   const [isSaving, setIsSaving] = useState(false);
 
   const calculatedAge = calculateAge(currentBaby.birthDate, date);
+
+  const privacyOptions: { id: PrivacyOption; label: string; tone: HighlightTone; Icon?: LucideIcon }[] = [
+    { id: 'private', label: 'Privado', tone: 'lavender', Icon: Lock },
+    { id: 'people', label: 'Pessoas', tone: 'mint', Icon: Users },
+    { id: 'link', label: 'Link', tone: 'babyBlue', Icon: LinkIcon },
+  ];
 
   const handleAddTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -279,40 +289,26 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                 <div>
                   <Label>Privacidade</Label>
                   <div className="flex gap-2 mt-1">
-                    <button
-                      type="button"
-                      onClick={() => setPrivacy('private')}
-                      className={`flex-1 py-2 px-3 rounded-xl text-sm transition-colors ${
-                        privacy === 'private'
-                          ? 'bg-primary text-white'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      <Lock className="w-4 h-4 inline-block mr-1" />
-                      Privado
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrivacy('people')}
-                      className={`flex-1 py-2 px-3 rounded-xl text-sm transition-colors ${
-                        privacy === 'people'
-                          ? 'bg-primary text-white'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Pessoas
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPrivacy('link')}
-                      className={`flex-1 py-2 px-3 rounded-xl text-sm transition-colors ${
-                        privacy === 'link'
-                          ? 'bg-primary text-white'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                    >
-                      Link
-                    </button>
+                    {privacyOptions.map(option => {
+                      const isActive = privacy === option.id;
+                      const Icon = option.Icon;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => setPrivacy(option.id)}
+                          className={`flex-1 py-2 px-3 rounded-xl text-sm transition-colors border ${
+                            isActive
+                              ? 'shadow-soft'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                          }`}
+                          style={isActive ? getHighlightStyle(option.tone) : undefined}
+                        >
+                          {Icon && <Icon className="w-4 h-4 inline-block mr-1" />}
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

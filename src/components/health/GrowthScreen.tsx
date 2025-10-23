@@ -5,6 +5,7 @@ import { getGrowthMeasurements, GrowthMeasurement } from '../../lib/mockData';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Button } from '../ui/button';
 import { GrowthForm } from './GrowthForm';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 interface GrowthScreenProps {
   onBack: () => void;
@@ -105,36 +106,29 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
 
         {/* Filter Tabs */}
         <div className="flex gap-2 mb-4">
-          <button
-            onClick={() => setActiveFilter('weight')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              activeFilter === 'weight'
-                ? 'bg-primary text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Peso
-          </button>
-          <button
-            onClick={() => setActiveFilter('height')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              activeFilter === 'height'
-                ? 'bg-primary text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Altura
-          </button>
-          <button
-            onClick={() => setActiveFilter('head')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              activeFilter === 'head'
-                ? 'bg-primary text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Perímetro Cefálico
-          </button>
+          {(
+            [
+              { id: 'weight', label: 'Peso', tone: 'mint' },
+              { id: 'height', label: 'Altura', tone: 'babyBlue' },
+              { id: 'head', label: 'Perímetro Cefálico', tone: 'lavender' },
+            ] satisfies { id: 'weight' | 'height' | 'head'; label: string; tone: HighlightTone }[]
+          ).map(option => {
+            const isActive = activeFilter === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => setActiveFilter(option.id)}
+                className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
+                  isActive
+                    ? 'shadow-soft'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                }`}
+                style={isActive ? getHighlightStyle(option.tone) : undefined}
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Chart */}
@@ -155,9 +149,9 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="weight"
-                  stroke="#4F46E5"
+                  stroke="var(--highlight-mint)"
                   strokeWidth={2}
-                  dot={{ fill: '#4F46E5', r: 4 }}
+                  dot={{ fill: 'var(--highlight-mint)', r: 4 }}
                   name="Peso (kg)"
                 />
               )}
@@ -165,9 +159,9 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="height"
-                  stroke="#8B5CF6"
+                  stroke="var(--highlight-baby-blue)"
                   strokeWidth={2}
-                  dot={{ fill: '#8B5CF6', r: 4 }}
+                  dot={{ fill: 'var(--highlight-baby-blue)', r: 4 }}
                   name="Altura (cm)"
                 />
               )}
@@ -175,9 +169,9 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="head"
-                  stroke="#22C55E"
+                  stroke="var(--highlight-lavender)"
                   strokeWidth={2}
-                  dot={{ fill: '#22C55E', r: 4 }}
+                  dot={{ fill: 'var(--highlight-lavender)', r: 4 }}
                   name="PC (cm)"
                 />
               )}
