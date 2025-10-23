@@ -29,6 +29,7 @@ import {
   Baby,
   chapters,
   currentBaby,
+  getCurrentBaby,
   getBabyAgeInDays,
   getMoments,
   getPlaceholdersForChapter,
@@ -161,6 +162,10 @@ export default function App() {
               }
               onNavigateToHelpAndSupport={() => navigateTo({ type: 'help-and-support' })}
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
+              onNavigateToMoments={() => navigateToMain('gallery')}
+              onNavigateToChapters={() => navigateToMain('chapters')}
+              onNavigateToMedia={() => navigateToMain('gallery')}
+              onEditBaby={() => navigateTo({ type: 'edit-baby', baby: getCurrentBaby() })}
             />
           );
       }

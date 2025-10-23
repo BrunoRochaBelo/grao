@@ -8,6 +8,7 @@ export interface Baby {
   avatar: string;
   gender?: 'male' | 'female' | 'other';
   isActive?: boolean;
+  notes?: string;
 }
 
 export interface GrowthMeasurement {
