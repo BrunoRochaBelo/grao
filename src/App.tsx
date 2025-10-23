@@ -126,6 +126,8 @@ export default function App() {
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
               onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
               onNavigateToChapters={() => navigateTo({ type: 'main', screen: 'chapters' })}
+              onOpenTemplate={openChapterTemplate}
+              onOpenChapter={handleSelectChapter}
             />
           );
         case 'gallery':
@@ -148,13 +150,19 @@ export default function App() {
     } else if (currentView.type === 'growth') {
       return <GrowthScreen onBack={goBack} />;
     } else if (currentView.type === 'vaccines') {
-      return <VaccinesScreen onBack={goBack} />;
+      return (
+        <VaccinesScreen
+          onBack={goBack}
+          onOpenTemplate={(template, chapter) => handleOpenTemplate(template, chapter)}
+        />
+      );
     } else if (currentView.type === 'sleep-humor') {
       return <SleepHumorScreen onBack={goBack} />;
     } else if (currentView.type === 'family-tree') {
       return (
         <FamilyTreeScreen
           onBack={goBack}
+          onOpenTemplate={(chapterId, templateId) => openChapterTemplate(chapterId, templateId)}
           onSelectMember={(member) => navigateTo({ type: 'family-member-detail', member })}
         />
       );

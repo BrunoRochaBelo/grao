@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, Plus, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getGrowthMeasurements, GrowthMeasurement } from '../../lib/mockData';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Button } from '../ui/button';
 import { GrowthForm } from './GrowthForm';
 import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
@@ -149,9 +149,10 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="weight"
-                  stroke="var(--highlight-mint)"
+                  stroke="var(--highlight-mint, #8FE7DA)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-mint)', r: 4 }}
+                  dot={{ fill: 'var(--highlight-mint, #8FE7DA)', r: 4, strokeWidth: 0 }}
+                  connectNulls
                   name="Peso (kg)"
                 />
               )}
@@ -159,9 +160,10 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="height"
-                  stroke="var(--highlight-baby-blue)"
+                  stroke="var(--highlight-baby-blue, #A6DCFF)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-baby-blue)', r: 4 }}
+                  dot={{ fill: 'var(--highlight-baby-blue, #A6DCFF)', r: 4, strokeWidth: 0 }}
+                  connectNulls
                   name="Altura (cm)"
                 />
               )}
@@ -169,9 +171,10 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <Line
                   type="monotone"
                   dataKey="head"
-                  stroke="var(--highlight-lavender)"
+                  stroke="var(--highlight-lavender, #C3CBFF)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-lavender)', r: 4 }}
+                  dot={{ fill: 'var(--highlight-lavender, #C3CBFF)', r: 4, strokeWidth: 0 }}
+                  connectNulls
                   name="PC (cm)"
                 />
               )}
