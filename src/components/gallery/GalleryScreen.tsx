@@ -3,6 +3,7 @@ import { getMoments, chapters, Moment } from '../../lib/mockData';
 import { Lock, Video, ChevronDown, ChevronUp, Filter, X, Calendar, Users, Tag, Image as ImageIcon, FolderOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Badge } from '../ui/badge';
+import { MediaCarousel } from '../shared/MediaCarousel';
 
 const moments = getMoments();
 
@@ -35,35 +36,36 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
       className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border"
     >
       {hasMedia && (
-        <div className="relative aspect-[4/3] overflow-hidden" onClick={onClick}>
-          <img
-            src={moment.media[0]}
-            alt={moment.title}
-            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+        <div className="relative" onClick={onClick}>
+          <MediaCarousel
+            items={moment.media}
+            aspectRatioClass="aspect-[4/3]"
+            roundedClass="rounded-2xl"
+            onItemClick={() => onClick?.()}
+            overlay={() => (
+              <>
+                <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 to-transparent" />
+                <div
+                  className="pointer-events-none absolute top-2 left-2 px-2 py-1 rounded-lg text-xs backdrop-blur-sm"
+                  style={{ backgroundColor: chapter.color + 'DD' }}
+                >
+                  {chapter.icon} {chapter.name}
+                </div>
+                <div className="pointer-events-none absolute top-2 right-2 flex gap-1">
+                  {moment.hasVideo && (
+                    <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <Video className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  {moment.privacy === 'private' && (
+                    <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <Lock className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
-          
-          {/* Chapter Badge */}
-          <div
-            className="absolute top-2 left-2 px-2 py-1 rounded-lg text-xs backdrop-blur-sm"
-            style={{ backgroundColor: chapter.color + 'DD' }}
-          >
-            {chapter.icon} {chapter.name}
-          </div>
-
-          {/* Icons */}
-          <div className="absolute top-2 right-2 flex gap-1">
-            {moment.hasVideo && (
-              <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Video className="w-4 h-4 text-white" />
-              </div>
-            )}
-            {moment.privacy === 'private' && (
-              <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Lock className="w-4 h-4 text-white" />
-              </div>
-            )}
-          </div>
         </div>
       )}
 

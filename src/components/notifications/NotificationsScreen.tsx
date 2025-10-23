@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 interface Notification {
   id: string;
   type: 'action' | 'reminder' | 'milestone';
+  scope: 'baby' | 'theme';
   icon: React.ReactNode;
   iconColor: string;
   title: string;
@@ -22,6 +23,13 @@ interface Notification {
 export function NotificationsScreen() {
   const currentBaby = getCurrentBaby();
   const [notifications, setNotifications] = useState<Notification[]>(getNotifications());
+  const [activeFilter, setActiveFilter] = useState<'all' | 'baby' | 'theme'>('all');
+  const [mutedThemes, setMutedThemes] = useState(false);
+  const filterOptions: { id: 'all' | 'baby' | 'theme'; label: string }[] = [
+    { id: 'all', label: 'Todos' },
+    { id: 'baby', label: 'Por bebê' },
+    { id: 'theme', label: 'Por tema' },
+  ];
 
   function getNotifications(): Notification[] {
     const vaccines = getVaccines();
@@ -40,6 +48,7 @@ export function NotificationsScreen() {
       notifs.push({
         id: 'monthversary',
         type: 'milestone',
+        scope: 'baby',
         icon: <Calendar className="w-5 h-5" />,
         iconColor: '#DDD6FE',
         title: `${ageInMonths + 1}º Mêsversário de ${currentBaby.name}`,
@@ -59,6 +68,7 @@ export function NotificationsScreen() {
       notifs.push({
         id: 'vaccine-pending',
         type: 'action',
+        scope: 'theme',
         icon: <Syringe className="w-5 h-5" />,
         iconColor: '#8B5CF6',
         title: `Vacina ${vaccine.name} - ${vaccine.dose}`,
@@ -73,6 +83,7 @@ export function NotificationsScreen() {
     notifs.push({
       id: 'sleep-reminder',
       type: 'reminder',
+      scope: 'theme',
       icon: <Moon className="w-5 h-5" />,
       iconColor: '#6366F1',
       title: 'Como foi o sono hoje?',
@@ -88,6 +99,7 @@ export function NotificationsScreen() {
       notifs.push({
         id: 'growth-reminder',
         type: 'reminder',
+        scope: 'theme',
         icon: <TrendingUp className="w-5 h-5" />,
         iconColor: '#4F46E5',
         title: 'Hora de medir!',
@@ -102,6 +114,7 @@ export function NotificationsScreen() {
     notifs.push({
       id: 'first-time-suggestion',
       type: 'action',
+      scope: 'theme',
       icon: <Heart className="w-5 h-5" />,
       iconColor: '#EC4899',
       title: 'Registre um momento especial',
@@ -114,8 +127,17 @@ export function NotificationsScreen() {
     return notifs;
   }
 
-  const thisWeekNotifications = notifications.filter(n => n.category === 'this-week');
-  const previousNotifications = notifications.filter(n => n.category === 'previous');
+  const filteredNotifications = notifications
+    .filter(notification => {
+      if (activeFilter === 'all') return true;
+      return notification.scope === activeFilter;
+    })
+    .filter(notification => (mutedThemes ? notification.scope !== 'theme' : true));
+
+  const actionNotifications = filteredNotifications.filter(notification => notification.type === 'action');
+  const timelineNotifications = filteredNotifications.filter(notification => notification.type !== 'action');
+  const thisWeekNotifications = timelineNotifications.filter(notification => notification.category === 'this-week');
+  const previousNotifications = timelineNotifications.filter(notification => notification.category === 'previous');
 
   const handleDismiss = (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
@@ -125,12 +147,32 @@ export function NotificationsScreen() {
     setNotifications([]);
   };
 
+  const toggleMuteThemes = () => {
+    setMutedThemes(prev => !prev);
+  };
+
+  const handleSnooze = () => {
+    setNotifications(prev =>
+      prev.map(notification =>
+        notification.category === 'this-week'
+          ? { ...notification, category: 'previous', date: new Date(Date.now() + 1000 * 60 * 60 * 24) }
+          : notification,
+      ),
+    );
+  };
+
+  const typeLabelMap: Record<Notification['type'], string> = {
+    action: 'A��o sugerida',
+    reminder: 'Lembrete',
+    milestone: 'Marco',
+  };
+
   const NotificationCard = ({ notification }: { notification: Notification }) => (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow"
+      className="card-surface p-4"
     >
       <div className="flex gap-3">
         {/* Icon */}
@@ -145,8 +187,13 @@ export function NotificationsScreen() {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="text-foreground">{notification.title}</h3>
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="min-w-0">
+              <span className="text-xs uppercase tracking-wide text-muted-foreground/80 block mb-1">
+                {typeLabelMap[notification.type]}
+              </span>
+              <h3 className="text-foreground">{notification.title}</h3>
+            </div>
             <button
               onClick={() => handleDismiss(notification.id)}
               className="p-1 hover:bg-muted rounded-lg transition-colors flex-shrink-0"
@@ -173,28 +220,58 @@ export function NotificationsScreen() {
   return (
     <div className="pb-24 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="px-4 pt-6 pb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-foreground">Notificações</h1>
-          {notifications.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearAll}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Limpar todas
-            </Button>
-          )}
+      <div className="px-4 pt-6 pb-4 space-y-4">
+        <div>
+          <h1 className="text-foreground text-xl">Notifica��es</h1>
+          <p className="text-muted-foreground">
+            Lembretes e sugest�es para o Livro do Beb�
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Lembretes e sugestões para o Livro do Bebê
-        </p>
+        <div className="flex flex-wrap gap-2">
+          {filterOptions.map(option => (
+            <button
+              key={option.id}
+              onClick={() => setActiveFilter(option.id)}
+              className={`px-4 py-2 rounded-full text-sm transition-colors ${activeFilter === option.id ? 'bg-primary text-white shadow-soft' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={mutedThemes ? 'default' : 'outline'}
+            size="sm"
+            className="gap-2 rounded-full"
+            onClick={toggleMuteThemes}
+          >
+            <BellOff className="w-4 h-4" />
+            {mutedThemes ? 'Reativar temas' : 'Silenciar tema'}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 rounded-full"
+            onClick={handleSnooze}
+          >
+            <Clock className="w-4 h-4" />
+            Adiar
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-2 rounded-full text-muted-foreground hover:text-foreground"
+            onClick={handleClearAll}
+            disabled={notifications.length === 0}
+          >
+            Limpar todas
+          </Button>
+        </div>
       </div>
 
       {/* Content */}
       <div className="px-4">
-        {notifications.length === 0 ? (
+        {filteredNotifications.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
               <BellOff className="w-10 h-10 text-muted-foreground" />
@@ -206,12 +283,27 @@ export function NotificationsScreen() {
           </div>
         ) : (
           <>
+            {/* Ações Sugeridas */}
+            {actionNotifications.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bell className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="text-foreground">Ações sugeridas</h3>
+                </div>
+                <div className="space-y-3">
+                  {actionNotifications.map((notification) => (
+                    <NotificationCard key={notification.id} notification={notification} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Esta Semana */}
             {thisWeekNotifications.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Clock className="w-4 h-4 text-muted-foreground" />
-                  <h3 className="text-foreground">Esta Semana</h3>
+                  <h3 className="text-foreground">Esta semana</h3>
                 </div>
                 <div className="space-y-3">
                   {thisWeekNotifications.map((notification) => (

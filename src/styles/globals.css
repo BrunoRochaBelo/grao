@@ -3,86 +3,90 @@
 :root {
   --font-size: 16px;
   /* Baby Book Design System Colors */
-  --background: #FAFAFA;
-  --foreground: #1C1C1C;
+  --background: #F4F7FB;
+  --foreground: #1A1C1F;
   --card: #FFFFFF;
-  --card-foreground: #1C1C1C;
+  --card-foreground: #1A1C1F;
   --popover: #FFFFFF;
-  --popover-foreground: #1C1C1C;
-  --primary: #4F46E5;
+  --popover-foreground: #1A1C1F;
+  --primary: #7D8CFF;
   --primary-foreground: #FFFFFF;
-  --secondary: #8B5CF6;
-  --secondary-foreground: #FFFFFF;
-  --muted: #F5F5F5;
-  --muted-foreground: #5F6368;
-  --accent: #F0F0F0;
-  --accent-foreground: #1C1C1C;
-  --destructive: #EF4444;
+  --secondary: #86D5CC;
+  --secondary-foreground: #0F2F2F;
+  --muted: #ECF1F6;
+  --muted-foreground: #637083;
+  --accent: #F1F4FD;
+  --accent-foreground: #1A1C1F;
+  --destructive: #E87070;
   --destructive-foreground: #FFFFFF;
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --border: #E6E6E6;
+  --success: #3CC7A7;
+  --warning: #F4C16D;
+  --border: #D9E2F2;
   --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+  --input-background: #EEF2FA;
+  --switch-background: #CCD4E0;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #4F46E5;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --ring: #7D8CFF;
+  --chart-1: #8D9BFF;
+  --chart-2: #8FD3C7;
+  --chart-3: #F7B9A8;
+  --chart-4: #FAD97D;
+  --chart-5: #C9B8FF;
+  --radius: 1.125rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1C1F;
+  --sidebar-primary: #7D8CFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #ECF1F6;
+  --sidebar-accent-foreground: #1A1C1F;
+  --sidebar-border: #D9E2F2;
+  --sidebar-ring: #7D8CFF;
+  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --shadow-soft-hover: 0 24px 56px rgba(15, 23, 42, 0.12);
 }
 
 .dark {
   --background: #0E1114;
-  --foreground: #E8E9ED;
+  --foreground: #E6E9ED;
   --card: #1B1F23;
-  --card-foreground: #E8E9ED;
+  --card-foreground: #E6E9ED;
   --popover: #1B1F23;
-  --popover-foreground: #E8E9ED;
-  --primary: #A5B4FC;
+  --popover-foreground: #E6E9ED;
+  --primary: #A8B4FF;
   --primary-foreground: #1B1F23;
-  --secondary: #C4B5FD;
-  --secondary-foreground: #1B1F23;
-  --muted: #252930;
-  --muted-foreground: #9CA3AF;
-  --accent: #252930;
-  --accent-foreground: #E8E9ED;
-  --destructive: #FCA5A5;
+  --secondary: #73D6C7;
+  --secondary-foreground: #0E2323;
+  --muted: #20272E;
+  --muted-foreground: #96A2B0;
+  --accent: #232A31;
+  --accent-foreground: #E6E9ED;
+  --destructive: #F28A8A;
   --destructive-foreground: #1B1F23;
-  --success: #86EFAC;
-  --warning: #FCD34D;
-  --border: #2A2E35;
+  --success: #6FE3C0;
+  --warning: #F6D58C;
+  --border: #2B323A;
   --input: transparent;
-  --input-background: #1B1F23;
-  --switch-background: #3A3F47;
-  --ring: #A5B4FC;
+  --input-background: #1F252C;
+  --switch-background: #3A424C;
+  --ring: #A8B4FF;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --chart-1: #8896FF;
+  --chart-2: #66CFC4;
+  --chart-3: #F4B3A5;
+  --chart-4: #F5D282;
+  --chart-5: #BBAEFF;
   --sidebar: #1B1F23;
-  --sidebar-foreground: #E8E9ED;
-  --sidebar-primary: #A5B4FC;
+  --sidebar-foreground: #E6E9ED;
+  --sidebar-primary: #A8B4FF;
   --sidebar-primary-foreground: #1B1F23;
-  --sidebar-accent: #252930;
-  --sidebar-accent-foreground: #E8E9ED;
-  --sidebar-border: #2A2E35;
-  --sidebar-ring: #A5B4FC;
+  --sidebar-accent: #232A31;
+  --sidebar-accent-foreground: #E6E9ED;
+  --sidebar-border: #2B323A;
+  --sidebar-ring: #A8B4FF;
+  --shadow-soft: 0 18px 42px rgba(3, 5, 8, 0.55);
+  --shadow-soft-hover: 0 26px 60px rgba(2, 4, 8, 0.7);
 }
 
 @theme inline {
@@ -188,6 +192,33 @@
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
     }
+  }
+}
+
+@layer components {
+  .card-surface {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-surface:hover {
+    box-shadow: var(--shadow-soft-hover);
+    transform: translateY(-2px);
+  }
+
+  .card-surface:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
   }
 }
 

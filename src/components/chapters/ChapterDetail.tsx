@@ -1,9 +1,18 @@
-import { ArrowLeft, CheckCircle2, Circle, ChevronLeft, ChevronRight, Edit, Share2, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Circle, Edit, Share2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Progress } from '../ui/progress';
-import { Chapter, PlaceholderTemplate, getBabyAgeInDays, getPlaceholdersForChapter, currentBaby, getMoments, Moment } from '../../lib/mockData';
+import {
+  Chapter,
+  PlaceholderTemplate,
+  currentBaby,
+  getBabyAgeInDays,
+  getMoments,
+  getPlaceholdersForChapter,
+  Moment,
+} from '../../lib/mockData';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
+import { MediaCarousel } from '../shared/MediaCarousel';
 
 interface ChapterDetailProps {
   chapter: Chapter;
@@ -20,7 +29,6 @@ interface ExpandableMomentCardProps {
 
 function ExpandableMomentCard({ template, moment, chapter, onClick }: ExpandableMomentCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!template.isCompleted || !moment) {
     // Empty template - just show the placeholder
@@ -51,17 +59,6 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
 
   const hasMedia = moment.media && moment.media.length > 0;
 
-  const nextImage = () => {
-    if (moment.media.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % moment.media.length);
-    }
-  };
-
-  const previousImage = () => {
-    if (moment.media.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + moment.media.length) % moment.media.length);
-    }
-  };
 
   return (
     <motion.div
@@ -111,60 +108,11 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
           >
             {/* Media Carousel */}
             {hasMedia && (
-              <div className="relative">
-                <div className="aspect-[16/10] relative overflow-hidden">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={currentImageIndex}
-                      src={moment.media[currentImageIndex]}
-                      alt={moment.title}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="w-full h-full object-cover"
-                    />
-                  </AnimatePresence>
-
-                  {/* Carousel Navigation */}
-                  {moment.media.length > 1 && (
-                    <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          previousImage();
-                        }}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 flex items-center justify-center transition-colors"
-                        aria-label="Anterior"
-                      >
-                        <ChevronLeft className="w-5 h-5 text-white" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          nextImage();
-                        }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 flex items-center justify-center transition-colors"
-                        aria-label="Próxima"
-                      >
-                        <ChevronRight className="w-5 h-5 text-white" />
-                      </button>
-
-                      {/* Dots Indicator */}
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {moment.media.map((_, index) => (
-                          <div
-                            key={index}
-                            className={`w-1.5 h-1.5 rounded-full transition-all ${
-                              index === currentImageIndex ? 'bg-white w-4' : 'bg-white/50'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+              <MediaCarousel
+                items={moment.media}
+                className="px-4 pt-4"
+                aspectRatioClass="aspect-[16/10]"
+              />
             )}
 
             {/* Details */}

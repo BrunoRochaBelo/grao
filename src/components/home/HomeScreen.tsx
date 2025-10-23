@@ -43,6 +43,7 @@ interface HomeScreenProps {
   onNavigateToSleepHumor?: () => void;
   onNavigateToFamily?: () => void;
   onNavigateToChapters?: () => void;
+  onOpenTemplate?: (chapterId: string, templateId: string) => void;
 }
 
 export function HomeScreen({
@@ -51,6 +52,7 @@ export function HomeScreen({
   onNavigateToSleepHumor,
   onNavigateToFamily,
   onNavigateToChapters,
+  onOpenTemplate,
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [currentBaby, setCurrentBabyState] = useState(getCurrentBaby());
@@ -69,6 +71,16 @@ export function HomeScreen({
     totalCompleted += completed;
     totalMoments += placeholders.length;
   });
+
+  const vaccineTemplates = getPlaceholdersForChapter('3', babyAgeInDays).filter(
+    placeholder => placeholder.templateType === 'vacina',
+  );
+  const nextVaccineTemplate =
+    vaccineTemplates.find(template => !moments.some(moment => moment.templateId === template.id)) ??
+    vaccineTemplates[0];
+
+  const familyTemplates = getPlaceholdersForChapter('4', babyAgeInDays);
+  const familyTreeTemplate = familyTemplates.find(template => template.id === 'p4-6');
 
   // Growth data
   const growthMeasurements = getGrowthMeasurements();
@@ -102,6 +114,22 @@ export function HomeScreen({
   const handleBabyChange = () => {
     setCurrentBabyState(getCurrentBaby());
     window.location.reload(); // Reload to update all data
+  };
+
+  const handleVaccinesClick = () => {
+    if (nextVaccineTemplate && onOpenTemplate) {
+      onOpenTemplate('3', nextVaccineTemplate.id);
+      return;
+    }
+    onNavigateToVaccines?.();
+  };
+
+  const handleFamilyClick = () => {
+    if (familyTreeTemplate && onOpenTemplate) {
+      onOpenTemplate('4', familyTreeTemplate.id);
+      return;
+    }
+    onNavigateToFamily?.();
   };
 
   return (
@@ -147,7 +175,7 @@ export function HomeScreen({
           value={`${completedVaccines} de ${totalVaccines} aplicadas`}
           subtitle={pendingVaccines > 0 ? `${pendingVaccines} ${pendingVaccines === 1 ? 'pendente' : 'pendentes'}` : 'Todas em dia! 🎉'}
           color="#8B5CF6"
-          onClick={onNavigateToVaccines}
+          onClick={handleVaccinesClick}
         />
         <StatWidget
           title="Sono & Humor"
@@ -163,7 +191,7 @@ export function HomeScreen({
           value={`${familyMembers.length} membros`}
           subtitle="Ver árvore"
           color="#EC4899"
-          onClick={onNavigateToFamily}
+          onClick={handleFamilyClick}
         />
       </div>
 
@@ -220,7 +248,7 @@ export function HomeScreen({
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
           <button
-            onClick={onNavigateToVaccines}
+            onClick={handleVaccinesClick}
             className="w-full bg-card rounded-xl p-3 shadow-sm border border-border flex items-center gap-3 hover:shadow-md transition-shadow text-left"
           >
             <div className="p-2 bg-secondary/10 rounded-lg">

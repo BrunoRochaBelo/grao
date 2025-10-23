@@ -1,9 +1,9 @@
-import { ArrowLeft, Calendar, MapPin, Users as UsersIcon, Tag, Lock, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Users as UsersIcon, Tag, Lock, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Moment, chapters } from '../../lib/mockData';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { useState } from 'react';
+import { MediaCarousel } from '../shared/MediaCarousel';
 
 interface MomentDetailScreenProps {
   moment: Moment;
@@ -13,19 +13,7 @@ interface MomentDetailScreenProps {
 
 export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScreenProps) {
   const chapter = chapters.find(c => c.id === moment.chapterId);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const nextImage = () => {
-    if (moment.media.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % moment.media.length);
-    }
-  };
-
-  const previousImage = () => {
-    if (moment.media.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + moment.media.length) % moment.media.length);
-    }
-  };
 
   return (
     <div className="pb-24 max-w-2xl mx-auto">
@@ -74,54 +62,11 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={currentImageIndex}
-                  src={moment.media[currentImageIndex]}
-                  alt={moment.title}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="w-full h-full object-cover"
-                />
-              </AnimatePresence>
-
-              {/* Carousel Navigation */}
-              {moment.media.length > 1 && (
-                <>
-                  <button
-                    onClick={previousImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 flex items-center justify-center transition-colors"
-                    aria-label="Anterior"
-                  >
-                    <ChevronLeft className="w-6 h-6 text-white" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm hover:bg-black/70 flex items-center justify-center transition-colors"
-                    aria-label="Próxima"
-                  >
-                    <ChevronRight className="w-6 h-6 text-white" />
-                  </button>
-
-                  {/* Dots Indicator */}
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-                    {moment.media.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50'
-                        }`}
-                        aria-label={`Ir para imagem ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <MediaCarousel
+              items={moment.media}
+              aspectRatioClass="aspect-[4/3]"
+              roundedClass="rounded-2xl"
+            />
           </motion.div>
         )}
 

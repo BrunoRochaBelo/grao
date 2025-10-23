@@ -15,7 +15,17 @@ import { SleepHumorScreen } from './components/health/SleepHumorScreen';
 import { FamilyTreeScreen } from './components/family/FamilyTreeScreen';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster } from './components/ui/sonner';
-import { Chapter, PlaceholderTemplate, Moment, FamilyMember, getMoments } from './lib/mockData';
+import {
+  Chapter,
+  PlaceholderTemplate,
+  Moment,
+  FamilyMember,
+  chapters,
+  currentBaby,
+  getBabyAgeInDays,
+  getMoments,
+  getPlaceholdersForChapter,
+} from './lib/mockData';
 import { ThemeProvider } from './lib/theme-context';
 import { FamilyMemberDetailScreen } from './components/family/FamilyMemberDetailScreen';
 
@@ -51,6 +61,29 @@ export default function App() {
     setViewStack([{ type: 'main', screen }]);
   };
 
+  const openChapter = (chapterId: string) => {
+    const chapterData = chapters.find(chapter => chapter.id === chapterId);
+    if (!chapterData) return;
+    navigateTo({ type: 'chapter-detail', chapter: chapterData });
+  };
+
+  const openChapterTemplate = (chapterId: string, templateId: string) => {
+    const chapterData = chapters.find(chapter => chapter.id === chapterId);
+    if (!chapterData) return;
+
+    const placeholders = getPlaceholdersForChapter(
+      chapterId,
+      getBabyAgeInDays(currentBaby.birthDate),
+    );
+    const template = placeholders.find(item => item.id === templateId);
+
+    navigateTo({ type: 'chapter-detail', chapter: chapterData });
+
+    if (template) {
+      navigateTo({ type: 'moment-form', template, chapter: chapterData });
+    }
+  };
+
   const handleTabChange = (tab: string) => {
     if (tab === 'chapters') {
       setShowAddMoment(true);
@@ -84,10 +117,11 @@ export default function App() {
           return (
             <HomeScreen
               onNavigateToGrowth={() => navigateTo({ type: 'growth' })}
-              onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
+              onNavigateToVaccines={() => openChapter('3')}
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
-              onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
-              onNavigateToChapters={() => navigateToMain('chapters')}
+              onNavigateToFamily={() => openChapter('4')}
+              onNavigateToChapters={() => navigateTo({ type: 'main', screen: 'chapters' })}
+              onOpenTemplate={(chapterId, templateId) => openChapterTemplate(chapterId, templateId)}
             />
           );
         case 'gallery':
