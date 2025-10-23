@@ -19,7 +19,7 @@ function ActionCard({ icon, title, subtitle, onClick }: ActionCardProps) {
     <motion.button
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="card-surface p-4 text-left w-full flex items-center gap-3"
+      className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left w-full flex items-center gap-3"
     >
       <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
@@ -38,7 +38,7 @@ interface StatCardProps {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <div className="card-surface p-4 text-center">
+    <div className="bg-card rounded-xl p-4 shadow-sm border border-border text-center">
       <p className="text-2xl text-foreground mb-1">{value}</p>
       <p className="text-muted-foreground text-sm">{label}</p>
     </div>
@@ -146,7 +146,7 @@ export function ProfileScreen() {
         <h2 className="text-foreground mb-3">Configurações</h2>
         <div className="space-y-2">
           {/* Theme Toggle */}
-          <div className="card-surface p-4 flex items-center justify-between">
+          <div className="bg-card rounded-xl p-4 shadow-sm border border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 {theme === 'dark' ? (

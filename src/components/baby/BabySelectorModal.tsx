@@ -90,10 +90,10 @@ export function BabySelectorModal({
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       onClick={() => handleSelectBaby(baby.id)}
-                      className={`w-full flex items-center gap-4 p-4 rounded-[1.25rem] transition-all border-2 ${
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all ${
                         baby.id === currentBaby.id
-                          ? "bg-primary/10 border-primary"
-                          : "card-surface border-border hover:border-primary/30"
+                          ? "bg-primary/10 border-2 border-primary"
+                          : "bg-card border-2 border-border hover:border-primary/30"
                       }`}
                     >
                       <Avatar className="w-16 h-16">
