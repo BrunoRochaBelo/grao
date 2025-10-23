@@ -1,20 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Bell, BellOff, Clock, CheckCircle2, Calendar, Syringe, Moon, TrendingUp, Heart, X } from 'lucide-react';
+import { useBabyData } from '../../lib/baby-data-context';
 import {
-  getCurrentBaby,
-  getVaccines,
-  getBabyAgeInDays,
-  getPlaceholdersForChapter,
-  chapters,
-  getGrowthMeasurements,
-  getSleepRecords,
-  updateVaccine,
   type Chapter,
   type PlaceholderTemplate,
   type GrowthMeasurement,
   type SleepRecord,
-} from '../../lib/mockData';
+} from '../../lib/types';
 import { Button } from '../ui/button';
 import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 import { GrowthForm } from '../health/GrowthForm';
@@ -44,7 +37,16 @@ interface Notification {
 type NotificationFilter = 'all' | Notification['type'];
 
 export function NotificationsScreen() {
-  const currentBaby = getCurrentBaby();
+  const {
+    currentBaby,
+    getVaccines,
+    getBabyAgeInDays,
+    getPlaceholdersForChapter,
+    chapters,
+    getGrowthMeasurements,
+    getSleepRecords,
+    updateVaccineRecord,
+  } = useBabyData();
   const [notifications, setNotifications] = useState<Notification[]>(getNotifications());
   const [activeFilter, setActiveFilter] = useState<NotificationFilter>('all');
   const [mutedThemes, setMutedThemes] = useState(false);
@@ -60,6 +62,7 @@ export function NotificationsScreen() {
   const [activeNotification, setActiveNotification] = useState<Notification | null>(null);
 
   function getNotifications(): Notification[] {
+    if (!currentBaby) return [];
     const vaccines = getVaccines();
     const pendingVaccines = vaccines.filter(v => v.status === 'pending');
     const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
@@ -353,7 +356,7 @@ export function NotificationsScreen() {
     const notification = activeNotification;
     closeMomentForm();
     if (notification?.action?.vaccineId) {
-      updateVaccine(notification.action.vaccineId, {
+      updateVaccineRecord(notification.action.vaccineId, {
         status: 'completed',
         date: new Date().toISOString().split('T')[0],
       });

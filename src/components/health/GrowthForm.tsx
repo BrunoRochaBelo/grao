@@ -5,7 +5,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
-import { addGrowthMeasurement, GrowthMeasurement, currentBaby, calculateAge } from '../../lib/mockData';
+import { GrowthMeasurement } from '../../lib/types';
+import { useBabyData } from '../../lib/baby-data-context';
 import { toast } from 'sonner@2.0.3';
 
 interface GrowthFormProps {
@@ -15,14 +16,20 @@ interface GrowthFormProps {
 }
 
 export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
+  const { currentBaby, addGrowthMeasurement, calculateAge } = useBabyData();
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [headCircumference, setHeadCircumference] = useState('');
   const [notes, setNotes] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!currentBaby) {
+      toast.error('Nenhum bebê selecionado');
+      return;
+    }
 
     if (!weight || !height) {
       toast.error('Por favor, preencha peso e altura');
@@ -31,7 +38,7 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
 
     const age = calculateAge(currentBaby.birthDate, new Date(date));
 
-    const newMeasurement = addGrowthMeasurement({
+    const newMeasurement = await addGrowthMeasurement({
       date,
       age,
       weight: parseFloat(weight),
@@ -40,16 +47,20 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
       notes: notes || undefined,
     });
 
-    onSave(newMeasurement);
-    toast.success('Medição adicionada com sucesso!');
-    
-    // Reset form
-    setDate(new Date().toISOString().split('T')[0]);
-    setWeight('');
-    setHeight('');
-    setHeadCircumference('');
-    setNotes('');
-    onClose();
+    if (newMeasurement) {
+      onSave(newMeasurement);
+      toast.success('Medição adicionada com sucesso!');
+
+      // Reset form
+      setDate(new Date().toISOString().split('T')[0]);
+      setWeight('');
+      setHeight('');
+      setHeadCircumference('');
+      setNotes('');
+      onClose();
+    } else {
+      toast.error('Erro ao salvar medição');
+    }
   };
 
   return (

@@ -7,10 +7,7 @@ import {
   useReducer,
   type ReactNode,
 } from 'react';
-import {
-  mockBackendAdapter,
-  bootstrapMockStorage,
-} from './adapters/mockBackend';
+import { apiClient } from './adapters/api';
 import {
   Baby,
   Chapter,
@@ -26,8 +23,8 @@ import {
   calculateAge,
   getBabyAgeInDays,
   getAgeInMonths,
-  getPlaceholdersForChapter as getPlaceholdersForChapterSource,
-} from './mockData';
+  getPlaceholdersForChapter,
+} from './utils';
 
 type DataStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -200,7 +197,6 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
     const initialize = async () => {
       dispatch({ type: 'INIT_START' });
       try {
-        await bootstrapMockStorage();
         const [
           babies,
           chapters,
@@ -212,15 +208,15 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
           sleepRecords,
           familyMembers,
         ] = await Promise.all([
-          mockBackendAdapter.fetchBabies(),
-          mockBackendAdapter.fetchChapters(),
-          mockBackendAdapter.fetchCurrentBaby(),
-          mockBackendAdapter.fetchMoments(),
-          mockBackendAdapter.fetchGrowthMeasurements(),
-          mockBackendAdapter.fetchVaccines(),
-          mockBackendAdapter.fetchSleepHumorEntries(),
-          mockBackendAdapter.fetchSleepRecords(),
-          mockBackendAdapter.fetchFamilyMembers(),
+          apiClient.getBabies(),
+          apiClient.getChapters(),
+          apiClient.getCurrentBaby(),
+          apiClient.getMoments(),
+          apiClient.getGrowthMeasurements(),
+          apiClient.getVaccines(),
+          apiClient.getSleepHumorEntries(),
+          apiClient.getSleepRecords(),
+          apiClient.getFamilyMembers(),
         ]);
 
         if (cancelled) return;
@@ -254,13 +250,13 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshMoments = useCallback(async () => {
-    const moments = await mockBackendAdapter.fetchMoments();
+    const moments = await apiClient.getMoments();
     dispatch({ type: 'SET_MOMENTS', payload: moments });
   }, []);
 
   const setCurrentBaby = useCallback(
     async (babyId: string) => {
-      const baby = await mockBackendAdapter.selectCurrentBaby(babyId);
+      const baby = await apiClient.selectCurrentBaby(babyId);
       if (!baby) return null;
       dispatch({ type: 'SET_CURRENT_BABY', payload: { babyId, baby } });
       return baby;
@@ -270,7 +266,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addMoment = useCallback(
     async (moment: Omit<Moment, 'id'>) => {
-      const created = await mockBackendAdapter.createMoment(moment);
+      const created = await apiClient.createMoment(moment);
       if (!created) return null;
       dispatch({ type: 'UPSERT_MOMENT', payload: created });
       return created;
@@ -280,7 +276,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const updateMoment = useCallback(
     async (id: string, updates: Partial<Moment>) => {
-      const updated = await mockBackendAdapter.patchMoment(id, updates);
+      const updated = await apiClient.updateMoment(id, updates);
       if (!updated) return null;
       dispatch({ type: 'UPSERT_MOMENT', payload: updated });
       return updated;
@@ -289,7 +285,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
   );
 
   const deleteMoment = useCallback(async (id: string) => {
-    const success = await mockBackendAdapter.removeMoment(id);
+    const success = await apiClient.deleteMoment(id);
     if (success) {
       dispatch({ type: 'DELETE_MOMENT', payload: id });
     }
@@ -298,7 +294,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addGrowthMeasurement = useCallback(
     async (measurement: Omit<GrowthMeasurement, 'id'>) => {
-      const created = await mockBackendAdapter.createGrowthMeasurement(measurement);
+      const created = await apiClient.createGrowthMeasurement(measurement);
       if (!created) return null;
       dispatch({ type: 'ADD_GROWTH_MEASUREMENT', payload: created });
       return created;
@@ -308,7 +304,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addVaccine = useCallback(
     async (vaccine: Omit<VaccineRecord, 'id'>) => {
-      const created = await mockBackendAdapter.createVaccine(vaccine);
+      const created = await apiClient.createVaccine(vaccine);
       if (!created) return null;
       dispatch({ type: 'ADD_VACCINE', payload: created });
       return created;
@@ -318,7 +314,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const updateVaccineRecord = useCallback(
     async (id: string, updates: Partial<VaccineRecord>) => {
-      const updated = await mockBackendAdapter.patchVaccine(id, updates);
+      const updated = await apiClient.updateVaccine(id, updates);
       if (!updated) return null;
       dispatch({ type: 'UPDATE_VACCINE', payload: updated });
       return updated;
@@ -328,7 +324,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addSleepHumorEntry = useCallback(
     async (entry: Omit<SleepHumorEntry, 'id'>) => {
-      const created = await mockBackendAdapter.createSleepHumorEntry(entry);
+      const created = await apiClient.createSleepHumorEntry(entry);
       if (!created) return null;
       dispatch({ type: 'ADD_SLEEP_HUMOR_ENTRY', payload: created });
       return created;
@@ -338,7 +334,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addSleepRecord = useCallback(
     async (record: Omit<SleepRecord, 'id'>) => {
-      const created = await mockBackendAdapter.createSleepRecord(record);
+      const created = await apiClient.createSleepRecord(record);
       if (!created) return null;
       dispatch({ type: 'ADD_SLEEP_RECORD', payload: created });
       return created;
@@ -348,7 +344,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
   const addFamilyMember = useCallback(
     async (member: Omit<FamilyMember, 'id'>) => {
-      const created = await mockBackendAdapter.createFamilyMember(member);
+      const created = await apiClient.createFamilyMember(member);
       if (!created) return null;
       dispatch({ type: 'ADD_FAMILY_MEMBER', payload: created });
       return created;
@@ -375,12 +371,12 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
     [state.familyMembers],
   );
 
-  const getPlaceholdersForChapter = useCallback(
+  const getPlaceholders = useCallback(
     (chapterId: string, babyAgeInDaysOverride?: number) => {
       const babyAge =
         babyAgeInDaysOverride ??
         (state.currentBaby ? getBabyAgeInDays(state.currentBaby.birthDate) : 0);
-      return getPlaceholdersForChapterSource(chapterId, babyAge);
+      return getPlaceholdersForChapter(chapterId, babyAge);
     },
     [state.currentBaby],
   );
@@ -405,7 +401,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
       getSleepHumorEntries,
       getSleepRecords,
       getFamilyMembers,
-      getPlaceholdersForChapter,
+      getPlaceholdersForChapter: getPlaceholders,
       calculateAge,
       getBabyAgeInDays,
       getAgeInMonths,
@@ -429,7 +425,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
       getSleepHumorEntries,
       getSleepRecords,
       getFamilyMembers,
-      getPlaceholdersForChapter,
+      getPlaceholders,
     ],
   );
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { babies, Baby, setCurrentBaby, calculateAge } from '../../lib/mockData';
+import { Baby } from '../../lib/types';
+import { useBabyData } from '../../lib/baby-data-context';
 import { ChevronLeft, Plus, Trash2, Edit, CheckCircle, MapPin } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { motion } from 'motion/react';
@@ -14,6 +15,7 @@ interface ManageBabiesScreenProps {
 }
 
 export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabiesScreenProps) {
+  const { babies, setCurrentBaby, calculateAge } = useBabyData();
   const [babyList, setBabyList] = useState<Baby[]>(() => [...babies]);
 
   const getInitials = (name: string) => {
