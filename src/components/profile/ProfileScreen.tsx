@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import { getCurrentBaby, calculateAge, chapters, getMoments, getPlaceholdersForChapter, getBabyAgeInDays } from '../../lib/mockData';
-import { Download, Settings, Shield, HelpCircle, ChevronRight, Users, Moon, Sun } from 'lucide-react';
+import { Download, Settings, Bell, HelpCircle, ChevronRight, Users, Moon, Sun } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
-import { BabySelectorModal } from '../baby/BabySelectorModal';
 import { Switch } from '../ui/switch';
 import { useTheme } from '../../lib/theme-context';
+
+interface ProfileScreenProps {
+  onNavigateToManageBabies: () => void;
+  onNavigateToExportAlbum: () => void;
+  onNavigateToManageAccount: () => void;
+  onNavigateToNotificationsSettings: () => void;
+  onNavigateToHelpAndSupport: () => void;
+  onNavigateToAddBaby: () => void;
+}
 
 interface ActionCardProps {
   icon: React.ReactNode;
@@ -45,9 +53,15 @@ function StatCard({ label, value }: StatCardProps) {
   );
 }
 
-export function ProfileScreen() {
-  const [showBabySelector, setShowBabySelector] = useState(false);
-  const [currentBaby, setCurrentBabyState] = useState(getCurrentBaby());
+export function ProfileScreen({
+  onNavigateToManageBabies,
+  onNavigateToExportAlbum,
+  onNavigateToManageAccount,
+  onNavigateToNotificationsSettings,
+  onNavigateToHelpAndSupport,
+  onNavigateToAddBaby,
+}: ProfileScreenProps) {
+  const [currentBaby] = useState(getCurrentBaby());
   const { theme, toggleTheme } = useTheme();
 
   const age = calculateAge(currentBaby.birthDate);
@@ -71,11 +85,6 @@ export function ProfileScreen() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const handleBabyChange = () => {
-    setCurrentBabyState(getCurrentBaby());
-    window.location.reload();
-  };
-
   return (
     <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
       {/* Baby Profile Header */}
@@ -84,7 +93,7 @@ export function ProfileScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-6"
       >
-        <button onClick={() => setShowBabySelector(true)} className="relative inline-block mb-4 group">
+        <button onClick={onNavigateToManageBabies} className="relative inline-block mb-4 group">
           <Avatar className="w-24 h-24 border-4 border-primary mx-auto">
             <AvatarImage src={currentBaby.avatar} alt={currentBaby.name} />
             <AvatarFallback className="bg-primary/10 text-primary text-3xl">
@@ -128,11 +137,13 @@ export function ProfileScreen() {
             icon={<Download className="w-5 h-5 text-primary" />}
             title="Exportar álbum em PDF"
             subtitle="Baixe todas as memórias"
+            onClick={onNavigateToExportAlbum}
           />
           <ActionCard
             icon={<Users className="w-5 h-5 text-primary" />}
             title="Adicionar bebê"
             subtitle="Crie outro álbum"
+            onClick={onNavigateToAddBaby}
           />
         </div>
       </motion.div>
@@ -173,16 +184,19 @@ export function ProfileScreen() {
             icon={<Settings className="w-5 h-5 text-primary" />}
             title="Gerenciar conta"
             subtitle="Dados pessoais e preferências"
+            onClick={onNavigateToManageAccount}
           />
           <ActionCard
-            icon={<Shield className="w-5 h-5 text-primary" />}
-            title="Privacidade"
-            subtitle="Controle quem pode ver"
+            icon={<Bell className="w-5 h-5 text-primary" />}
+            title="Notificações e Preferências"
+            subtitle="Ajuste os alertas e mais"
+            onClick={onNavigateToNotificationsSettings}
           />
           <ActionCard
             icon={<HelpCircle className="w-5 h-5 text-primary" />}
             title="Ajuda e suporte"
             subtitle="Dúvidas e feedback"
+            onClick={onNavigateToHelpAndSupport}
           />
         </div>
       </motion.div>
@@ -191,13 +205,6 @@ export function ProfileScreen() {
       <div className="text-center mt-8 text-muted-foreground text-sm">
         <p>Livro do Bebê v1.0.0</p>
       </div>
-
-      {/* Baby Selector Modal */}
-      <BabySelectorModal
-        isOpen={showBabySelector}
-        onClose={() => setShowBabySelector(false)}
-        onBabyChange={handleBabyChange}
-      />
     </div>
   );
 }

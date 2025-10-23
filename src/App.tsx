@@ -6,6 +6,12 @@ import { ChaptersScreen } from './components/chapters/ChaptersScreen';
 import { ChapterDetail } from './components/chapters/ChapterDetail';
 import { NotificationsScreen } from './components/notifications/NotificationsScreen';
 import { ProfileScreen } from './components/profile/ProfileScreen';
+import { ManageBabiesScreen } from './components/profile/ManageBabiesScreen';
+import { EditBabyScreen } from './components/profile/EditBabyScreen';
+import { ExportAlbumScreen } from './components/profile/ExportAlbumScreen';
+import { ManageAccountScreen } from './components/profile/ManageAccountScreen';
+import { NotificationsSettingsScreen } from './components/profile/NotificationsSettingsScreen';
+import { HelpAndSupportScreen } from './components/profile/HelpAndSupportScreen';
 import { AddMomentSheet } from './components/chapters/AddMomentSheet';
 import { MomentForm } from './components/moments/MomentForm';
 import { MomentDetailScreen } from './components/moments/MomentDetailScreen';
@@ -20,6 +26,7 @@ import {
   PlaceholderTemplate,
   Moment,
   FamilyMember,
+  Baby,
   chapters,
   currentBaby,
   getBabyAgeInDays,
@@ -39,7 +46,14 @@ type ViewState =
   | { type: 'vaccines' }
   | { type: 'sleep-humor' }
   | { type: 'family-tree' }
-  | { type: 'family-member-detail'; member: FamilyMember };
+  | { type: 'family-member-detail'; member: FamilyMember }
+  | { type: 'manage-babies' }
+  | { type: 'edit-baby'; baby: Baby }
+  | { type: 'add-baby' }
+  | { type: 'export-album' }
+  | { type: 'manage-account' }
+  | { type: 'notifications-settings' }
+  | { type: 'help-and-support' };
 
 export default function App() {
   const [viewStack, setViewStack] = useState<ViewState[]>([{ type: 'main', screen: 'home' }]);
@@ -137,7 +151,18 @@ export default function App() {
         case 'notifications':
           return <NotificationsScreen />;
         case 'profile':
-          return <ProfileScreen />;
+          return (
+            <ProfileScreen
+              onNavigateToManageBabies={() => navigateTo({ type: 'manage-babies' })}
+              onNavigateToExportAlbum={() => navigateTo({ type: 'export-album' })}
+              onNavigateToManageAccount={() => navigateTo({ type: 'manage-account' })}
+              onNavigateToNotificationsSettings={() =>
+                navigateTo({ type: 'notifications-settings' })
+              }
+              onNavigateToHelpAndSupport={() => navigateTo({ type: 'help-and-support' })}
+              onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
+            />
+          );
       }
     } else if (currentView.type === 'chapter-detail') {
       return (
@@ -181,6 +206,27 @@ export default function App() {
       );
     } else if (currentView.type === 'moment-detail') {
       return <MomentDetailScreen moment={currentView.moment} onBack={goBack} />;
+    } else if (currentView.type === 'manage-babies') {
+      return (
+        <ManageBabiesScreen
+          onBack={goBack}
+          onAddBaby={() => navigateTo({ type: 'add-baby' })}
+          onEditBaby={(baby) => navigateTo({ type: 'edit-baby', baby })}
+        />
+      );
+    } else if (currentView.type === 'edit-baby') {
+      return <EditBabyScreen baby={currentView.baby} onBack={goBack} onSave={goBack} />;
+    } else if (currentView.type === 'add-baby') {
+      const newBaby: Baby = { id: '', name: '', birthDate: '', city: '', avatar: '' };
+      return <EditBabyScreen baby={newBaby} onBack={goBack} onSave={goBack} />;
+    } else if (currentView.type === 'export-album') {
+      return <ExportAlbumScreen onBack={goBack} />;
+    } else if (currentView.type === 'manage-account') {
+      return <ManageAccountScreen onBack={goBack} />;
+    } else if (currentView.type === 'notifications-settings') {
+      return <NotificationsSettingsScreen onBack={goBack} />;
+    } else if (currentView.type === 'help-and-support') {
+      return <HelpAndSupportScreen onBack={goBack} />;
     }
     return null;
   };

@@ -7,6 +7,7 @@ export interface Baby {
   city: string;
   avatar: string;
   gender?: 'male' | 'female' | 'other';
+  isActive?: boolean;
 }
 
 export interface GrowthMeasurement {
@@ -115,6 +116,7 @@ export const babies: Baby[] = [
     city: 'São Paulo, SP',
     avatar: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=400&fit=crop',
     gender: 'female',
+    isActive: true,
   },
   {
     id: '2',
@@ -123,15 +125,16 @@ export const babies: Baby[] = [
     city: 'Rio de Janeiro, RJ',
     avatar: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop',
     gender: 'male',
+    isActive: false,
   },
 ];
 
 export function getCurrentBaby(): Baby {
-  return babies.find(b => b.id === currentBabyId) || babies[0];
+  return babies.find(b => b.isActive) || babies[0];
 }
 
 export function setCurrentBaby(babyId: string): void {
-  currentBabyId = babyId;
+  babies.forEach(b => (b.isActive = b.id === babyId));
   if (typeof window !== 'undefined') {
     localStorage.setItem('babybook_current_baby', babyId);
   }
