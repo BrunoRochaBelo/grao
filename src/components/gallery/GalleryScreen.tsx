@@ -33,7 +33,7 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="card-surface overflow-hidden"
+      className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border"
     >
       {hasMedia && (
         <div className="relative" onClick={onClick}>

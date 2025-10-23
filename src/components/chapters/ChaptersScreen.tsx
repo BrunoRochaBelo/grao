@@ -25,7 +25,7 @@ function ChapterCard({ chapter, onClick }: ChapterCardProps) {
     <motion.button
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="card-surface p-4 text-left w-full"
+      className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left w-full"
     >
       <div className="flex items-start gap-3 mb-3">
         <div

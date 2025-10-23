@@ -119,7 +119,7 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="card-surface p-4 mb-6"
+          className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6"
         >
           <h3 className="text-foreground mb-3">Distribuição de Humor</h3>
           <div className="space-y-2">
@@ -145,7 +145,7 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="card-surface p-4 mb-6"
+          className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6"
         >
           <h3 className="text-foreground mb-4">Qualidade do Sono (7 dias)</h3>
           <ResponsiveContainer width="100%" height={200}>
@@ -166,7 +166,7 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="card-surface p-4"
+          className="bg-card rounded-2xl p-4 shadow-sm border border-border"
         >
           <h3 className="text-foreground mb-3">Histórico</h3>
           <div className="space-y-3">

@@ -117,10 +117,10 @@ export function VaccinesScreen({ onBack }: VaccinesScreenProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`card-surface p-4 ${
+              className={`bg-card rounded-xl p-4 shadow-sm border transition-shadow ${
                 vaccine.status === 'completed'
                   ? 'border-success/30'
-                  : 'border-warning/30'
+                  : 'border-warning/30 hover:shadow-md'
               }`}
             >
               <div className="flex items-start gap-3">
