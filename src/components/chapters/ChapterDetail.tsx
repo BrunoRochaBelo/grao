@@ -10,7 +10,7 @@ import {
   getPlaceholdersForChapter,
   Moment,
 } from '../../lib/mockData';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { MediaCarousel } from '../shared/MediaCarousel';
 
@@ -29,6 +29,7 @@ interface ExpandableMomentCardProps {
 
 function ExpandableMomentCard({ template, moment, chapter, onClick }: ExpandableMomentCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
   if (!template.isCompleted || !moment) {
     // Empty template - just show the placeholder
@@ -59,12 +60,47 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
 
   const hasMedia = moment.media && moment.media.length > 0;
 
+  useEffect(() => {
+    if (!expanded || !cardRef.current || typeof window === 'undefined') {
+      return;
+    }
+
+    const ensureCardInView = () => {
+      if (!cardRef.current) return;
+
+      const headerElement = document.querySelector<HTMLElement>('[data-chapter-header]');
+      const headerOffset = (headerElement?.getBoundingClientRect().height ?? 96) + 16;
+      const rect = cardRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollY = window.scrollY;
+
+      if (rect.top < headerOffset) {
+        const targetTop = Math.max(rect.top + scrollY - headerOffset, 0);
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        return;
+      }
+
+      if (rect.bottom > viewportHeight) {
+        const targetBottom = rect.bottom + scrollY - viewportHeight + 16;
+        window.scrollTo({ top: Math.max(targetBottom, 0), behavior: 'smooth' });
+      }
+    };
+
+    const raf = window.requestAnimationFrame(ensureCardInView);
+    const timeoutId = window.setTimeout(ensureCardInView, 350);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timeoutId);
+    };
+  }, [expanded]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-card rounded-2xl shadow-sm border border-success/30 overflow-hidden"
+      ref={cardRef}
     >
       {/* Header - Always visible */}
       <button
@@ -210,7 +246,7 @@ export function ChapterDetail({ chapter, onBack, onOpenTemplate }: ChapterDetail
   return (
     <div className="pb-24 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-background z-10 px-4 pt-6 pb-4 border-b border-border">
+      <div data-chapter-header className="sticky top-0 bg-background z-10 px-4 pt-6 pb-4 border-b border-border">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4 min-h-[44px]"

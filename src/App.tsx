@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BottomNav } from './components/layout/BottomNav';
 import { HomeScreen } from './components/home/HomeScreen';
 import { GalleryScreen } from './components/gallery/GalleryScreen';
@@ -46,6 +46,11 @@ export default function App() {
   const [showAddMoment, setShowAddMoment] = useState(false);
 
   const currentView = viewStack[viewStack.length - 1];
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [currentView]);
 
   const navigateTo = (view: ViewState) => {
     setViewStack(prev => [...prev, view]);
