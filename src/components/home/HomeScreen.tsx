@@ -43,7 +43,6 @@ interface HomeScreenProps {
   onNavigateToSleepHumor?: () => void;
   onNavigateToFamily?: () => void;
   onNavigateToChapters?: () => void;
-  onOpenTemplate?: (chapterId: string, templateId: string) => void;
 }
 
 export function HomeScreen({
@@ -52,7 +51,6 @@ export function HomeScreen({
   onNavigateToSleepHumor,
   onNavigateToFamily,
   onNavigateToChapters,
-  onOpenTemplate,
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [currentBaby, setCurrentBabyState] = useState(getCurrentBaby());
@@ -71,16 +69,6 @@ export function HomeScreen({
     totalCompleted += completed;
     totalMoments += placeholders.length;
   });
-
-  const vaccineTemplates = getPlaceholdersForChapter('3', babyAgeInDays).filter(
-    placeholder => placeholder.templateType === 'vacina',
-  );
-  const nextVaccineTemplate =
-    vaccineTemplates.find(template => !moments.some(moment => moment.templateId === template.id)) ??
-    vaccineTemplates[0];
-
-  const familyTemplates = getPlaceholdersForChapter('4', babyAgeInDays);
-  const familyTreeTemplate = familyTemplates.find(template => template.id === 'p4-6');
 
   // Growth data
   const growthMeasurements = getGrowthMeasurements();
@@ -117,18 +105,10 @@ export function HomeScreen({
   };
 
   const handleVaccinesClick = () => {
-    if (nextVaccineTemplate && onOpenTemplate) {
-      onOpenTemplate('3', nextVaccineTemplate.id);
-      return;
-    }
     onNavigateToVaccines?.();
   };
 
   const handleFamilyClick = () => {
-    if (familyTreeTemplate && onOpenTemplate) {
-      onOpenTemplate('4', familyTreeTemplate.id);
-      return;
-    }
     onNavigateToFamily?.();
   };
 

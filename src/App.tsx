@@ -122,11 +122,10 @@ export default function App() {
           return (
             <HomeScreen
               onNavigateToGrowth={() => navigateTo({ type: 'growth' })}
-              onNavigateToVaccines={() => openChapter('3')}
+              onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
-              onNavigateToFamily={() => openChapter('4')}
+              onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
               onNavigateToChapters={() => navigateTo({ type: 'main', screen: 'chapters' })}
-              onOpenTemplate={(chapterId, templateId) => openChapterTemplate(chapterId, templateId)}
             />
           );
         case 'gallery':
