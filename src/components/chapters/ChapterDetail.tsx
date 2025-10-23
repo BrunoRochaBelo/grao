@@ -37,7 +37,7 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onClick={onClick}
-        className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left flex items-center gap-3"
+        className="card-surface p-4 text-left flex items-center gap-3"
       >
         <div
           className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0"
@@ -64,7 +64,7 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-card rounded-2xl shadow-sm border border-success/30 overflow-hidden"
+      className="card-surface overflow-hidden border-success/30"
     >
       {/* Header - Always visible */}
       <button

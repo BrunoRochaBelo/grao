@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { getCurrentBaby, calculateAge, chapters, getMoments, getPlaceholdersForChapter, getBabyAgeInDays, getGrowthMeasurements, getVaccines, getSleepHumorEntries, getFamilyMembers } from '../../lib/mockData';
 import { TrendingUp, Syringe, Moon, Users, BookOpen, Calendar, ChevronRight } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { BabySelectorModal } from '../baby/BabySelectorModal';
 
 interface StatWidgetProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   value: string;
   subtitle?: string;
   color: string;
@@ -15,16 +16,18 @@ interface StatWidgetProps {
 }
 
 function StatWidget({ title, icon, value, subtitle, color, onClick }: StatWidgetProps) {
+  const Icon = icon;
+
   return (
     <motion.button
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left relative overflow-hidden"
-      style={{ backgroundColor: color + '20' }}
+      className="card-surface p-4 text-left relative overflow-hidden"
+      style={{ backgroundColor: color + '20', borderColor: color + '35' }}
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="p-2 rounded-xl" style={{ backgroundColor: color + '40' }}>
-          {icon}
+        <div className="p-2 rounded-xl" style={{ backgroundColor: color + '33' }}>
+          <Icon className="w-5 h-5" style={{ color }} />
         </div>
         {onClick && (
           <ChevronRight className="w-5 h-5 text-muted-foreground absolute top-4 right-4" />
@@ -163,7 +166,7 @@ export function HomeScreen({
       <div className="grid grid-cols-2 gap-3 mb-6">
         <StatWidget
           title="Crescimento"
-          icon={<TrendingUp className="w-5 h-5 text-primary" />}
+          icon={TrendingUp}
           value={`${latestGrowth?.weight} kg · ${latestGrowth?.height} cm`}
           subtitle={`+${weightChange} kg este mês`}
           color="#4F46E5"
@@ -171,7 +174,7 @@ export function HomeScreen({
         />
         <StatWidget
           title="Vacinas"
-          icon={<Syringe className="w-5 h-5 text-primary" />}
+          icon={Syringe}
           value={`${completedVaccines} de ${totalVaccines} aplicadas`}
           subtitle={pendingVaccines > 0 ? `${pendingVaccines} ${pendingVaccines === 1 ? 'pendente' : 'pendentes'}` : 'Todas em dia! 🎉'}
           color="#8B5CF6"
@@ -179,7 +182,7 @@ export function HomeScreen({
         />
         <StatWidget
           title="Sono & Humor"
-          icon={<Moon className="w-5 h-5 text-primary" />}
+          icon={Moon}
           value={`${avgSleep}h média`}
           subtitle="Média semanal"
           color="#6366F1"
@@ -187,7 +190,7 @@ export function HomeScreen({
         />
         <StatWidget
           title="Família"
-          icon={<Users className="w-5 h-5 text-primary" />}
+          icon={Users}
           value={`${familyMembers.length} membros`}
           subtitle="Ver árvore"
           color="#EC4899"
@@ -201,7 +204,7 @@ export function HomeScreen({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         onClick={onNavigateToChapters}
-        className="w-full bg-card rounded-2xl p-4 shadow-sm border border-border mb-6 hover:shadow-md transition-shadow text-left"
+        className="w-full card-surface p-4 mb-6 text-left"
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -234,9 +237,9 @@ export function HomeScreen({
       >
         <h3 className="text-foreground mb-3">Próximos marcos</h3>
         <div className="space-y-2">
-          <button 
+          <button
             onClick={onNavigateToChapters}
-            className="w-full bg-card rounded-xl p-3 shadow-sm border border-border flex items-center gap-3 hover:shadow-md transition-shadow text-left"
+            className="w-full card-surface p-3 flex items-center gap-3 text-left"
           >
             <div className="p-2 bg-primary/10 rounded-lg">
               <Calendar className="w-5 h-5 text-primary" />
@@ -249,7 +252,7 @@ export function HomeScreen({
           </button>
           <button
             onClick={handleVaccinesClick}
-            className="w-full bg-card rounded-xl p-3 shadow-sm border border-border flex items-center gap-3 hover:shadow-md transition-shadow text-left"
+            className="w-full card-surface p-3 flex items-center gap-3 text-left"
           >
             <div className="p-2 bg-secondary/10 rounded-lg">
               <Syringe className="w-5 h-5 text-secondary" />

@@ -58,7 +58,7 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-2xl p-6 shadow-sm border border-border mb-6"
+          className="card-surface p-6 mb-6"
         >
           <div className="flex items-center gap-4 mb-4">
             <Avatar className="w-20 h-20">
@@ -101,7 +101,7 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
           <h2 className="text-foreground mb-3">Momentos com {member.name.split(' ')[0]}</h2>
           
           {memberMoments.length === 0 ? (
-            <div className="bg-card rounded-2xl p-8 shadow-sm border border-border text-center">
+            <div className="card-surface p-8 text-center">
               <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground">
                 Nenhum momento registrado ainda
@@ -119,7 +119,7 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
                     onClick={() => onSelectMoment?.(moment.id)}
-                    className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-shadow cursor-pointer"
+                    className="card-surface overflow-hidden cursor-pointer"
                   >
                     {moment.media && moment.media.length > 0 && (
                       <div className="aspect-[3/2] overflow-hidden">

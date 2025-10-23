@@ -95,7 +95,7 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-card rounded-xl p-4 shadow-sm border border-border"
+              className="card-surface p-4"
             >
               <div className="flex items-center gap-2 text-primary mb-2">
                 <MapPin className="w-4 h-4" />
@@ -110,7 +110,7 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-card rounded-xl p-4 shadow-sm border border-border"
+              className="card-surface p-4"
             >
               <div className="flex items-center gap-2 text-secondary mb-2">
                 <UsersIcon className="w-4 h-4" />
@@ -131,7 +131,7 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-card rounded-xl p-4 shadow-sm border border-border"
+              className="card-surface p-4"
             >
               <h3 className="text-foreground mb-2">Notas</h3>
               <p className="text-muted-foreground whitespace-pre-wrap">{moment.notes}</p>
@@ -143,7 +143,7 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-card rounded-xl p-4 shadow-sm border border-border"
+              className="card-surface p-4"
             >
               <div className="flex items-center gap-2 text-primary mb-2">
                 <Tag className="w-4 h-4" />

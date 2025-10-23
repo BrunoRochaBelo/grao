@@ -142,7 +142,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6"
+          className="card-surface p-4 mb-6"
         >
           <h3 className="text-foreground mb-4">Evolução do Crescimento</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -190,7 +190,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6"
+          className="card-surface p-4 mb-6"
         >
           <h3 className="text-foreground mb-3">Estatísticas</h3>
           <div className="space-y-2">
@@ -214,7 +214,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-card rounded-2xl p-4 shadow-sm border border-border"
+          className="card-surface p-4"
         >
           <h3 className="text-foreground mb-3">Histórico de Medições</h3>
           <div className="space-y-3">
