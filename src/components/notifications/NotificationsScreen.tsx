@@ -162,7 +162,7 @@ export function NotificationsScreen() {
   };
 
   const typeLabelMap: Record<Notification['type'], string> = {
-    action: 'A��o sugerida',
+    action: 'Ação sugerida',
     reminder: 'Lembrete',
     milestone: 'Marco',
   };
@@ -222,9 +222,9 @@ export function NotificationsScreen() {
       {/* Header */}
       <div className="px-4 pt-6 pb-4 space-y-4">
         <div>
-          <h1 className="text-foreground text-xl">Notifica��es</h1>
+          <h1 className="text-foreground text-xl">Notificações</h1>
           <p className="text-muted-foreground">
-            Lembretes e sugest�es para o Livro do Beb�
+            Lembretes e sugestões para o Livro do Bebê
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
