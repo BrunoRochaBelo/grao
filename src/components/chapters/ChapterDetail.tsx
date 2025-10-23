@@ -13,12 +13,15 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { MediaCarousel } from '../shared/MediaCarousel';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 interface ChapterDetailProps {
   chapter: Chapter;
   onBack: () => void;
   onOpenTemplate: (template: PlaceholderTemplate) => void;
 }
+
+type ChapterFilter = 'all' | 'completed' | 'pending';
 
 interface ExpandableMomentCardProps {
   template: PlaceholderTemplate & { thumbnail?: string };
@@ -215,7 +218,7 @@ function ExpandableMomentCard({ template, moment, chapter, onClick }: Expandable
 }
 
 export function ChapterDetail({ chapter, onBack, onOpenTemplate }: ChapterDetailProps) {
-  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
+  const [filter, setFilter] = useState<ChapterFilter>('all');
   
   const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
   const allPlaceholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
@@ -279,30 +282,29 @@ export function ChapterDetail({ chapter, onBack, onOpenTemplate }: ChapterDetail
       {/* Templates Grid */}
       <div className="px-4 pt-4">
         <div className="flex gap-2 mb-4">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              filter === 'all' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Todos
-          </button>
-          <button
-            onClick={() => setFilter('completed')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              filter === 'completed' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Preenchidos
-          </button>
-          <button
-            onClick={() => setFilter('pending')}
-            className={`px-4 py-2 rounded-xl text-sm transition-colors ${
-              filter === 'pending' ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            Pendentes
-          </button>
+          {(
+            [
+              { id: 'all', label: 'Todos', tone: 'lavender' },
+              { id: 'completed', label: 'Preenchidos', tone: 'mint' },
+              { id: 'pending', label: 'Pendentes', tone: 'babyBlue' },
+            ] satisfies { id: ChapterFilter; label: string; tone: HighlightTone }[]
+          ).map(option => {
+            const isActive = filter === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => setFilter(option.id)}
+                className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
+                  isActive
+                    ? 'shadow-soft'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                }`}
+                style={isActive ? getHighlightStyle(option.tone) : undefined}
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
 
         {filteredTemplates.length === 0 ? (

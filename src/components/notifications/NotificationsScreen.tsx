@@ -3,13 +3,14 @@ import { motion } from 'motion/react';
 import { Bell, BellOff, Clock, CheckCircle2, Calendar, Syringe, Moon, TrendingUp, Heart, X } from 'lucide-react';
 import { getCurrentBaby, getVaccines, getBabyAgeInDays } from '../../lib/mockData';
 import { Button } from '../ui/button';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 interface Notification {
   id: string;
   type: 'action' | 'reminder' | 'milestone';
   scope: 'baby' | 'theme';
   icon: React.ReactNode;
-  iconColor: string;
+  accent: HighlightTone;
   title: string;
   subtitle: string;
   action: {
@@ -25,10 +26,10 @@ export function NotificationsScreen() {
   const [notifications, setNotifications] = useState<Notification[]>(getNotifications());
   const [activeFilter, setActiveFilter] = useState<'all' | 'baby' | 'theme'>('all');
   const [mutedThemes, setMutedThemes] = useState(false);
-  const filterOptions: { id: 'all' | 'baby' | 'theme'; label: string }[] = [
-    { id: 'all', label: 'Todos' },
-    { id: 'baby', label: 'Por bebê' },
-    { id: 'theme', label: 'Por tema' },
+  const filterOptions: { id: 'all' | 'baby' | 'theme'; label: string; tone: HighlightTone }[] = [
+    { id: 'all', label: 'Todos', tone: 'lavender' },
+    { id: 'baby', label: 'Por bebê', tone: 'mint' },
+    { id: 'theme', label: 'Por tema', tone: 'babyBlue' },
   ];
 
   function getNotifications(): Notification[] {
@@ -50,7 +51,7 @@ export function NotificationsScreen() {
         type: 'milestone',
         scope: 'baby',
         icon: <Calendar className="w-5 h-5" />,
-        iconColor: '#DDD6FE',
+        accent: 'lavender',
         title: `${ageInMonths + 1}º Mêsversário de ${currentBaby.name}`,
         subtitle: `Em ${daysUntilMonthBirthday} ${daysUntilMonthBirthday === 1 ? 'dia' : 'dias'}`,
         action: { label: 'Registrar', variant: 'default' },
@@ -70,7 +71,7 @@ export function NotificationsScreen() {
         type: 'action',
         scope: 'theme',
         icon: <Syringe className="w-5 h-5" />,
-        iconColor: '#8B5CF6',
+        accent: 'babyBlue',
         title: `Vacina ${vaccine.name} - ${vaccine.dose}`,
         subtitle: isOverdue ? 'Atrasada' : `Recomendada aos ${Math.floor(recommendedAge / 30)} meses`,
         action: { label: 'Registrar', variant: 'default' },
@@ -85,7 +86,7 @@ export function NotificationsScreen() {
       type: 'reminder',
       scope: 'theme',
       icon: <Moon className="w-5 h-5" />,
-      iconColor: '#6366F1',
+      accent: 'lavender',
       title: 'Como foi o sono hoje?',
       subtitle: 'Registre a qualidade do sono de hoje',
       action: { label: 'Registrar', variant: 'outline' },
@@ -101,7 +102,7 @@ export function NotificationsScreen() {
         type: 'reminder',
         scope: 'theme',
         icon: <TrendingUp className="w-5 h-5" />,
-        iconColor: '#4F46E5',
+        accent: 'mint',
         title: 'Hora de medir!',
         subtitle: 'Registre peso e altura',
         action: { label: 'Registrar', variant: 'outline' },
@@ -116,7 +117,7 @@ export function NotificationsScreen() {
       type: 'action',
       scope: 'theme',
       icon: <Heart className="w-5 h-5" />,
-      iconColor: '#EC4899',
+      accent: 'babyBlue',
       title: 'Registre um momento especial',
       subtitle: 'Completar "Primeira Vez"',
       action: { label: 'Ver', variant: 'outline' },
@@ -177,12 +178,10 @@ export function NotificationsScreen() {
       <div className="flex gap-3">
         {/* Icon */}
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: notification.iconColor + '40' }}
+          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border shadow-soft"
+          style={getHighlightStyle(notification.accent)}
         >
-          <div style={{ color: notification.iconColor }}>
-            {notification.icon}
-          </div>
+          {notification.icon}
         </div>
 
         {/* Content */}
@@ -228,15 +227,23 @@ export function NotificationsScreen() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {filterOptions.map(option => (
-            <button
-              key={option.id}
-              onClick={() => setActiveFilter(option.id)}
-              className={`px-4 py-2 rounded-full text-sm transition-colors ${activeFilter === option.id ? 'bg-primary text-white shadow-soft' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
-            >
-              {option.label}
-            </button>
-          ))}
+          {filterOptions.map(option => {
+            const isActive = activeFilter === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => setActiveFilter(option.id)}
+                className={`px-4 py-2 rounded-full text-sm transition-colors border ${
+                  isActive
+                    ? 'shadow-soft'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                }`}
+                style={isActive ? getHighlightStyle(option.tone) : undefined}
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button

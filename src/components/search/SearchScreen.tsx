@@ -3,6 +3,7 @@ import { Search as SearchIcon, Calendar, User, Tag } from 'lucide-react';
 import { Input } from '../ui/input';
 import { getMoments, chapters } from '../../lib/mockData';
 import { motion } from 'motion/react';
+import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
 export function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,12 +12,12 @@ export function SearchScreen() {
   const moments = getMoments();
 
   const filters = [
-    { id: 'all', label: 'Todos', icon: null },
-    { id: 'chapter', label: 'Capítulos', icon: Calendar },
-    { id: 'date', label: 'Data', icon: Calendar },
-    { id: 'people', label: 'Pessoas', icon: User },
-    { id: 'tags', label: 'Tags', icon: Tag },
-  ];
+    { id: 'all', label: 'Todos', icon: null, tone: 'lavender' },
+    { id: 'chapter', label: 'Capítulos', icon: Calendar, tone: 'babyBlue' },
+    { id: 'date', label: 'Data', icon: Calendar, tone: 'lavender' },
+    { id: 'people', label: 'Pessoas', icon: User, tone: 'mint' },
+    { id: 'tags', label: 'Tags', icon: Tag, tone: 'babyBlue' },
+  ] satisfies { id: string; label: string; icon: typeof Calendar | typeof User | typeof Tag | null; tone: HighlightTone }[];
 
   const filteredMoments = moments.filter((moment) =>
     moment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,15 +44,17 @@ export function SearchScreen() {
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {filters.map((filter) => {
             const Icon = filter.icon;
+            const isActive = activeFilter === filter.id;
             return (
               <button
                 key={filter.id}
                 onClick={() => setActiveFilter(filter.id)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-colors ${
-                  activeFilter === filter.id
-                    ? 'bg-primary text-white'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-colors border ${
+                  isActive
+                    ? 'shadow-soft'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
                 }`}
+                style={isActive ? getHighlightStyle(filter.tone) : undefined}
               >
                 {Icon && <Icon className="w-4 h-4" />}
                 {filter.label}
