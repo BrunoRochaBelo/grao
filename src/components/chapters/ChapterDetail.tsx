@@ -2,15 +2,8 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 import { Progress } from '../ui/progress';
-import {
-  Chapter,
-  PlaceholderTemplate,
-  currentBaby,
-  getBabyAgeInDays,
-  getMoments,
-  getPlaceholdersForChapter,
-  Moment,
-} from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { Chapter, Moment, PlaceholderTemplate } from '../../lib/types';
 import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 import { MomentTemplateCard } from './MomentTemplateCard';
 
@@ -29,9 +22,9 @@ type TemplateWithMoment = PlaceholderTemplate & {
 
 export function ChapterDetail({ chapter, onBack, onOpenTemplate }: ChapterDetailProps) {
   const [filter, setFilter] = useState<ChapterFilter>('all');
+  const { getPlaceholdersForChapter, getMoments } = useBabyData();
 
-  const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
-  const allPlaceholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
+  const allPlaceholders = getPlaceholdersForChapter(chapter.id);
   const moments = getMoments();
 
   const templates: TemplateWithMoment[] = allPlaceholders.map((placeholder) => {

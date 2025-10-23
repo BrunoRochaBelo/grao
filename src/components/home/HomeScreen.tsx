@@ -1,18 +1,6 @@
 import { useMemo, useState } from 'react';
-import {
-  Chapter,
-  PlaceholderTemplate,
-  calculateAge,
-  chapters,
-  getBabyAgeInDays,
-  getCurrentBaby,
-  getFamilyMembers,
-  getGrowthMeasurements,
-  getMoments,
-  getPlaceholdersForChapter,
-  getSleepHumorEntries,
-  getVaccines,
-} from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { Chapter, PlaceholderTemplate } from '../../lib/types';
 import {
   BookOpen,
   Calendar,
@@ -81,11 +69,22 @@ export function HomeScreen({
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [showChaptersDrawer, setShowChaptersDrawer] = useState(false);
-  const [currentBabyState, setCurrentBabyState] = useState(getCurrentBaby());
+  const {
+    currentBaby,
+    chapters,
+    calculateAge,
+    getBabyAgeInDays,
+    getMoments,
+    getPlaceholdersForChapter,
+    getGrowthMeasurements,
+    getVaccines,
+    getSleepHumorEntries,
+    getFamilyMembers,
+  } = useBabyData();
 
-  const ageLabel = calculateAge(currentBabyState.birthDate);
-  const babyAgeInDays = getBabyAgeInDays(currentBabyState.birthDate);
   const moments = getMoments();
+  const ageLabel = currentBaby ? calculateAge(currentBaby.birthDate) : '';
+  const babyAgeInDays = currentBaby ? getBabyAgeInDays(currentBaby.birthDate) : 0;
 
   const chapterSummaries = useMemo(() => {
     return chapters.map((chapter) => {
@@ -173,11 +172,6 @@ export function HomeScreen({
       .toUpperCase()
       .slice(0, 2);
 
-  const handleBabyChange = () => {
-    setCurrentBabyState(getCurrentBaby());
-    window.location.reload();
-  };
-
   return (
     <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
       <motion.button
@@ -187,15 +181,15 @@ export function HomeScreen({
         className="flex items-center gap-4 mb-6 w-full text-left hover:opacity-80 transition-opacity"
       >
         <Avatar className="w-20 h-20 border-2 border-primary">
-          <AvatarImage src={currentBabyState.avatar} alt={currentBabyState.name} />
+          <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
           <AvatarFallback className="bg-primary/10 text-primary text-2xl">
-            {getInitials(currentBabyState.name)}
+            {currentBaby ? getInitials(currentBaby.name) : '?'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h1 className="text-foreground mb-1">{currentBabyState.name}</h1>
+          <h1 className="text-foreground mb-1">{currentBaby?.name ?? 'Bebê atual'}</h1>
           <p className="text-muted-foreground">{ageLabel}</p>
-          <p className="text-muted-foreground text-sm">{currentBabyState.city}</p>
+          <p className="text-muted-foreground text-sm">{currentBaby?.city}</p>
         </div>
         <ChevronRight className="w-6 h-6 text-muted-foreground" />
       </motion.button>
@@ -372,7 +366,7 @@ export function HomeScreen({
       <BabySelectorModal
         isOpen={showBabySelector}
         onClose={() => setShowBabySelector(false)}
-        onBabyChange={handleBabyChange}
+        onBabyChange={() => undefined}
       />
     </div>
   );

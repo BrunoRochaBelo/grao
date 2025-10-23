@@ -1,6 +1,7 @@
 import { ArrowLeft, Calendar, MapPin, Users as UsersIcon, Tag, Lock, Edit } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Moment, chapters } from '../../lib/mockData';
+import { motion } from 'motion/react';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { Moment } from '../../lib/types';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { MediaCarousel } from '../shared/MediaCarousel';
@@ -12,6 +13,7 @@ interface MomentDetailScreenProps {
 }
 
 export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScreenProps) {
+  const { chapters } = useBabyData();
   const chapter = chapters.find(c => c.id === moment.chapterId);
 
 

@@ -5,7 +5,8 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { addFamilyMember, FamilyMember } from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { FamilyMember } from '../../lib/types';
 import { toast } from 'sonner@2.0.3';
 
 interface FamilyMemberFormProps {
@@ -35,8 +36,9 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
   const [name, setName] = useState('');
   const [relation, setRelation] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const { addFamilyMember } = useBabyData();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !relation) {
@@ -44,17 +46,21 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
       return;
     }
 
-    const newMember = addFamilyMember({
+    const newMember = await addFamilyMember({
       name,
       relation,
       birthDate: birthDate || undefined,
       avatar: undefined,
     });
 
+    if (!newMember) {
+      toast.error('Não foi possível adicionar o familiar. Tente novamente.');
+      return;
+    }
+
     onSave(newMember);
     toast.success('Membro da família adicionado!');
-    
-    // Reset form
+
     setName('');
     setRelation('');
     setBirthDate('');
@@ -71,7 +77,6 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
         exit={{ opacity: 0, y: 100 }}
         className="bg-background rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg max-h-[90vh] overflow-y-auto"
       >
-        {/* Header */}
         <div className="sticky top-0 bg-background z-10 px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-center justify-between">
             <h2 className="text-foreground">Adicionar Familiar</h2>
@@ -85,7 +90,6 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <Label htmlFor="name">Nome Completo</Label>
@@ -93,7 +97,7 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
               id="name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               placeholder="Ex: Maria da Silva"
               className="mt-1"
               required
@@ -122,7 +126,7 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
               id="birthDate"
               type="date"
               value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
+              onChange={(event) => setBirthDate(event.target.value)}
               max={new Date().toISOString().split('T')[0]}
               className="mt-1"
             />

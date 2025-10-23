@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Check } from "lucide-react";
-import { babies, getCurrentBaby, setCurrentBaby } from "../../lib/mockData";
+import { useBabyData } from "../../lib/baby-data-context";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Button } from "../ui/button";
 
 interface BabySelectorModalProps {
   isOpen: boolean;
@@ -15,10 +14,11 @@ export function BabySelectorModal({
   onClose,
   onBabyChange,
 }: BabySelectorModalProps) {
-  const currentBaby = getCurrentBaby();
+  const { babies, currentBaby, setCurrentBaby, calculateAge } = useBabyData();
+  const activeBabyId = currentBaby?.id;
 
-  const handleSelectBaby = (babyId: string) => {
-    setCurrentBaby(babyId);
+  const handleSelectBaby = async (babyId: string) => {
+    await setCurrentBaby(babyId);
     onBabyChange();
     onClose();
   };
@@ -31,7 +31,6 @@ export function BabySelectorModal({
       .toUpperCase()
       .slice(0, 2);
   };
-
   const getAge = (birthDate: string) => {
     const birth = new Date(birthDate);
     const now = new Date();
@@ -91,7 +90,7 @@ export function BabySelectorModal({
                       transition={{ delay: index * 0.1 }}
                       onClick={() => handleSelectBaby(baby.id)}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all ${
-                        baby.id === currentBaby.id
+                        baby.id === activeBabyId
                           ? "bg-primary/10 border-2 border-primary"
                           : "bg-card border-2 border-border hover:border-primary/30"
                       }`}
@@ -106,12 +105,12 @@ export function BabySelectorModal({
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
                           <h3 className="text-foreground">{baby.name}</h3>
-                          {baby.id === currentBaby.id && (
+                          {baby.id === activeBabyId && (
                             <Check className="w-5 h-5 text-primary" />
                           )}
                         </div>
                         <p className="text-muted-foreground text-sm">
-                          {getAge(baby.birthDate)}
+                          {calculateAge(baby.birthDate)}
                         </p>
                         <p className="text-muted-foreground text-xs">
                           {baby.city}

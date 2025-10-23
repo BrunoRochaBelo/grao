@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Circle, Edit, Share2, Trash2 } from 'lucide-react';
-import { Chapter, Moment, PlaceholderTemplate } from '../../lib/mockData';
+import type { Chapter, Moment, PlaceholderTemplate } from '../../lib/types';
 import { MediaCarousel } from '../shared/MediaCarousel';
 import { Badge } from '../ui/badge';
 

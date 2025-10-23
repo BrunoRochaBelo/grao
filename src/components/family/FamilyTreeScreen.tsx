@@ -1,13 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Plus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
-import {
-  FamilyMember,
-  currentBaby,
-  getBabyAgeInDays,
-  getFamilyMembers,
-  getPlaceholdersForChapter,
-} from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { FamilyMember } from '../../lib/types';
 import { Button } from '../ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
@@ -18,7 +13,12 @@ interface FamilyTreeScreenProps {
 }
 
 export function FamilyTreeScreen({ onBack, onSelectMember, onOpenTemplate }: FamilyTreeScreenProps) {
-  const [members, setMembers] = useState(getFamilyMembers());
+  const { currentBaby, getFamilyMembers, getPlaceholdersForChapter } = useBabyData();
+  const [members, setMembers] = useState<FamilyMember[]>(() => getFamilyMembers());
+
+  useEffect(() => {
+    setMembers(getFamilyMembers());
+  }, [getFamilyMembers]);
 
   const parents = useMemo(
     () => members.filter((member) => member.relation === 'Mãe' || member.relation === 'Pai'),
@@ -48,8 +48,7 @@ export function FamilyTreeScreen({ onBack, onSelectMember, onOpenTemplate }: Fam
   };
 
   const handleAddMember = () => {
-    const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
-    const templates = getPlaceholdersForChapter('4', babyAgeInDays);
+    const templates = getPlaceholdersForChapter('4');
     const familyTreeTemplate = templates.find((template) => template.id === 'p4-6');
 
     if (familyTreeTemplate) {
@@ -144,12 +143,12 @@ export function FamilyTreeScreen({ onBack, onSelectMember, onOpenTemplate }: Fam
           >
             <div className="flex flex-col items-center">
               <Avatar className="w-24 h-24 border-4 border-success">
-                <AvatarImage src={currentBaby.avatar} alt={currentBaby.name} />
+                <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
                 <AvatarFallback className="bg-success/10 text-success text-2xl">
-                  {getInitials(currentBaby.name)}
+                  {currentBaby ? getInitials(currentBaby.name) : '?'}
                 </AvatarFallback>
               </Avatar>
-              <p className="text-foreground mt-2">{currentBaby.name}</p>
+              <p className="text-foreground mt-2">{currentBaby?.name ?? 'Bebê atual'}</p>
               <p className="text-muted-foreground text-sm">Nosso bebê</p>
             </div>
           </motion.div>

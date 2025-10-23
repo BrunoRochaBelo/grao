@@ -1,7 +1,8 @@
-import { chapters, getPlaceholdersForChapter, getBabyAgeInDays, currentBaby, getMoments, Chapter } from '../../lib/mockData';
 import { motion } from 'motion/react';
 import { Progress } from '../ui/progress';
 import { ArrowLeft } from 'lucide-react';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { Chapter } from '../../lib/types';
 
 interface ChapterCardProps {
   chapter: Chapter;
@@ -9,8 +10,8 @@ interface ChapterCardProps {
 }
 
 function ChapterCard({ chapter, onClick }: ChapterCardProps) {
-  const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
-  const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
+  const { getPlaceholdersForChapter, getMoments } = useBabyData();
+  const placeholders = getPlaceholdersForChapter(chapter.id);
   const moments = getMoments();
   
   const completedCount = placeholders.filter(p => 
@@ -64,6 +65,7 @@ interface ChaptersScreenProps {
 }
 
 export function ChaptersScreen({ onSelectChapter, onBack }: ChaptersScreenProps) {
+  const { chapters, getMoments } = useBabyData();
   const moments = getMoments();
   const totalMoments = moments.length;
   

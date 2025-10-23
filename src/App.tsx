@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './components/layout/BottomNav';
 import { HomeScreen } from './components/home/HomeScreen';
 import { GalleryScreen } from './components/gallery/GalleryScreen';
@@ -19,26 +20,20 @@ import { GrowthScreen } from './components/health/GrowthScreen';
 import { VaccinesScreen } from './components/health/VaccinesScreen';
 import { SleepHumorScreen } from './components/health/SleepHumorScreen';
 import { FamilyTreeScreen } from './components/family/FamilyTreeScreen';
-import { motion, AnimatePresence } from 'motion/react';
-import { Toaster } from './components/ui/sonner';
-import {
-  Chapter,
-  PlaceholderTemplate,
-  Moment,
-  FamilyMember,
-  Baby,
-  chapters,
-  currentBaby,
-  getCurrentBaby,
-  getBabyAgeInDays,
-  getMoments,
-  getPlaceholdersForChapter,
-} from './lib/mockData';
-import { ThemeProvider } from './lib/theme-context';
 import { FamilyMemberDetailScreen } from './components/family/FamilyMemberDetailScreen';
+import { Toaster } from './components/ui/sonner';
+import { ThemeProvider } from './lib/theme-context';
+import { BabyDataProvider, useBabyData } from './lib/baby-data-context';
+import {
+  Baby,
+  Chapter,
+  FamilyMember,
+  Moment,
+  PlaceholderTemplate,
+} from './lib/types';
 
 type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
-type ViewState = 
+type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
   | { type: 'moment-form'; template: PlaceholderTemplate; chapter: Chapter }
@@ -56,9 +51,21 @@ type ViewState =
   | { type: 'notifications-settings' }
   | { type: 'help-and-support' };
 
-export default function App() {
-  const [viewStack, setViewStack] = useState<ViewState[]>([{ type: 'main', screen: 'home' }]);
+function AppContent() {
+  const [viewStack, setViewStack] = useState<ViewState[]>([
+    { type: 'main', screen: 'home' },
+  ]);
   const [showAddMoment, setShowAddMoment] = useState(false);
+
+  const {
+    status,
+    error,
+    chapters,
+    currentBaby,
+    getMoments,
+    getPlaceholdersForChapter,
+    refreshMoments,
+  } = useBabyData();
 
   const currentView = viewStack[viewStack.length - 1];
 
@@ -91,10 +98,7 @@ export default function App() {
     const chapterData = chapters.find(chapter => chapter.id === chapterId);
     if (!chapterData) return;
 
-    const placeholders = getPlaceholdersForChapter(
-      chapterId,
-      getBabyAgeInDays(currentBaby.birthDate),
-    );
+    const placeholders = getPlaceholdersForChapter(chapterId);
     const template = placeholders.find(item => item.id === templateId);
 
     navigateTo({ type: 'chapter-detail', chapter: chapterData });
@@ -113,20 +117,26 @@ export default function App() {
   };
 
   const isNavigatedToChapters = () => {
-    // Check if we navigated to chapters from another screen (not from bottom nav)
-    return currentView.type === 'main' && currentView.screen === 'chapters' && viewStack.length > 1;
+    return (
+      currentView.type === 'main' &&
+      currentView.screen === 'chapters' &&
+      viewStack.length > 1
+    );
   };
 
   const handleSelectChapter = (chapter: Chapter) => {
     navigateTo({ type: 'chapter-detail', chapter });
   };
 
-  const handleOpenTemplate = (template: PlaceholderTemplate, chapter: Chapter) => {
+  const handleOpenTemplate = (
+    template: PlaceholderTemplate,
+    chapter: Chapter,
+  ) => {
     navigateTo({ type: 'moment-form', template, chapter });
   };
 
-  const handleMomentSaved = () => {
-    // Refresh the view by going back
+  const handleMomentSaved = async () => {
+    await refreshMoments();
     goBack();
   };
 
@@ -140,32 +150,55 @@ export default function App() {
               onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
               onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
-              onNavigateToChapters={() => navigateTo({ type: 'main', screen: 'chapters' })}
+              onNavigateToChapters={() =>
+                navigateTo({ type: 'main', screen: 'chapters' })
+              }
               onOpenTemplate={openChapterTemplate}
               onOpenChapter={handleSelectChapter}
             />
           );
         case 'gallery':
-          return <GalleryScreen onSelectMoment={(moment) => navigateTo({ type: 'moment-detail', moment })} />;
+          return (
+            <GalleryScreen
+              onSelectMoment={moment => navigateTo({ type: 'moment-detail', moment })}
+            />
+          );
         case 'chapters':
-          return <ChaptersScreen onSelectChapter={handleSelectChapter} onBack={isNavigatedToChapters() ? goBack : undefined} />;
+          return (
+            <ChaptersScreen
+              onSelectChapter={handleSelectChapter}
+              onBack={isNavigatedToChapters() ? goBack : undefined}
+            />
+          );
         case 'notifications':
           return <NotificationsScreen />;
         case 'profile':
           return (
             <ProfileScreen
-              onNavigateToManageBabies={() => navigateTo({ type: 'manage-babies' })}
-              onNavigateToExportAlbum={() => navigateTo({ type: 'export-album' })}
-              onNavigateToManageAccount={() => navigateTo({ type: 'manage-account' })}
+              onNavigateToManageBabies={() =>
+                navigateTo({ type: 'manage-babies' })
+              }
+              onNavigateToExportAlbum={() =>
+                navigateTo({ type: 'export-album' })
+              }
+              onNavigateToManageAccount={() =>
+                navigateTo({ type: 'manage-account' })
+              }
               onNavigateToNotificationsSettings={() =>
                 navigateTo({ type: 'notifications-settings' })
               }
-              onNavigateToHelpAndSupport={() => navigateTo({ type: 'help-and-support' })}
+              onNavigateToHelpAndSupport={() =>
+                navigateTo({ type: 'help-and-support' })
+              }
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
               onNavigateToMoments={() => navigateToMain('gallery')}
               onNavigateToChapters={() => navigateToMain('chapters')}
               onNavigateToMedia={() => navigateToMain('gallery')}
-              onEditBaby={() => navigateTo({ type: 'edit-baby', baby: getCurrentBaby() })}
+              onEditBaby={() => {
+                if (currentBaby) {
+                  navigateTo({ type: 'edit-baby', baby: currentBaby });
+                }
+              }}
             />
           );
       }
@@ -174,7 +207,7 @@ export default function App() {
         <ChapterDetail
           chapter={currentView.chapter}
           onBack={goBack}
-          onOpenTemplate={(template) => handleOpenTemplate(template, currentView.chapter)}
+          onOpenTemplate={template => handleOpenTemplate(template, currentView.chapter)}
         />
       );
     } else if (currentView.type === 'growth') {
@@ -183,7 +216,9 @@ export default function App() {
       return (
         <VaccinesScreen
           onBack={goBack}
-          onOpenTemplate={(template, chapter) => handleOpenTemplate(template, chapter)}
+          onOpenTemplate={(template, chapter) =>
+            handleOpenTemplate(template, chapter)
+          }
         />
       );
     } else if (currentView.type === 'sleep-humor') {
@@ -192,8 +227,12 @@ export default function App() {
       return (
         <FamilyTreeScreen
           onBack={goBack}
-          onOpenTemplate={(chapterId, templateId) => openChapterTemplate(chapterId, templateId)}
-          onSelectMember={(member) => navigateTo({ type: 'family-member-detail', member })}
+          onOpenTemplate={(chapterId, templateId) =>
+            openChapterTemplate(chapterId, templateId)
+          }
+          onSelectMember={member =>
+            navigateTo({ type: 'family-member-detail', member })
+          }
         />
       );
     } else if (currentView.type === 'family-member-detail') {
@@ -201,8 +240,8 @@ export default function App() {
         <FamilyMemberDetailScreen
           member={currentView.member}
           onBack={goBack}
-          onSelectMoment={(momentId) => {
-            const moment = getMoments().find((m) => m.id === momentId);
+          onSelectMoment={momentId => {
+            const moment = getMoments().find(m => m.id === momentId);
             if (moment) {
               navigateTo({ type: 'moment-detail', moment });
             }
@@ -216,7 +255,7 @@ export default function App() {
         <ManageBabiesScreen
           onBack={goBack}
           onAddBaby={() => navigateTo({ type: 'add-baby' })}
-          onEditBaby={(baby) => navigateTo({ type: 'edit-baby', baby })}
+          onEditBaby={baby => navigateTo({ type: 'edit-baby', baby })}
         />
       );
     } else if (currentView.type === 'edit-baby') {
@@ -245,48 +284,65 @@ export default function App() {
     return 'home';
   };
 
+  if (status !== 'ready' || !currentBaby) {
+    return (
+      <div className="min-h-screen bg-background text-muted-foreground flex items-center justify-center px-6 text-center">
+        {status === 'error'
+          ? `Falha ao carregar dados: ${error ?? 'tente novamente mais tarde.'}`
+          : 'Carregando dados...'}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={viewStack.length}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2 }}
+          className="min-h-screen"
+        >
+          {renderCurrentView()}
+        </motion.div>
+      </AnimatePresence>
+
+      {currentView.type === 'main' && (
+        <BottomNav activeTab={getCurrentTab()} onTabChange={handleTabChange} />
+      )}
+
+      <AddMomentSheet
+        isOpen={showAddMoment}
+        onClose={() => setShowAddMoment(false)}
+        onSelectChapter={chapter => {
+          setShowAddMoment(false);
+          handleSelectChapter(chapter);
+        }}
+      />
+
+      {currentView.type === 'moment-form' && (
+        <MomentForm
+          isOpen={true}
+          onClose={goBack}
+          template={currentView.template}
+          chapter={currentView.chapter}
+          onSave={handleMomentSaved}
+        />
+      )}
+
+      <Toaster />
+    </div>
+  );
+}
+
+export default function App() {
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-background">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={viewStack.length}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-            className="min-h-screen"
-          >
-            {renderCurrentView()}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Only show bottom nav on main screens */}
-        {currentView.type === 'main' && (
-          <BottomNav activeTab={getCurrentTab()} onTabChange={handleTabChange} />
-        )}
-
-        <AddMomentSheet
-          isOpen={showAddMoment}
-          onClose={() => setShowAddMoment(false)}
-          onSelectChapter={(chapter) => {
-            setShowAddMoment(false);
-            handleSelectChapter(chapter);
-          }}
-        />
-
-        {currentView.type === 'moment-form' && (
-          <MomentForm
-            isOpen={true}
-            onClose={goBack}
-            template={currentView.template}
-            chapter={currentView.chapter}
-            onSave={handleMomentSaved}
-          />
-        )}
-
-        <Toaster />
-      </div>
+      <BabyDataProvider>
+        <AppContent />
+      </BabyDataProvider>
     </ThemeProvider>
   );
 }

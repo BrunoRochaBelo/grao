@@ -7,7 +7,8 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { PlaceholderTemplate, addMoment, calculateAge, currentBaby, Chapter } from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { PlaceholderTemplate, Chapter } from '../../lib/types';
 import { toast } from 'sonner@2.0.3';
 import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 
@@ -34,7 +35,8 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
   const [privacy, setPrivacy] = useState<PrivacyOption>('private');
   const [isSaving, setIsSaving] = useState(false);
 
-  const calculatedAge = calculateAge(currentBaby.birthDate, date);
+  const { currentBaby, calculateAge, addMoment } = useBabyData();
+  const calculatedAge = currentBaby ? calculateAge(currentBaby.birthDate, date) : '';
 
   const privacyOptions: { id: PrivacyOption; label: string; tone: HighlightTone; Icon?: LucideIcon }[] = [
     { id: 'private', label: 'Privado', tone: 'lavender', Icon: Lock },
@@ -59,12 +61,17 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
       return;
     }
 
+    if (!currentBaby) {
+      toast.error('Nenhum bebê ativo selecionado.');
+      return;
+    }
+
     setIsSaving(true);
 
     try {
       const momentDate = `${date}T${time}:00`;
       
-      addMoment({
+      const created = await addMoment({
         chapterId: chapter.id,
         templateId: template.id,
         title: title.trim(),
@@ -80,8 +87,12 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
         status,
       });
 
+      if (!created) {
+        throw new Error('Falha ao criar momento');
+      }
+
       toast.success(
-        status === 'published' 
+        status === 'published'
           ? `${template.icon} ${template.name} registrado com sucesso!`
           : 'Rascunho salvo com sucesso'
       );

@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { chapters, Chapter, getPlaceholdersForChapter, getBabyAgeInDays, currentBaby, getMoments } from '../../lib/mockData';
+import { useBabyData } from '../../lib/baby-data-context';
+import type { Chapter } from '../../lib/types';
 
 interface AddMomentSheetProps {
   isOpen: boolean;
@@ -9,11 +10,11 @@ interface AddMomentSheetProps {
 }
 
 export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSheetProps) {
-  const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
+  const { chapters, getPlaceholdersForChapter, getMoments } = useBabyData();
   const moments = getMoments();
   
   const chaptersWithCounts = chapters.map(chapter => {
-    const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
+    const placeholders = getPlaceholdersForChapter(chapter.id);
     const completedCount = placeholders.filter(p => 
       moments.some(m => m.templateId === p.id)
     ).length;
