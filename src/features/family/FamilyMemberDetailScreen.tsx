@@ -1,8 +1,8 @@
 import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
 import { motion } from 'motion/react';
-import { FamilyMember, getMoments, chapters } from '../../lib/mockData';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
-import { Badge } from '../../components/ui/badge';
+import { FamilyMember, getMoments, chapters } from '@/lib/mockData';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface FamilyMemberDetailScreenProps {
   member: FamilyMember;

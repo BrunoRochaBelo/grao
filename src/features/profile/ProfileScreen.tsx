@@ -6,7 +6,7 @@ import {
   getMoments,
   getPlaceholdersForChapter,
   getBabyAgeInDays,
-} from '../../lib/mockData';
+} from '@/lib/mockData';
 import {
   Download,
   Settings,
@@ -21,11 +21,11 @@ import {
   Shuffle,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
-import { Switch } from '../../components/ui/switch';
-import { useTheme } from '../../lib/theme-context';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
+import { useTheme } from '@/lib/theme-context';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface ProfileScreenProps {
   onNavigateToManageBabies: () => void;

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ChevronLeft, BellRing, Timer, Globe } from 'lucide-react';
-import { Switch } from '../../components/ui/switch';
-import { Label } from '../../components/ui/label';
-import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group';
-import { Input } from '../../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Button } from '../../components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner@2.0.3';
 
 interface NotificationsSettingsScreenProps {

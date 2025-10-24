@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Plus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { FamilyMember } from '../../lib/types';
-import { Button } from '../../components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { FamilyMember } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface FamilyTreeScreenProps {
   onBack: () => void;

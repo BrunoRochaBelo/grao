@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ArrowLeft, Plus, Moon, Smile } from 'lucide-react';
 import { motion } from 'motion/react';
-import { getSleepRecords, SleepRecord } from '../../lib/mockData';
-import { Button } from '../../components/ui/button';
+import { getSleepRecords, SleepRecord } from '@/lib/mockData';
+import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { SleepHumorForm } from './SleepHumorForm';
 

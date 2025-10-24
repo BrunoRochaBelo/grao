@@ -1,7 +1,7 @@
 import { X, Share2, Edit, Trash2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useRef, useEffect } from 'react';
-import { Badge } from '../../components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 
 interface Photo {
   id: string;

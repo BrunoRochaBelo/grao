@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { babies, Baby, setCurrentBaby, calculateAge } from '../../lib/mockData';
+import { babies, Baby, setCurrentBaby, calculateAge } from '@/lib/mockData';
 import { ChevronLeft, Plus, Trash2, Edit, CheckCircle, MapPin } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'motion/react';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner@2.0.3';
 
 interface ManageBabiesScreenProps {

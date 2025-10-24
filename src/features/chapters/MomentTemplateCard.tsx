@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Circle, Edit, Share2, Trash2 } from 'lucide-react';
-import type { Chapter, Moment, PlaceholderTemplate } from '../../lib/types';
-import { MediaCarousel } from '../../components/shared/MediaCarousel';
-import { Badge } from '../../components/ui/badge';
+import type { Chapter, Moment, PlaceholderTemplate } from '@/lib/types';
+import { MediaCarousel } from '@/components/shared/MediaCarousel';
+import { Badge } from '@/components/ui/badge';
 
 export interface MomentTemplateCardProps {
   template: PlaceholderTemplate & { thumbnail?: string };

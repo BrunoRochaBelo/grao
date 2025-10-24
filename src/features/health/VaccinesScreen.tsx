@@ -9,9 +9,9 @@ import {
   getBabyAgeInDays,
   getMoments,
   getPlaceholdersForChapter,
-} from '../../lib/mockData';
-import { Progress } from '../../components/ui/progress';
-import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
+} from '@/lib/mockData';
+import { Progress } from '@/components/ui/progress';
+import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
 import { MomentTemplateCard } from '../chapters/MomentTemplateCard';
 
 interface VaccinesScreenProps {

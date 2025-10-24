@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ChevronLeft, ExternalLink, HelpCircle, Search, Send } from 'lucide-react';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { Label } from '../../components/ui/label';
-import { Button } from '../../components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner@2.0.3';
 
 interface HelpAndSupportScreenProps {

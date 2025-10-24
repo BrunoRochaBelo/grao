@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { Chapter, PlaceholderTemplate } from '../../lib/types';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Chapter, PlaceholderTemplate } from '@/lib/types';
 import {
   BookOpen,
   Calendar,
@@ -12,9 +12,9 @@ import {
   Users,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BabySelectorModal } from '../baby/BabySelectorModal';
-import { Progress } from '../../components/ui/progress';
+import { Progress } from '@/components/ui/progress';
 
 interface StatWidgetProps {
   title: string;

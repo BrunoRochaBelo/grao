@@ -14,9 +14,9 @@ import {
   type PlaceholderTemplate,
   type GrowthMeasurement,
   type SleepRecord,
-} from '../../lib/mockData';
-import { Button } from '../../components/ui/button';
-import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
+} from '@/lib/mockData';
+import { Button } from '@/components/ui/button';
+import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
 import { GrowthForm } from '../health/GrowthForm';
 import { SleepHumorForm } from '../health/SleepHumorForm';
 import { MomentForm } from '../moments/MomentForm';

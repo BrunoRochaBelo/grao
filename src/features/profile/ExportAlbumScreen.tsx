@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, Loader2, FileText, Sparkles } from 'lucide-react';
-import { Button } from '../../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Checkbox } from '../../components/ui/checkbox';
-import { Label } from '../../components/ui/label';
-import { chapters } from '../../lib/mockData';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { chapters } from '@/lib/mockData';
 import { toast } from 'sonner@2.0.3';
 
 interface ExportAlbumScreenProps {

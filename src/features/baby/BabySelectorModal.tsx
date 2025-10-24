@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Check } from "lucide-react";
-import { useBabyData } from "../../lib/baby-data-context";
-import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar";
+import { useBabyData } from "@/lib/baby-data-context";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface BabySelectorModalProps {
   isOpen: boolean;

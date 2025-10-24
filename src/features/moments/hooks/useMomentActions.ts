@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { useBabyData } from '../../../lib/baby-data-context';
-import type { Moment } from '../../../lib/types';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Moment } from '@/lib/types';
 import type { MomentStatus, PrivacyOption } from '../forms/momentFormConfig';
 
 export interface CreateMomentInput {

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ArrowLeft, Plus, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
-import { getGrowthMeasurements, GrowthMeasurement } from '../../lib/mockData';
+import { getGrowthMeasurements, GrowthMeasurement } from '@/lib/mockData';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Button } from '../../components/ui/button';
+import { Button } from '@/components/ui/button';
 import { GrowthForm } from './GrowthForm';
-import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
+import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
 
 interface GrowthScreenProps {
   onBack: () => void;

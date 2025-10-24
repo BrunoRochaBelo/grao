@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, LogOut, Shield, Users, UserPen } from 'lucide-react';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { babies, getCurrentBaby } from '../../lib/mockData';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { babies, getCurrentBaby } from '@/lib/mockData';
 import { toast } from 'sonner@2.0.3';
 
 interface ManageAccountScreenProps {

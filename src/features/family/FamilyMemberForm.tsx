@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { X } from 'lucide-react';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { FamilyMember } from '../../lib/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { FamilyMember } from '@/lib/types';
 import { toast } from 'sonner@2.0.3';
 
 interface FamilyMemberFormProps {

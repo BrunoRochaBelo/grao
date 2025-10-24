@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
-import { Progress } from '../../components/ui/progress';
+import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-react';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { Chapter } from '../../lib/types';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Chapter } from '@/lib/types';
 
 interface ChapterCardProps {
   chapter: Chapter;

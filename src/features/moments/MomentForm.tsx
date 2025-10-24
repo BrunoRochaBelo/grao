@@ -11,14 +11,14 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useForm } from 'react-hook-form';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { Label } from '../../components/ui/label';
-import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
-import type { PlaceholderTemplate, Chapter } from '../../lib/types';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { PlaceholderTemplate, Chapter } from '@/lib/types';
 import { toast } from 'sonner@2.0.3';
-import { getHighlightStyle } from '../../lib/highlights';
+import { getHighlightStyle } from '@/lib/highlights';
 import {
   buildDefaultValues,
   formatDateLabel,

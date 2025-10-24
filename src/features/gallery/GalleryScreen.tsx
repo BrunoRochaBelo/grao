@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { getMoments, chapters, Moment } from '../../lib/mockData';
+import { getMoments, chapters, Moment } from '@/lib/mockData';
 import { Lock, Video, ChevronDown, ChevronUp, Filter, X, Calendar, Users, Tag, Image as ImageIcon, FolderOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Badge } from '../../components/ui/badge';
-import { MediaCarousel } from '../../components/shared/MediaCarousel';
-import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
+import { Badge } from '@/components/ui/badge';
+import { MediaCarousel } from '@/components/shared/MediaCarousel';
+import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
 
 const moments = getMoments();
 

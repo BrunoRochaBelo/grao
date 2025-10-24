@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Baby, babies } from '../../lib/mockData';
+import { Baby, babies } from '@/lib/mockData';
 import { ChevronLeft, Camera } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
-import { Input } from '../../components/ui/input';
-import { Button } from '../../components/ui/button';
-import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Textarea } from '../../components/ui/textarea';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner@2.0.3';
 
 interface EditBabyScreenProps {

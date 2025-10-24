@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { Chapter } from '../../lib/types';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Chapter } from '@/lib/types';
 
 interface AddMomentSheetProps {
   isOpen: boolean;

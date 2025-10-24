@@ -1,10 +1,10 @@
 import { ArrowLeft, Calendar, MapPin, Users as UsersIcon, Tag, Lock, Edit } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useBabyData } from '../../lib/baby-data-context';
-import type { Moment } from '../../lib/types';
-import { Badge } from '../../components/ui/badge';
-import { Button } from '../../components/ui/button';
-import { MediaCarousel } from '../../components/shared/MediaCarousel';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Moment } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MediaCarousel } from '@/components/shared/MediaCarousel';
 
 interface MomentDetailScreenProps {
   moment: Moment;
