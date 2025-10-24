@@ -1,70 +1,67 @@
-import { Baby, Bell, Flower2, Home, Plus } from 'lucide-react';
+import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
 import { motion } from 'motion/react';
-import { cn } from '@/components/ui/utils';
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  onOpenCreate: () => void;
-  isHidden?: boolean;
 }
 
-const NAV_ITEMS = [
-  { id: 'home', label: 'Início', icon: Home },
-  { id: 'gallery', label: 'Momentos', icon: Flower2 },
-  { id: 'notifications', label: 'Sussurros', icon: Bell },
-  { id: 'profile', label: 'Jornada', icon: Baby },
-];
-
-export function BottomNav({ activeTab, onTabChange, onOpenCreate, isHidden = false }: BottomNavProps) {
-  const leftItems = NAV_ITEMS.slice(0, 2);
-  const rightItems = NAV_ITEMS.slice(2);
-
-  const renderItem = (item: (typeof NAV_ITEMS)[number]) => {
-    const Icon = item.icon;
-    const isActive = activeTab === item.id;
-
-    return (
-      <button
-        key={item.id}
-        type="button"
-        onClick={() => onTabChange(item.id)}
-        className={cn(
-          'flex flex-col items-center gap-1 rounded-full px-3 py-2 text-xs font-medium transition-all duration-200',
-          'text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300',
-          isActive && 'text-violet-600 dark:text-violet-400 scale-[1.05]'
-        )}
-        aria-pressed={isActive}
-        aria-label={item.label}
-      >
-        <Icon className={cn('h-5 w-5 transition-transform', isActive ? 'scale-105' : 'scale-100')} />
-        <span>{item.label}</span>
-      </button>
-    );
-  };
+export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const tabs = [
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'gallery', label: 'Galeria', icon: Image },
+    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
+    { id: 'notifications', label: 'Notificações', icon: Bell },
+    { id: 'profile', label: 'Perfil', icon: Baby },
+  ];
 
   return (
-    <motion.nav
-      initial={{ y: 120, opacity: 0 }}
-      animate={{ y: isHidden ? 120 : 0, opacity: isHidden ? 0 : 1 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="pointer-events-none fixed inset-x-0 bottom-5 z-50 flex justify-center px-4"
-    >
-      <div
-        className="pointer-events-auto relative flex w-full max-w-xl items-center justify-between rounded-full border border-white/60 bg-white/80 px-4 py-2 shadow-[0_20px_45px_-25px_rgba(79,70,229,0.55)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/80"
-      >
-        <div className="flex flex-1 items-center justify-start gap-3">{leftItems.map(renderItem)}</div>
-        <motion.button
-          type="button"
-          whileTap={{ scale: 0.92 }}
-          onClick={onOpenCreate}
-          className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-400/40"
-          aria-label="Novo momento"
-        >
-          <Plus className="h-7 w-7" />
-        </motion.button>
-        <div className="flex flex-1 items-center justify-end gap-3">{rightItems.map(renderItem)}</div>
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+
+          if (tab.isAction) {
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                className="flex flex-col items-center gap-1 relative"
+                aria-label={tab.label}
+              >
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
+                >
+                  <Icon className="w-6 h-6" />
+                </motion.div>
+              </button>
+            );
+          }
+
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
+                isActive ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              aria-label={tab.label}
+            >
+              <Icon className="w-6 h-6" />
+              <span className="text-[11px]">{tab.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
-    </motion.nav>
+    </nav>
   );
 }
