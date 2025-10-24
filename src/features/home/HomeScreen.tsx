@@ -99,26 +99,26 @@ function StatWidget({ title, icon, accent, highlight, description, onClick }: St
     <motion.button
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card/95 p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+      className="glass-panel group relative overflow-hidden px-5 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
     >
       <div
-        className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: `linear-gradient(135deg, ${accent}14 0%, transparent 55%, ${accent}0d 100%)` }}
+        className="pointer-events-none absolute inset-0 rounded-[24px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: `linear-gradient(135deg, ${accent}1f 0%, transparent 50%, ${accent}0a 100%)` }}
       />
-      <div className="pointer-events-none absolute inset-x-6 top-0 h-[3px] rounded-full opacity-50" style={{ background: accent }} />
+      <div className="pointer-events-none absolute inset-x-8 top-0 h-[3px] rounded-full opacity-60" style={{ background: accent }} />
       <div className="relative flex items-start justify-between gap-3">
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-border/70 bg-primary/5 text-base text-primary"
+          className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/35 text-base text-primary shadow-sm dark:bg-white/5"
           style={{ color: accent }}
         >
           {icon}
         </div>
         {onClick && <ArrowUpRight className="mt-0.5 h-5 w-5 text-muted-foreground" />}
       </div>
-      <div className="relative mt-3 space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground/80">{title}</p>
-        <p className="text-base font-semibold leading-tight text-foreground">{highlight}</p>
-        {description && <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>}
+      <div className="relative mt-4 space-y-1.5">
+        <p className="text-[12px] font-medium uppercase tracking-[0.22em] text-muted-foreground/80">{title}</p>
+        <p className="text-subtitle font-semibold text-foreground">{highlight}</p>
+        {description && <p className="text-meta leading-snug">{description}</p>}
       </div>
     </motion.button>
   );
@@ -126,7 +126,7 @@ function StatWidget({ title, icon, accent, highlight, description, onClick }: St
 
 function InsightChip({ icon, label }: InsightChipProps) {
   return (
-    <div className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-3 py-1.5 text-[11px] font-medium text-primary">
+    <div className="glass-chip flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-medium text-primary">
       {icon}
       <span>{label}</span>
     </div>
@@ -410,49 +410,51 @@ export function HomeScreen({
   }
 
   return (
-    <div className="pb-24">
-      <div className="sticky top-0 z-10 border-b border-border/70 bg-background/90 backdrop-blur-sm">
-        <div className="mx-auto max-w-3xl px-5 pb-5 pt-6">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setShowBabySelector(true)}
-            className="flex w-full flex-col gap-4 rounded-3xl border border-transparent bg-card/70 px-4 py-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-border/70 hover:shadow-soft sm:flex-row sm:items-center"
-            aria-label="Trocar bebê"
-          >
-            <Avatar className="h-16 w-16 border border-primary/30 shadow-sm">
-              <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
-              <AvatarFallback className="bg-primary/10 text-lg font-medium text-primary">
-                {currentBaby ? getInitials(currentBaby.name) : '?'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 space-y-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-                <MapPin className="h-4 w-4" />
-                <span>{currentBaby?.city ?? 'Cidade não informada'}</span>
-              </div>
-              <h1 className="text-xl font-semibold leading-tight text-foreground">
-                {currentBaby?.name ?? 'Bebê atual'}
-              </h1>
-              <p className="text-sm text-muted-foreground">{babyAgeLabel}</p>
+    <div className="relative pb-36">
+      <div className="mx-auto max-w-3xl space-y-6 px-5 pt-8">
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setShowBabySelector(true)}
+          className="glass-panel flex w-full flex-col gap-4 px-5 py-5 text-left sm:flex-row sm:items-center"
+          aria-label="Trocar bebê"
+        >
+          <Avatar className="h-16 w-16 border border-primary/30 shadow-sm">
+            <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
+            <AvatarFallback className="bg-primary/10 text-lg font-semibold text-primary">
+              {currentBaby ? getInitials(currentBaby.name) : '?'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2 text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground/80">
+              <MapPin className="h-4 w-4" />
+              <span>{currentBaby?.city ?? 'Cidade não informada'}</span>
             </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground" />
-          </motion.button>
-        </div>
-        <div className="mx-auto max-w-3xl px-5 pb-5">
-          <p className="text-sm leading-relaxed text-muted-foreground/90 text-balance">
-            {contextualSentence}
-          </p>
-        </div>
-      </div>
+            <div>
+              <p className="text-hero font-semibold text-foreground">
+                {currentBaby?.name ?? 'Bebê atual'}
+              </p>
+              <p className="text-meta mt-1">{babyAgeLabel}</p>
+            </div>
+          </div>
+          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+        </motion.button>
 
-      <div className="mx-auto max-w-3xl space-y-6 px-5 pt-6">
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-body text-muted-foreground/90 text-balance"
+        >
+          {contextualSentence}
+        </motion.p>
+
         <div className="flex flex-wrap gap-2">
           {summaryItems.slice(0, 3).map(item => (
             <InsightChip key={item} icon={<Sparkles className="h-3 w-3" />} label={item} />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <StatWidget
             title="Crescimento"
             icon={<TrendingUp className="h-5 w-5" />}
@@ -495,14 +497,21 @@ export function HomeScreen({
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {quickActions.map(action => (
             <motion.button
               key={action.id}
               whileTap={{ scale: 0.97 }}
               onClick={action.action}
-              className="group flex h-12 items-center justify-center gap-2 rounded-2xl border border-border/60 bg-card/80 text-sm font-medium text-primary transition-all hover:-translate-y-0.5 hover:border-primary/30"
+              className={`group relative flex h-14 items-center justify-center gap-2 rounded-full px-6 text-body font-semibold transition-all ${
+                action.id === 'new-moment'
+                  ? 'bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white shadow-lg shadow-primary/25'
+                  : 'glass-panel rounded-full text-primary'
+              }`}
             >
+              {action.id === 'new-moment' && (
+                <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              )}
               {action.icon}
               {action.label}
             </motion.button>
@@ -512,19 +521,19 @@ export function HomeScreen({
         <motion.section
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-border/60 bg-card/95 shadow-sm transition-all hover:shadow-soft"
+          className="glass-panel overflow-hidden"
         >
           <button
             onClick={() => setShowChaptersDrawer(prev => !prev)}
-            className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-muted/40"
+            className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-white/40 dark:hover:bg-white/10"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/12 text-primary">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
               <BookOpen className="h-5 w-5" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-foreground">Capítulos</h2>
-                <span className="text-sm text-muted-foreground">
+                <h2 className="text-subtitle text-foreground">Capítulos</h2>
+                <span className="text-meta">
                   {totals.completed}/{totals.total}
                 </span>
               </div>
@@ -532,7 +541,7 @@ export function HomeScreen({
                 value={totals.total > 0 ? (totals.completed / totals.total) * 100 : 0}
                 className="mt-2 h-2"
               />
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-2 text-meta">
                 {totals.total > 0
                   ? `${Math.round((totals.completed / totals.total) * 100)}% do álbum vivo`
                   : 'Comece registrando o primeiro capítulo'}
@@ -549,14 +558,15 @@ export function HomeScreen({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="border-t border-border"
+                className="border-t border-transparent"
               >
-                <div className="space-y-3 px-4 py-4">
+                <div className="surface-divider mx-6" />
+                <div className="space-y-3 px-5 py-4">
                   {chapterSummaries.map(summary => (
                     <button
                       key={summary.chapter.id}
                       onClick={() => onOpenChapter?.(summary.chapter)}
-                      className="group flex w-full items-start gap-3 rounded-2xl border border-border/60 bg-card/90 p-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/20"
+                      className="group flex w-full items-start gap-3 rounded-[22px] bg-white/50 px-4 py-3 text-left shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-white/5"
                     >
                       <div
                         className="flex h-12 w-12 items-center justify-center rounded-xl text-xl"
@@ -565,13 +575,13 @@ export function HomeScreen({
                         {summary.chapter.icon}
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center justify-between text-sm font-medium text-foreground">
+                        <div className="flex items-center justify-between text-body font-medium text-foreground">
                           <span>{summary.chapter.name}</span>
-                          <span className="text-muted-foreground">
+                          <span className="text-meta">
                             {summary.completed}/{summary.total}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 text-meta">
                           {summary.chapter.description}
                         </p>
                         <Progress value={summary.percentage} className="mt-2 h-1.5" />
@@ -580,7 +590,7 @@ export function HomeScreen({
                   ))}
                   <button
                     onClick={onNavigateToChapters}
-                    className="h-11 w-full rounded-xl border border-border/60 text-sm text-muted-foreground transition-colors hover:bg-muted/60"
+                    className="h-12 w-full rounded-full bg-white/55 text-body font-medium text-primary transition hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/15"
                   >
                     Ver todos os capítulos
                   </button>
@@ -592,11 +602,11 @@ export function HomeScreen({
 
         <section>
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-foreground">Próximos marcos</h2>
+            <h2 className="text-subtitle text-foreground">Próximos marcos</h2>
           </div>
           <div className="mt-3 space-y-2">
             {upcomingMilestones.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-body text-muted-foreground">
                 Nenhum marco pendente. Explore os capítulos para desbloquear novas histórias.
               </p>
             ) : (
@@ -609,14 +619,14 @@ export function HomeScreen({
                       ? onOpenTemplate(item.chapter.id, item.template.id)
                       : onNavigateToChapters?.()
                   }
-                  className="group flex w-full items-center gap-3 rounded-2xl border border-border/60 bg-card/90 px-3 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/20"
+                  className="group flex w-full items-center gap-3 rounded-[22px] bg-white/55 px-4 py-3 text-left shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-white/10"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/12 text-primary">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{item.template.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-body font-medium text-foreground">{item.template.name}</p>
+                    <p className="text-meta">
                       {item.chapter.name} · {item.label}
                     </p>
                   </div>
@@ -629,25 +639,25 @@ export function HomeScreen({
 
         {storyCards.length > 0 && (
           <section>
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-foreground">Histórias vivas</h2>
-            </div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-subtitle text-foreground">Histórias vivas</h2>
+              </div>
             <div className="-mx-4 mt-3 overflow-x-auto pb-1">
               <div className="flex min-w-full gap-3 px-4">
                 {storyCards.map(card => (
                   <div
                     key={card.id}
-                    className="min-w-[220px] shrink-0 rounded-3xl border border-border/60 bg-card/90 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30"
+                    className="glass-panel min-w-[220px] shrink-0 px-5 py-4"
                   >
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/12 text-primary">
+                    <div className="flex items-center gap-2 text-body font-semibold text-foreground">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/12 text-primary">
                         {card.icon}
                       </span>
                       {card.title}
                     </div>
-                    <p className="mt-2 text-sm text-foreground">{card.body}</p>
+                    <p className="mt-3 text-body text-foreground">{card.body}</p>
                     {card.footer && (
-                      <p className="mt-2 text-xs text-muted-foreground">{card.footer}</p>
+                      <p className="mt-2 text-meta">{card.footer}</p>
                     )}
                   </div>
                 ))}
