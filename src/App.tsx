@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './layout/BottomNav';
 import { HomeScreen } from './features/home/HomeScreen';
@@ -36,7 +36,12 @@ type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
 type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
-  | { type: 'moment-form'; template: PlaceholderTemplate; chapter: Chapter }
+  | {
+      type: 'moment-form';
+      template: PlaceholderTemplate;
+      chapter: Chapter;
+      launchContext?: { titleOverride?: string; accentColor?: string };
+    }
   | { type: 'moment-detail'; moment: Moment }
   | { type: 'growth' }
   | { type: 'vaccines' }
@@ -56,6 +61,8 @@ function AppContent() {
     { type: 'main', screen: 'home' },
   ]);
   const [showAddMoment, setShowAddMoment] = useState(false);
+  const [isNavHidden, setIsNavHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   const {
     status,
@@ -72,6 +79,32 @@ function AppContent() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [currentView]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || currentView.type !== 'main') return;
+
+    const handleScroll = () => {
+      const currentPosition = window.scrollY;
+      const isScrollingDown = currentPosition > lastScrollY.current;
+      const nearTop = currentPosition < 72;
+
+      if (isScrollingDown && currentPosition > 160) {
+        setIsNavHidden(true);
+      } else if (!isScrollingDown || nearTop) {
+        setIsNavHidden(false);
+      }
+
+      lastScrollY.current = currentPosition;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentView]);
+
+  useEffect(() => {
+    lastScrollY.current = 0;
+    setIsNavHidden(false);
   }, [currentView]);
 
   const navigateTo = (view: ViewState) => {
@@ -94,26 +127,31 @@ function AppContent() {
     navigateTo({ type: 'chapter-detail', chapter: chapterData });
   };
 
-  const openChapterTemplate = (chapterId: string, templateId: string) => {
+  const openChapterTemplate = (
+    chapterId: string,
+    templateId: string,
+    options?: { titleOverride?: string; accentColor?: string },
+  ) => {
     const chapterData = chapters.find(chapter => chapter.id === chapterId);
     if (!chapterData) return;
 
     const placeholders = getPlaceholdersForChapter(chapterId);
     const template = placeholders.find(item => item.id === templateId);
 
-    navigateTo({ type: 'chapter-detail', chapter: chapterData });
-
     if (template) {
-      navigateTo({ type: 'moment-form', template, chapter: chapterData });
+      navigateTo({
+        type: 'moment-form',
+        template,
+        chapter: chapterData,
+        launchContext: options,
+      });
+    } else {
+      navigateTo({ type: 'chapter-detail', chapter: chapterData });
     }
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'chapters') {
-      setShowAddMoment(true);
-    } else {
-      navigateToMain(tab as Screen);
-    }
+    navigateToMain(tab as Screen);
   };
 
   const isNavigatedToChapters = () => {
@@ -131,8 +169,18 @@ function AppContent() {
   const handleOpenTemplate = (
     template: PlaceholderTemplate,
     chapter: Chapter,
+    options?: { titleOverride?: string; accentColor?: string },
   ) => {
-    navigateTo({ type: 'moment-form', template, chapter });
+    navigateTo({ type: 'moment-form', template, chapter, launchContext: options });
+  };
+
+  const handleSelectTemplateFromSheet = (
+    template: PlaceholderTemplate,
+    chapter: Chapter,
+    options?: { titleOverride?: string; accentColor?: string },
+  ) => {
+    setShowAddMoment(false);
+    handleOpenTemplate(template, chapter, options);
   };
 
   const handleMomentSaved = async () => {
@@ -154,7 +202,8 @@ function AppContent() {
                 navigateTo({ type: 'main', screen: 'chapters' })
               }
               onOpenTemplate={openChapterTemplate}
-              onOpenChapter={handleSelectChapter}
+              onOpenMoment={moment => navigateTo({ type: 'moment-detail', moment })}
+              onRequestCreate={() => setShowAddMoment(true)}
             />
           );
         case 'gallery':
@@ -310,16 +359,18 @@ function AppContent() {
       </AnimatePresence>
 
       {currentView.type === 'main' && (
-        <BottomNav activeTab={getCurrentTab()} onTabChange={handleTabChange} />
+        <BottomNav
+          activeTab={getCurrentTab()}
+          onTabChange={handleTabChange}
+          onOpenCreate={() => setShowAddMoment(true)}
+          isHidden={isNavHidden || showAddMoment}
+        />
       )}
 
       <AddMomentSheet
         isOpen={showAddMoment}
         onClose={() => setShowAddMoment(false)}
-        onSelectChapter={chapter => {
-          setShowAddMoment(false);
-          handleSelectChapter(chapter);
-        }}
+        onSelectTemplate={handleSelectTemplateFromSheet}
       />
 
       {currentView.type === 'moment-form' && (
@@ -329,6 +380,8 @@ function AppContent() {
           template={currentView.template}
           chapter={currentView.chapter}
           onSave={handleMomentSaved}
+          titleOverride={currentView.launchContext?.titleOverride}
+          accentColor={currentView.launchContext?.accentColor}
         />
       )}
 
