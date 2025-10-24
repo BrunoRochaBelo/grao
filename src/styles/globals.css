@@ -3,109 +3,109 @@
 :root {
   --font-size: 16px;
   /* Baby Book Design System Colors */
-  --background: #F4F7FB;
-  --foreground: #1A1C1F;
+  --background: #FAFAFA;
+  --foreground: #1C1C1C;
   --card: #FFFFFF;
-  --card-foreground: #1A1C1F;
+  --card-foreground: #1C1C1C;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1C1F;
-  --primary: #7D8CFF;
+  --popover-foreground: #1C1C1C;
+  --primary: #4F46E5;
   --primary-foreground: #FFFFFF;
-  --secondary: #86D5CC;
-  --secondary-foreground: #0F2F2F;
-  --muted: #ECF1F6;
-  --muted-foreground: #637083;
-  --accent: #F1F4FD;
-  --accent-foreground: #1A1C1F;
-  --destructive: #E87070;
+  --secondary: #8DD8CA;
+  --secondary-foreground: #0F3F35;
+  --muted: #EEF0F8;
+  --muted-foreground: #5F6778;
+  --accent: #E7E9FF;
+  --accent-foreground: #1C1C1C;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --success: #3CC7A7;
-  --warning: #F4C16D;
-  --border: #D9E2F2;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --border: #DCDFF5;
   --input: transparent;
-  --input-background: #EEF2FA;
-  --switch-background: #CCD4E0;
+  --input-background: #F3F4FB;
+  --switch-background: #D4D6E5;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #7D8CFF;
-  --chart-1: #8D9BFF;
-  --chart-2: #8FD3C7;
-  --chart-3: #F7B9A8;
+  --ring: #4F46E5;
+  --chart-1: #8F97FF;
+  --chart-2: #8FD8C5;
+  --chart-3: #F7C0AC;
   --chart-4: #FAD97D;
-  --chart-5: #C9B8FF;
+  --chart-5: #C7B5FF;
   --radius: 1.125rem;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #1A1C1F;
-  --sidebar-primary: #7D8CFF;
+  --sidebar-foreground: #1C1C1C;
+  --sidebar-primary: #4F46E5;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #ECF1F6;
-  --sidebar-accent-foreground: #1A1C1F;
-  --sidebar-border: #D9E2F2;
-  --sidebar-ring: #7D8CFF;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
-  --shadow-soft-hover: 0 24px 56px rgba(15, 23, 42, 0.12);
-  --highlight-lavender: #7D8CFF;
-  --highlight-lavender-soft: rgba(125, 140, 255, 0.18);
-  --highlight-lavender-border: rgba(125, 140, 255, 0.45);
-  --highlight-mint: #73D6C7;
-  --highlight-mint-soft: rgba(115, 214, 199, 0.18);
-  --highlight-mint-border: rgba(115, 214, 199, 0.45);
-  --highlight-baby-blue: #8CCBFF;
-  --highlight-baby-blue-soft: rgba(140, 203, 255, 0.18);
-  --highlight-baby-blue-border: rgba(140, 203, 255, 0.45);
+  --sidebar-accent: #EEF0F8;
+  --sidebar-accent-foreground: #1C1C1C;
+  --sidebar-border: #DCDFF5;
+  --sidebar-ring: #4F46E5;
+  --shadow-soft: 0 24px 45px -25px rgba(79, 70, 229, 0.28), 0 18px 40px -20px rgba(15, 23, 42, 0.18);
+  --shadow-soft-hover: 0 30px 60px -28px rgba(79, 70, 229, 0.35), 0 22px 48px -22px rgba(15, 23, 42, 0.2);
+  --highlight-lavender: #6E6CF2;
+  --highlight-lavender-soft: rgba(110, 108, 242, 0.18);
+  --highlight-lavender-border: rgba(110, 108, 242, 0.4);
+  --highlight-mint: #4CC9B0;
+  --highlight-mint-soft: rgba(76, 201, 176, 0.18);
+  --highlight-mint-border: rgba(76, 201, 176, 0.38);
+  --highlight-baby-blue: #7CCBFF;
+  --highlight-baby-blue-soft: rgba(124, 203, 255, 0.18);
+  --highlight-baby-blue-border: rgba(124, 203, 255, 0.4);
 }
 
 /* Sweet Dreams Dark Theme */
 .dark {
-  --background: #2A2A3D; /* Deep Indigo - Calming and sophisticated */
-  --foreground: #EAEAF2; /* Off-White - Soft on the eyes */
-  --card: #3C3C54; /* Muted Purple - Gentle contrast */
-  --card-foreground: #EAEAF2;
-  --popover: #3C3C54;
-  --popover-foreground: #EAEAF2;
-  --primary: #B2A2E8; /* Soft Lavender - Playful and cute */
-  --primary-foreground: #2A2A3D;
-  --secondary: #A2D9E8; /* Baby Blue - Calm and serene */
-  --secondary-foreground: #2A2A3D;
-  --muted: #4D4D6B; /* Muted Purple - For subtle elements */
-  --muted-foreground: #BDBDD4; /* Light Gray-Purple - Soft text */
-  --accent: #5E5E85; /* Darker Muted Purple - For interactive elements */
-  --accent-foreground: #EAEAF2;
-  --destructive: #E8A2A2; /* Soft Red - Gentle warnings */
-  --destructive-foreground: #2A2A3D;
-  --success: #A2E8B9; /* Soft Green - Positive feedback */
-  --warning: #E8D1A2; /* Soft Yellow - Cautious alerts */
-  --border: #4D4D6B;
+  --background: #0E1114;
+  --foreground: #E6E6E6;
+  --card: #1B1F23;
+  --card-foreground: #E6E6E6;
+  --popover: #1B1F23;
+  --popover-foreground: #E6E6E6;
+  --primary: #A6A2FF;
+  --primary-foreground: #0E1114;
+  --secondary: #7DD6C4;
+  --secondary-foreground: #0E1114;
+  --muted: #232933;
+  --muted-foreground: #A4ABB7;
+  --accent: #262E3A;
+  --accent-foreground: #E6E6E6;
+  --destructive: #F28585;
+  --destructive-foreground: #0E1114;
+  --success: #65D6A5;
+  --warning: #F5C979;
+  --border: #2F3640;
   --input: transparent;
-  --input-background: #3C3C54;
-  --switch-background: #5E5E85;
-  --ring: #B2A2E8;
+  --input-background: #1F252E;
+  --switch-background: #313946;
+  --ring: #A6A2FF;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: #B2A2E8; /* Soft Lavender */
-  --chart-2: #A2D9E8; /* Baby Blue */
-  --chart-3: #E8B9A2; /* Soft Peach */
-  --chart-4: #E8D1A2; /* Soft Yellow */
-  --chart-5: #C9B8FF; /* Brighter Lavender */
-  --sidebar: #3C3C54;
-  --sidebar-foreground: #EAEAF2;
-  --sidebar-primary: #B2A2E8;
-  --sidebar-primary-foreground: #2A2A3D;
-  --sidebar-accent: #5E5E85;
-  --sidebar-accent-foreground: #EAEAF2;
-  --sidebar-border: #4D4D6B;
-  --sidebar-ring: #B2A2E8;
-  --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.15); /* Softer shadows */
-  --shadow-soft-hover: 0 15px 30px rgba(0, 0, 0, 0.2);
-  --highlight-lavender: #C3CBFF;
-  --highlight-lavender-soft: rgba(195, 203, 255, 0.22);
-  --highlight-lavender-border: rgba(195, 203, 255, 0.4);
-  --highlight-mint: #8FE7DA;
-  --highlight-mint-soft: rgba(143, 231, 218, 0.26);
-  --highlight-mint-border: rgba(143, 231, 218, 0.4);
-  --highlight-baby-blue: #A6DCFF;
-  --highlight-baby-blue-soft: rgba(166, 220, 255, 0.26);
-  --highlight-baby-blue-border: rgba(166, 220, 255, 0.4);
+  --chart-1: #B5B2FF;
+  --chart-2: #7DD6C4;
+  --chart-3: #F7BBA9;
+  --chart-4: #F5C979;
+  --chart-5: #C9B8FF;
+  --sidebar: #1B1F23;
+  --sidebar-foreground: #E6E6E6;
+  --sidebar-primary: #A6A2FF;
+  --sidebar-primary-foreground: #0E1114;
+  --sidebar-accent: #232933;
+  --sidebar-accent-foreground: #E6E6E6;
+  --sidebar-border: #2F3640;
+  --sidebar-ring: #A6A2FF;
+  --shadow-soft: 0 26px 50px -28px rgba(12, 18, 26, 0.65), 0 16px 32px -20px rgba(83, 77, 204, 0.32);
+  --shadow-soft-hover: 0 30px 60px -24px rgba(12, 18, 26, 0.7), 0 20px 40px -20px rgba(166, 162, 255, 0.35);
+  --highlight-lavender: #B8B4FF;
+  --highlight-lavender-soft: rgba(184, 180, 255, 0.22);
+  --highlight-lavender-border: rgba(184, 180, 255, 0.38);
+  --highlight-mint: #8BE9D4;
+  --highlight-mint-soft: rgba(139, 233, 212, 0.26);
+  --highlight-mint-border: rgba(139, 233, 212, 0.4);
+  --highlight-baby-blue: #9BD8FF;
+  --highlight-baby-blue-soft: rgba(155, 216, 255, 0.26);
+  --highlight-baby-blue-border: rgba(155, 216, 255, 0.38);
 }
 
 @theme inline {
