@@ -3,109 +3,109 @@
 :root {
   --font-size: 16px;
   /* Baby Book Design System Colors */
-  --background: #F4F7FB;
-  --foreground: #1A1C1F;
+  --background: #F7F8FC;
+  --foreground: #1A1D29;
   --card: #FFFFFF;
-  --card-foreground: #1A1C1F;
+  --card-foreground: #1A1D29;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1C1F;
-  --primary: #7D8CFF;
+  --popover-foreground: #1A1D29;
+  --primary: #5754EC;
   --primary-foreground: #FFFFFF;
-  --secondary: #86D5CC;
-  --secondary-foreground: #0F2F2F;
-  --muted: #ECF1F6;
-  --muted-foreground: #637083;
-  --accent: #F1F4FD;
-  --accent-foreground: #1A1C1F;
-  --destructive: #E87070;
+  --secondary: #84D8C6;
+  --secondary-foreground: #0F3F35;
+  --muted: #EEF1FA;
+  --muted-foreground: #5B6376;
+  --accent: #E4E8FF;
+  --accent-foreground: #1A1D29;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --success: #3CC7A7;
-  --warning: #F4C16D;
-  --border: #D9E2F2;
+  --success: #20C06D;
+  --warning: #F5B444;
+  --border: #E1E5F5;
   --input: transparent;
-  --input-background: #EEF2FA;
-  --switch-background: #CCD4E0;
+  --input-background: #F1F3FB;
+  --switch-background: #D7DAE8;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #7D8CFF;
-  --chart-1: #8D9BFF;
-  --chart-2: #8FD3C7;
-  --chart-3: #F7B9A8;
-  --chart-4: #FAD97D;
-  --chart-5: #C9B8FF;
+  --ring: #5754EC;
+  --chart-1: #8D94FF;
+  --chart-2: #82D9C8;
+  --chart-3: #F6C3B0;
+  --chart-4: #FADFA3;
+  --chart-5: #C5BEFF;
   --radius: 1.125rem;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #1A1C1F;
-  --sidebar-primary: #7D8CFF;
+  --sidebar-foreground: #1A1D29;
+  --sidebar-primary: #5754EC;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #ECF1F6;
-  --sidebar-accent-foreground: #1A1C1F;
-  --sidebar-border: #D9E2F2;
-  --sidebar-ring: #7D8CFF;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
-  --shadow-soft-hover: 0 24px 56px rgba(15, 23, 42, 0.12);
-  --highlight-lavender: #7D8CFF;
-  --highlight-lavender-soft: rgba(125, 140, 255, 0.18);
-  --highlight-lavender-border: rgba(125, 140, 255, 0.45);
-  --highlight-mint: #73D6C7;
-  --highlight-mint-soft: rgba(115, 214, 199, 0.18);
-  --highlight-mint-border: rgba(115, 214, 199, 0.45);
-  --highlight-baby-blue: #8CCBFF;
-  --highlight-baby-blue-soft: rgba(140, 203, 255, 0.18);
-  --highlight-baby-blue-border: rgba(140, 203, 255, 0.45);
+  --sidebar-accent: #EFF2FB;
+  --sidebar-accent-foreground: #1A1D29;
+  --sidebar-border: #E1E5F5;
+  --sidebar-ring: #5754EC;
+  --shadow-soft: 0 18px 38px -26px rgba(25, 36, 56, 0.22), 0 12px 26px -20px rgba(87, 84, 236, 0.16);
+  --shadow-soft-hover: 0 24px 44px -28px rgba(25, 36, 56, 0.26), 0 18px 32px -20px rgba(87, 84, 236, 0.2);
+  --highlight-lavender: #6C6AF6;
+  --highlight-lavender-soft: rgba(108, 106, 246, 0.16);
+  --highlight-lavender-border: rgba(108, 106, 246, 0.28);
+  --highlight-mint: #47C9B3;
+  --highlight-mint-soft: rgba(71, 201, 179, 0.16);
+  --highlight-mint-border: rgba(71, 201, 179, 0.28);
+  --highlight-baby-blue: #74C9FF;
+  --highlight-baby-blue-soft: rgba(116, 201, 255, 0.16);
+  --highlight-baby-blue-border: rgba(116, 201, 255, 0.28);
 }
 
 /* Sweet Dreams Dark Theme */
 .dark {
-  --background: #2A2A3D; /* Deep Indigo - Calming and sophisticated */
-  --foreground: #EAEAF2; /* Off-White - Soft on the eyes */
-  --card: #3C3C54; /* Muted Purple - Gentle contrast */
-  --card-foreground: #EAEAF2;
-  --popover: #3C3C54;
-  --popover-foreground: #EAEAF2;
-  --primary: #B2A2E8; /* Soft Lavender - Playful and cute */
-  --primary-foreground: #2A2A3D;
-  --secondary: #A2D9E8; /* Baby Blue - Calm and serene */
-  --secondary-foreground: #2A2A3D;
-  --muted: #4D4D6B; /* Muted Purple - For subtle elements */
-  --muted-foreground: #BDBDD4; /* Light Gray-Purple - Soft text */
-  --accent: #5E5E85; /* Darker Muted Purple - For interactive elements */
-  --accent-foreground: #EAEAF2;
-  --destructive: #E8A2A2; /* Soft Red - Gentle warnings */
-  --destructive-foreground: #2A2A3D;
-  --success: #A2E8B9; /* Soft Green - Positive feedback */
-  --warning: #E8D1A2; /* Soft Yellow - Cautious alerts */
-  --border: #4D4D6B;
+  --background: #0F1419;
+  --foreground: #E7ECF6;
+  --card: #161C24;
+  --card-foreground: #E7ECF6;
+  --popover: #161C24;
+  --popover-foreground: #E7ECF6;
+  --primary: #B7B3FF;
+  --primary-foreground: #0F1419;
+  --secondary: #79D5C3;
+  --secondary-foreground: #0F1419;
+  --muted: #1C242E;
+  --muted-foreground: #A7B1C4;
+  --accent: #1E2733;
+  --accent-foreground: #E7ECF6;
+  --destructive: #F2858A;
+  --destructive-foreground: #0F1419;
+  --success: #61D2A6;
+  --warning: #F6C987;
+  --border: #232D3A;
   --input: transparent;
-  --input-background: #3C3C54;
-  --switch-background: #5E5E85;
-  --ring: #B2A2E8;
+  --input-background: #1A212C;
+  --switch-background: #2B3441;
+  --ring: #B7B3FF;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: #B2A2E8; /* Soft Lavender */
-  --chart-2: #A2D9E8; /* Baby Blue */
-  --chart-3: #E8B9A2; /* Soft Peach */
-  --chart-4: #E8D1A2; /* Soft Yellow */
-  --chart-5: #C9B8FF; /* Brighter Lavender */
-  --sidebar: #3C3C54;
-  --sidebar-foreground: #EAEAF2;
-  --sidebar-primary: #B2A2E8;
-  --sidebar-primary-foreground: #2A2A3D;
-  --sidebar-accent: #5E5E85;
-  --sidebar-accent-foreground: #EAEAF2;
-  --sidebar-border: #4D4D6B;
-  --sidebar-ring: #B2A2E8;
-  --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.15); /* Softer shadows */
-  --shadow-soft-hover: 0 15px 30px rgba(0, 0, 0, 0.2);
-  --highlight-lavender: #C3CBFF;
-  --highlight-lavender-soft: rgba(195, 203, 255, 0.22);
-  --highlight-lavender-border: rgba(195, 203, 255, 0.4);
-  --highlight-mint: #8FE7DA;
-  --highlight-mint-soft: rgba(143, 231, 218, 0.26);
-  --highlight-mint-border: rgba(143, 231, 218, 0.4);
-  --highlight-baby-blue: #A6DCFF;
-  --highlight-baby-blue-soft: rgba(166, 220, 255, 0.26);
-  --highlight-baby-blue-border: rgba(166, 220, 255, 0.4);
+  --chart-1: #C1BDFF;
+  --chart-2: #79D5C3;
+  --chart-3: #F5BFB0;
+  --chart-4: #F6C987;
+  --chart-5: #D0C8FF;
+  --sidebar: #161C24;
+  --sidebar-foreground: #E7ECF6;
+  --sidebar-primary: #B7B3FF;
+  --sidebar-primary-foreground: #0F1419;
+  --sidebar-accent: #1C242E;
+  --sidebar-accent-foreground: #E7ECF6;
+  --sidebar-border: #232D3A;
+  --sidebar-ring: #B7B3FF;
+  --shadow-soft: 0 20px 40px -28px rgba(5, 10, 16, 0.65), 0 14px 28px -20px rgba(183, 179, 255, 0.24);
+  --shadow-soft-hover: 0 24px 48px -28px rgba(5, 10, 16, 0.7), 0 18px 34px -20px rgba(183, 179, 255, 0.28);
+  --highlight-lavender: #C7C4FF;
+  --highlight-lavender-soft: rgba(199, 196, 255, 0.22);
+  --highlight-lavender-border: rgba(199, 196, 255, 0.38);
+  --highlight-mint: #9AE8D6;
+  --highlight-mint-soft: rgba(154, 232, 214, 0.28);
+  --highlight-mint-border: rgba(154, 232, 214, 0.4);
+  --highlight-baby-blue: #A8DEFF;
+  --highlight-baby-blue-soft: rgba(168, 222, 255, 0.28);
+  --highlight-baby-blue-border: rgba(168, 222, 255, 0.4);
 }
 
 @theme inline {
