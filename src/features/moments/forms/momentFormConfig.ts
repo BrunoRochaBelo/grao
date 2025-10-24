@@ -13,20 +13,6 @@ export interface MomentFormValues {
   tags: string[];
   privacy: PrivacyOption;
   status: MomentStatus;
-  monthHighlight: string;
-  monthSurprise: string;
-  monthWeight: string;
-  monthHeight: string;
-  monthMood: string;
-  monthFavorite: string;
-  healthLocation: string;
-  healthLot: string;
-  healthReminderDate: string;
-  healthReactions: string[];
-  letterSender: string;
-  letterDeliveryOption: '5' | '10' | '18' | 'custom';
-  letterCustomDate: string;
-  letterIntro: string;
 }
 
 export function buildDefaultValues(templateName: string): MomentFormValues {
@@ -42,20 +28,6 @@ export function buildDefaultValues(templateName: string): MomentFormValues {
     tags: [],
     privacy: 'private',
     status: 'published',
-    monthHighlight: '',
-    monthSurprise: '',
-    monthWeight: '',
-    monthHeight: '',
-    monthMood: '',
-    monthFavorite: '',
-    healthLocation: '',
-    healthLot: '',
-    healthReminderDate: '',
-    healthReactions: [],
-    letterSender: '',
-    letterDeliveryOption: 'custom',
-    letterCustomDate: '',
-    letterIntro: '',
   } satisfies MomentFormValues;
 }
 
