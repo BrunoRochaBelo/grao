@@ -23,6 +23,9 @@ export const babies: Baby[] = [
     avatar: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=400&fit=crop',
     gender: 'female',
     isActive: true,
+    nameMeaning: 'amanhecer, o primeiro brilho do dia',
+    nameOrigin: 'latim',
+    favoriteSong: 'Boi da Cara Preta',
   },
   {
     id: '2',
@@ -32,6 +35,9 @@ export const babies: Baby[] = [
     avatar: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop',
     gender: 'male',
     isActive: false,
+    nameMeaning: 'quem é como Deus',
+    nameOrigin: 'hebraico',
+    favoriteSong: 'Ciranda Cirandinha',
   },
 ];
 
