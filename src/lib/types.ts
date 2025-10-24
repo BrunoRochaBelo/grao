@@ -9,6 +9,9 @@ export interface Baby {
   gender?: 'male' | 'female' | 'other';
   isActive?: boolean;
   notes?: string;
+  nameMeaning?: string;
+  nameOrigin?: string;
+  favoriteSong?: string;
 }
 
 export interface GrowthMeasurement {
