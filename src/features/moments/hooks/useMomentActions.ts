@@ -18,6 +18,7 @@ export interface CreateMomentInput {
   privacy: PrivacyOption;
   status: MomentStatus;
   ageLabel?: string;
+  extraData?: Record<string, unknown>;
 }
 
 export function useMomentActions() {
@@ -50,6 +51,8 @@ export function useMomentActions() {
         tags: input.tags && input.tags.length > 0 ? input.tags : undefined,
         privacy: input.privacy,
         status: input.status,
+        extraData:
+          input.extraData && Object.keys(input.extraData).length > 0 ? input.extraData : undefined,
       } satisfies Omit<Moment, 'id'>;
     },
     [getAgeLabel],
