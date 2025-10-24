@@ -1,5 +1,12 @@
 import type { ReactNode } from 'react';
-import { useBabyData } from '../../lib/baby-data-context';
+import {
+  getCurrentBaby,
+  calculateAge,
+  chapters,
+  getMoments,
+  getPlaceholdersForChapter,
+  getBabyAgeInDays,
+} from '../../lib/mockData';
 import {
   Download,
   Settings,
@@ -100,19 +107,8 @@ export function ProfileScreen({
   onNavigateToMedia,
   onEditBaby,
 }: ProfileScreenProps) {
-  const {
-    currentBaby,
-    calculateAge,
-    chapters,
-    getMoments,
-    getPlaceholdersForChapter,
-    getBabyAgeInDays,
-  } = useBabyData();
+  const currentBaby = getCurrentBaby();
   const { theme, toggleTheme } = useTheme();
-
-  if (!currentBaby) {
-    return null;
-  }
 
   const age = calculateAge(currentBaby.birthDate);
   const moments = getMoments();
@@ -133,7 +129,7 @@ export function ProfileScreen({
 
   const completionPercentage =
     totalMoments > 0 ? Math.round((totalCompleted / totalMoments) * 100) : 0;
-  const totalMedia = moments.reduce((sum, moment) => sum + (moment.media?.length || 0), 0);
+  const totalMedia = moments.reduce((sum, moment) => sum + moment.media.length, 0);
 
   const appVersion = 'v1.0.2 build 67';
   const updateAvailable = true;

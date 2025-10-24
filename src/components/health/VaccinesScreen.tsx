@@ -1,8 +1,15 @@
 import { useMemo, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Chapter, PlaceholderTemplate } from '../../lib/types';
-import { useBabyData } from '../../lib/baby-data-context';
+import {
+  Chapter,
+  PlaceholderTemplate,
+  chapters,
+  currentBaby,
+  getBabyAgeInDays,
+  getMoments,
+  getPlaceholdersForChapter,
+} from '../../lib/mockData';
 import { Progress } from '../ui/progress';
 import { getHighlightStyle, HighlightTone } from '../../lib/highlights';
 import { MomentTemplateCard } from '../chapters/MomentTemplateCard';
@@ -15,16 +22,9 @@ interface VaccinesScreenProps {
 type VaccineFilter = 'all' | 'completed' | 'pending';
 
 export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) {
-  const {
-    chapters,
-    currentBaby,
-    getBabyAgeInDays,
-    getMoments,
-    getPlaceholdersForChapter,
-  } = useBabyData();
-  const chapter = useMemo(() => chapters.find((item) => item.id === '3'), [chapters]);
+  const chapter = useMemo(() => chapters.find((item) => item.id === '3'), []);
 
-  const babyAgeInDays = currentBaby ? getBabyAgeInDays(currentBaby.birthDate) : 0;
+  const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
   const moments = getMoments();
 
   const vaccineTemplates = useMemo(() => {
@@ -34,7 +34,7 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
 
     return getPlaceholdersForChapter(chapter.id, babyAgeInDays)
       .filter((placeholder) => placeholder.templateType === 'vacina')
-      .sort((a, b) => (a.ageRangeStart ?? 0) - (b.ageRangeStart ?? 0))
+      .sort((a, b) => a.ageRangeStart - b.ageRangeStart)
       .map((placeholder) => {
         const moment = moments.find((item) => item.templateId === placeholder.id);
 
@@ -45,7 +45,7 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
           moment,
         };
       });
-  }, [babyAgeInDays, chapter, moments, getPlaceholdersForChapter]);
+  }, [babyAgeInDays, chapter, moments]);
 
   if (!chapter) {
     return null;

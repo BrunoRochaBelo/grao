@@ -183,7 +183,7 @@ export function HomeScreen({
         <Avatar className="w-20 h-20 border-2 border-primary">
           <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
           <AvatarFallback className="bg-primary/10 text-primary text-2xl">
-            {currentBaby ? getInitials(currentBaby.name) : <Baby />}
+            {currentBaby ? getInitials(currentBaby.name) : '?'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
@@ -366,6 +366,7 @@ export function HomeScreen({
       <BabySelectorModal
         isOpen={showBabySelector}
         onClose={() => setShowBabySelector(false)}
+        onBabyChange={() => undefined}
       />
     </div>
   );
