@@ -109,7 +109,7 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'chapters') {
+    if (tab === 'add') {
       setShowAddMoment(true);
     } else {
       navigateToMain(tab as Screen);
