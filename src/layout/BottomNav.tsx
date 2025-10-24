@@ -1,5 +1,12 @@
-import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
+import {
+  Home,
+  GalleryVerticalEnd,
+  Plus,
+  Bell,
+  User,
+} from 'lucide-react';
 import { motion } from 'motion/react';
+import { useScrollDirection } from '../lib/hooks/useScrollDirection';
 
 interface BottomNavProps {
   activeTab: string;
@@ -7,18 +14,24 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const scrollDirection = useScrollDirection();
+
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'gallery', label: 'Galeria', icon: Image },
-    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
-    { id: 'notifications', label: 'Notificações', icon: Bell },
-    { id: 'profile', label: 'Perfil', icon: Baby },
+    { id: 'home', label: 'Início', icon: Home },
+    { id: 'gallery', label: 'Momentos', icon: GalleryVerticalEnd },
+    { id: 'add', label: 'Novo', icon: Plus, isAction: true },
+    { id: 'notifications', label: 'Sussurros', icon: Bell },
+    { id: 'profile', label: 'Jornada', icon: User },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
-        {tabs.map((tab) => {
+    <nav
+      className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-transform duration-300 ${
+        scrollDirection === 'down' ? 'translate-y-24' : 'translate-y-0'
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-xl rounded-full p-2 shadow-2xl">
+        {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 
@@ -27,14 +40,14 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="flex flex-col items-center gap-1 relative"
+                className="flex flex-col items-center justify-center gap-1 relative"
                 aria-label={tab.label}
               >
                 <motion.div
                   whileTap={{ scale: 0.9 }}
-                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
+                  className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white shadow-lg transform scale-115"
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-7 h-7" />
                 </motion.div>
               </button>
             );
@@ -44,20 +57,20 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
+              className={`flex flex-col items-center justify-center gap-1 px-4 py-2 min-w-[60px] min-h-[44px] transition-all duration-300 rounded-full ${
+                isActive
+                  ? 'text-violet-600'
+                  : 'text-zinc-400 dark:text-zinc-500'
               }`}
               aria-label={tab.label}
             >
-              <Icon className="w-6 h-6" />
-              <span className="text-[11px]">{tab.label}</span>
-              {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                />
-              )}
+              <motion.div
+                animate={{ scale: isActive ? 1.05 : 1 }}
+                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+              >
+                <Icon className="w-5 h-5" />
+              </motion.div>
+              <span className="text-[11px] font-medium">{tab.label}</span>
             </button>
           );
         })}
