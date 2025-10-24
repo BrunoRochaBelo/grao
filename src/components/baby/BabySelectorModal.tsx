@@ -6,17 +6,20 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 interface BabySelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onBabyChange: () => void;
 }
 
 export function BabySelectorModal({
   isOpen,
   onClose,
+  onBabyChange,
 }: BabySelectorModalProps) {
   const { babies, currentBaby, setCurrentBaby, calculateAge } = useBabyData();
   const activeBabyId = currentBaby?.id;
 
   const handleSelectBaby = async (babyId: string) => {
     await setCurrentBaby(babyId);
+    onBabyChange();
     onClose();
   };
 
@@ -27,6 +30,20 @@ export function BabySelectorModal({
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+  const getAge = (birthDate: string) => {
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const totalDays = Math.floor(
+      (now.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const months = Math.floor(totalDays / 30);
+    const days = totalDays % 30;
+
+    if (months === 0) {
+      return `${days} ${days === 1 ? "dia" : "dias"}`;
+    }
+    return `${months} ${months === 1 ? "mês" : "meses"}`;
   };
 
   return (
