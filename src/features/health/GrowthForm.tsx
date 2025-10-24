@@ -1,12 +1,17 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { addGrowthMeasurement, GrowthMeasurement, currentBaby, calculateAge } from '@/lib/mockData';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  addGrowthMeasurement,
+  currentBaby,
+  calculateAge,
+} from "@/lib/mockData";
+import type { GrowthMeasurement } from "@/lib/types";
+import { toast } from "sonner";
 
 interface GrowthFormProps {
   isOpen: boolean;
@@ -15,40 +20,42 @@ interface GrowthFormProps {
 }
 
 export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [headCircumference, setHeadCircumference] = useState('');
-  const [notes, setNotes] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [headCircumference, setHeadCircumference] = useState("");
+  const [notes, setNotes] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!weight || !height) {
-      toast.error('Por favor, preencha peso e altura');
+      toast.error("Por favor, preencha peso e altura");
       return;
     }
 
-    const age = calculateAge(currentBaby.birthDate, new Date(date));
+    const age = calculateAge(currentBaby.birthDate, date);
 
     const newMeasurement = addGrowthMeasurement({
       date,
       age,
       weight: parseFloat(weight),
       height: parseFloat(height),
-      headCircumference: headCircumference ? parseFloat(headCircumference) : undefined,
+      headCircumference: headCircumference
+        ? parseFloat(headCircumference)
+        : undefined,
       notes: notes || undefined,
     });
 
     onSave(newMeasurement);
-    toast.success('Medição adicionada com sucesso!');
-    
+    toast.success("Medição adicionada com sucesso!");
+
     // Reset form
-    setDate(new Date().toISOString().split('T')[0]);
-    setWeight('');
-    setHeight('');
-    setHeadCircumference('');
-    setNotes('');
+    setDate(new Date().toISOString().split("T")[0]);
+    setWeight("");
+    setHeight("");
+    setHeadCircumference("");
+    setNotes("");
     onClose();
   };
 
@@ -65,10 +72,10 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
           />
 
           <motion.div
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-50 max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -82,7 +89,10 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+            <form
+              onSubmit={handleSubmit}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 <div>
                   <Label htmlFor="date">Data da Medição</Label>
@@ -91,7 +101,7 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    max={new Date().toISOString().split('T')[0]}
+                    max={new Date().toISOString().split("T")[0]}
                     className="mt-1"
                     required
                   />
@@ -128,7 +138,9 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
                 </div>
 
                 <div>
-                  <Label htmlFor="headCircumference">Perímetro Cefálico (cm) - Opcional</Label>
+                  <Label htmlFor="headCircumference">
+                    Perímetro Cefálico (cm) - Opcional
+                  </Label>
                   <Input
                     id="headCircumference"
                     type="number"
@@ -154,7 +166,12 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
               </div>
 
               <div className="p-4 border-t border-border flex gap-3">
-                <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1"
+                >
                   Cancelar
                 </Button>
                 <Button type="submit" className="flex-1">

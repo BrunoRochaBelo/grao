@@ -1,11 +1,19 @@
-import { useState } from 'react';
-import { babies, Baby, setCurrentBaby, calculateAge } from '@/lib/mockData';
-import { ChevronLeft, Plus, Trash2, Edit, CheckCircle, MapPin } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { motion } from 'motion/react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import { babies, setCurrentBaby, calculateAge } from "@/lib/mockData";
+import type { Baby } from "@/lib/types";
+import {
+  ChevronLeft,
+  Plus,
+  Trash2,
+  Edit,
+  CheckCircle,
+  MapPin,
+} from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface ManageBabiesScreenProps {
   onBack: () => void;
@@ -13,28 +21,32 @@ interface ManageBabiesScreenProps {
   onEditBaby: (baby: Baby) => void;
 }
 
-export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabiesScreenProps) {
+export function ManageBabiesScreen({
+  onBack,
+  onAddBaby,
+  onEditBaby,
+}: ManageBabiesScreenProps) {
   const [babyList, setBabyList] = useState<Baby[]>(() => [...babies]);
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((part) => part[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   const formatAge = (birthDate: string) => {
     const age = calculateAge(birthDate);
-    const [firstPart] = age.split(' e ');
+    const [firstPart] = age.split(" e ");
     return firstPart;
   };
 
   const handleSetActive = (babyId: string) => {
     setCurrentBaby(babyId);
     setBabyList([...babies]);
-    toast.success('Perfil principal atualizado.');
+    toast.success("Perfil principal atualizado.");
   };
 
   const handleDelete = (babyId: string) => {
@@ -50,10 +62,12 @@ export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabi
     if (baby.isActive && updated.length > 0) {
       setCurrentBaby(updated[0].id);
       setBabyList([...babies]);
-      toast.success('Perfil removido. O primeiro da lista foi definido como ativo.');
+      toast.success(
+        "Perfil removido. O primeiro da lista foi definido como ativo."
+      );
     } else {
       setBabyList([...updated]);
-      toast.success('Perfil removido.');
+      toast.success("Perfil removido.");
     }
   };
 
@@ -66,7 +80,8 @@ export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabi
         <h1 className="text-xl font-medium text-center flex-1">Seus bebes</h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6 text-center">
-        Gerencie perfis vinculados, altere o ativo e mantenha os dados atualizados.
+        Gerencie perfis vinculados, altere o ativo e mantenha os dados
+        atualizados.
       </p>
 
       <div className="space-y-3">
@@ -79,7 +94,9 @@ export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabi
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               className={`rounded-xl border p-4 flex items-center gap-4 ${
-                isActive ? 'border-primary bg-primary/10' : 'border-border bg-card'
+                isActive
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-card"
               }`}
             >
               <Avatar className="w-14 h-14 border-2 border-primary/40">
@@ -89,7 +106,9 @@ export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabi
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-foreground font-medium truncate">{baby.name || 'Sem nome'}</p>
+                  <p className="text-foreground font-medium truncate">
+                    {baby.name || "Sem nome"}
+                  </p>
                   {isActive && (
                     <Badge className="bg-primary text-primary-foreground">
                       <CheckCircle className="w-3 h-3" />
@@ -99,21 +118,35 @@ export function ManageBabiesScreen({ onBack, onAddBaby, onEditBaby }: ManageBabi
                 </div>
                 <p className="text-muted-foreground text-sm flex items-center gap-1 mt-1">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span className="truncate">{baby.city || 'Cidade nao informada'}</span>
+                  <span className="truncate">
+                    {baby.city || "Cidade nao informada"}
+                  </span>
                 </p>
                 <p className="text-muted-foreground text-xs mt-1">
-                  Idade aproximada: {baby.birthDate ? formatAge(baby.birthDate) : 'Informe a data'}
+                  Idade aproximada:{" "}
+                  {baby.birthDate
+                    ? formatAge(baby.birthDate)
+                    : "Informe a data"}
                 </p>
               </div>
 
               <div className="flex flex-col items-end gap-2">
                 {!isActive && (
-                  <Button variant="secondary" size="sm" onClick={() => handleSetActive(baby.id)}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleSetActive(baby.id)}
+                  >
                     Tornar ativo
                   </Button>
                 )}
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => onEditBaby(baby)} aria-label="Editar bebe">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEditBaby(baby)}
+                    aria-label="Editar bebe"
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button

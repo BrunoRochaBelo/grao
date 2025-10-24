@@ -1,13 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Baby, babies } from '@/lib/mockData';
-import { ChevronLeft, Camera } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner@2.0.3';
+import { useEffect, useMemo, useState } from "react";
+import { babies } from "@/lib/mockData";
+import type { Baby } from "@/lib/types";
+import { ChevronLeft, Camera } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface EditBabyScreenProps {
   baby: Baby;
@@ -18,16 +25,16 @@ interface EditBabyScreenProps {
 export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
   const initialData: Baby = useMemo(
     () => ({
-      id: baby.id ?? '',
-      name: baby.name ?? '',
-      birthDate: baby.birthDate ?? '',
-      city: baby.city ?? '',
-      avatar: baby.avatar ?? '',
-      gender: baby.gender ?? 'other',
+      id: baby.id ?? "",
+      name: baby.name ?? "",
+      birthDate: baby.birthDate ?? "",
+      city: baby.city ?? "",
+      avatar: baby.avatar ?? "",
+      gender: baby.gender ?? "other",
       isActive: baby.isActive ?? false,
-      notes: baby.notes ?? '',
+      notes: baby.notes ?? "",
     }),
-    [baby],
+    [baby]
   );
 
   const [formData, setFormData] = useState<Baby>(initialData);
@@ -38,39 +45,42 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((part) => part[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+    setFormData((prev: Baby) => ({ ...prev, [id]: value }));
   };
 
   const handleGenderChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, gender: value as Baby['gender'] }));
+    setFormData((prev: Baby) => ({ ...prev, gender: value as Baby["gender"] }));
   };
 
   const handleRandomAvatar = () => {
     const fallback = `https://source.boringavatars.com/beam/120/${encodeURIComponent(
-      formData.name || 'bebe',
+      formData.name || "bebe"
     )}?colors=8B5CF6,6366F1,F472B6,FDA4AF,FDE68A`;
-    setFormData((prev) => ({ ...prev, avatar: fallback }));
+    setFormData((prev: Baby) => ({ ...prev, avatar: fallback }));
   };
 
-  const canSave = formData.name.trim().length > 0 && formData.birthDate.trim().length > 0;
+  const canSave =
+    formData.name.trim().length > 0 && formData.birthDate.trim().length > 0;
 
   const handleSave = () => {
     if (!canSave) {
-      toast.error('Informe pelo menos o nome e a data de nascimento.');
+      toast.error("Informe pelo menos o nome e a data de nascimento.");
       return;
     }
 
     if (Number.isNaN(Date.parse(formData.birthDate))) {
-      toast.error('Informe uma data valida.');
+      toast.error("Informe uma data valida.");
       return;
     }
 
@@ -86,7 +96,7 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
       babies.push(normalized);
     }
 
-    toast.success('Informacoes atualizadas com sucesso!');
+    toast.success("Informacoes atualizadas com sucesso!");
     onSave(normalized);
   };
 
@@ -97,11 +107,12 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-medium text-center flex-1">
-          {formData.id ? 'Editar informacoes' : 'Novo bebe'}
+          {formData.id ? "Editar informacoes" : "Novo bebe"}
         </h1>
       </div>
       <p className="text-sm text-muted-foreground mb-6 text-center">
-        Personalize como o bebe aparece no album, incluindo avatar, dados basicos e observacoes.
+        Personalize como o bebe aparece no album, incluindo avatar, dados
+        basicos e observacoes.
       </p>
 
       <div className="space-y-6">
@@ -134,7 +145,12 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
           </div>
           <div>
             <Label htmlFor="birthDate">Data de nascimento</Label>
-            <Input id="birthDate" type="date" value={formData.birthDate} onChange={handleChange} />
+            <Input
+              id="birthDate"
+              type="date"
+              value={formData.birthDate}
+              onChange={handleChange}
+            />
           </div>
           <div>
             <Label htmlFor="city">Cidade</Label>
@@ -154,7 +170,9 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
               <SelectContent>
                 <SelectItem value="female">Feminino</SelectItem>
                 <SelectItem value="male">Masculino</SelectItem>
-                <SelectItem value="other">Outro / Prefiro nao informar</SelectItem>
+                <SelectItem value="other">
+                  Outro / Prefiro nao informar
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -171,7 +189,7 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
             <Label htmlFor="notes">Notas</Label>
             <Textarea
               id="notes"
-              value={formData.notes ?? ''}
+              value={formData.notes ?? ""}
               onChange={handleChange}
               placeholder="Observacoes relevantes, alergias, apelidos..."
               rows={4}
@@ -181,10 +199,20 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
       </div>
 
       <div className="mt-8 space-y-2">
-        <Button onClick={handleSave} className="w-full" type="button" disabled={!canSave || isNaN(Date.parse(formData.birthDate))}>
+        <Button
+          onClick={handleSave}
+          className="w-full"
+          type="button"
+          disabled={!canSave || isNaN(Date.parse(formData.birthDate))}
+        >
           Salvar alteracoes
         </Button>
-        <Button onClick={onBack} variant="ghost" className="w-full" type="button">
+        <Button
+          onClick={onBack}
+          variant="ghost"
+          className="w-full"
+          type="button"
+        >
           Cancelar
         </Button>
       </div>

@@ -1,72 +1,79 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, LogOut, Shield, Users, UserPen } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { babies, getCurrentBaby } from '@/lib/mockData';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+  Shield,
+  Users,
+  UserPen,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { babies, getCurrentBaby } from "@/lib/mockData";
+import { toast } from "sonner";
 
 interface ManageAccountScreenProps {
   onBack: () => void;
 }
 
 export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
-  const [name, setName] = useState('Bruno Oliveira');
-  const [email, setEmail] = useState('bruno@example.com');
+  const [name, setName] = useState("Bruno Oliveira");
+  const [email, setEmail] = useState("bruno@example.com");
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const createdAt = '22/03/2024';
+  const createdAt = "22/03/2024";
 
   const linkedBabies = babies.filter((baby) => !baby.isActive);
   const activeBaby = getCurrentBaby();
   const formatDate = (value: string) => {
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? '--' : date.toLocaleDateString();
+    return Number.isNaN(date.getTime()) ? "--" : date.toLocaleDateString();
   };
 
   const handleSaveName = () => {
     setIsEditingName(false);
-    toast.success('Nome atualizado com sucesso.');
+    toast.success("Nome atualizado com sucesso.");
   };
 
   const handleSaveEmail = () => {
     setIsEditingEmail(false);
-    toast.success('Email atualizado com sucesso.');
+    toast.success("Email atualizado com sucesso.");
   };
 
   const handleChangePassword = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error('Preencha todos os campos da senha.');
+      toast.error("Preencha todos os campos da senha.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error('As senhas novas precisam ser iguais.');
+      toast.error("As senhas novas precisam ser iguais.");
       return;
     }
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
     setIsEditingPassword(false);
-    toast.success('Senha alterada com sucesso.');
+    toast.success("Senha alterada com sucesso.");
   };
 
   const handleSignOut = () => {
-    const confirmed = window.confirm('Tem certeza que deseja sair da conta?');
+    const confirmed = window.confirm("Tem certeza que deseja sair da conta?");
     if (!confirmed) return;
-    toast.success('Voce saiu da conta. Redirecionando para login...');
+    toast.success("Voce saiu da conta. Redirecionando para login...");
   };
 
   const handleDeleteAccount = () => {
     const confirmed = window.confirm(
-      'Excluir conta e uma acao permanente. Deseja continuar mesmo assim?',
+      "Excluir conta e uma acao permanente. Deseja continuar mesmo assim?"
     );
     if (!confirmed) return;
-    toast.success('Conta excluida (simulacao).');
+    toast.success("Conta excluida (simulacao).");
   };
 
   return (
@@ -82,14 +89,18 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
         <p className="text-sm text-muted-foreground">Responsavel</p>
         <p className="text-lg font-medium text-foreground">{name}</p>
         <p className="text-sm text-muted-foreground">{email}</p>
-        <p className="text-xs text-muted-foreground">Conta criada em {createdAt}</p>
+        <p className="text-xs text-muted-foreground">
+          Conta criada em {createdAt}
+        </p>
       </div>
 
       <div className="space-y-3 mb-8">
         <div className="rounded-xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2 text-foreground">
             <UserPen className="w-4 h-4" />
-            <span className="text-sm font-medium uppercase tracking-wide">Dados pessoais</span>
+            <span className="text-sm font-medium uppercase tracking-wide">
+              Dados pessoais
+            </span>
           </div>
 
           <div className="space-y-2">
@@ -100,7 +111,11 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
                 <Button size="sm" onClick={handleSaveName}>
                   Salvar
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setIsEditingName(false)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsEditingName(false)}
+                >
                   Cancelar
                 </Button>
               </div>
@@ -130,7 +145,11 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
                   <Button size="sm" onClick={handleSaveEmail}>
                     Salvar
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setIsEditingEmail(false)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsEditingEmail(false)}
+                  >
                     Cancelar
                   </Button>
                 </div>
@@ -151,7 +170,9 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
         <div className="rounded-xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2 text-foreground">
             <Shield className="w-4 h-4" />
-            <span className="text-sm font-medium uppercase tracking-wide">Seguranca</span>
+            <span className="text-sm font-medium uppercase tracking-wide">
+              Seguranca
+            </span>
           </div>
 
           {isEditingPassword ? (
@@ -187,7 +208,11 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
                 <Button size="sm" onClick={handleChangePassword}>
                   Salvar nova senha
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setIsEditingPassword(false)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsEditingPassword(false)}
+                >
                   Cancelar
                 </Button>
               </div>
@@ -203,7 +228,11 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
             </button>
           )}
 
-          <Button variant="ghost" className="text-destructive justify-start" onClick={handleDeleteAccount}>
+          <Button
+            variant="ghost"
+            className="text-destructive justify-start"
+            onClick={handleDeleteAccount}
+          >
             Excluir conta
           </Button>
         </div>
@@ -211,17 +240,25 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
         <div className="rounded-xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-2 text-foreground">
             <Users className="w-4 h-4" />
-            <span className="text-sm font-medium uppercase tracking-wide">Outros bebes vinculados</span>
+            <span className="text-sm font-medium uppercase tracking-wide">
+              Outros bebes vinculados
+            </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            {activeBaby.name} esta definido como perfil principal neste dispositivo.
+            {activeBaby.name} esta definido como perfil principal neste
+            dispositivo.
           </p>
           {linkedBabies.length > 0 ? (
             <ul className="space-y-2 text-sm text-muted-foreground">
               {linkedBabies.map((baby) => (
-                <li key={baby.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                <li
+                  key={baby.id}
+                  className="flex items-center justify-between rounded-lg border border-border px-3 py-2"
+                >
                   <span>{baby.name}</span>
-                  <span className="text-xs">Criado em {formatDate(baby.birthDate)}</span>
+                  <span className="text-xs">
+                    Criado em {formatDate(baby.birthDate)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -234,7 +271,11 @@ export function ManageAccountScreen({ onBack }: ManageAccountScreenProps) {
       </div>
 
       <div className="mt-10">
-        <Button variant="outline" className="w-full flex items-center justify-center gap-2" onClick={handleSignOut}>
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={handleSignOut}
+        >
           <LogOut className="w-4 h-4" />
           Sair da conta
         </Button>

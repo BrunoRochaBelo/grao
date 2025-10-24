@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { addVaccine, VaccineRecord } from '@/lib/mockData';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { addVaccine } from "@/lib/mockData";
+import type { VaccineRecord } from "@/lib/types";
+import { toast } from "sonner";
 
 interface VaccineFormProps {
   isOpen: boolean;
@@ -15,18 +16,18 @@ interface VaccineFormProps {
 }
 
 export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
-  const [name, setName] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [dose, setDose] = useState('');
-  const [lot, setLot] = useState('');
-  const [location, setLocation] = useState('');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [dose, setDose] = useState("");
+  const [lot, setLot] = useState("");
+  const [location, setLocation] = useState("");
+  const [notes, setNotes] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !dose) {
-      toast.error('Por favor, preencha o nome e a dose da vacina');
+      toast.error("Por favor, preencha o nome e a dose da vacina");
       return;
     }
 
@@ -37,20 +38,20 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
       dose,
       lot: lot || undefined,
       location: location || undefined,
-      status: 'completed',
+      status: "completed",
       notes: notes || undefined,
     });
 
     onSave(newVaccine);
-    toast.success('Vacina registrada com sucesso!');
-    
+    toast.success("Vacina registrada com sucesso!");
+
     // Reset form
-    setName('');
-    setDate(new Date().toISOString().split('T')[0]);
-    setDose('');
-    setLot('');
-    setLocation('');
-    setNotes('');
+    setName("");
+    setDate(new Date().toISOString().split("T")[0]);
+    setDose("");
+    setLot("");
+    setLocation("");
+    setNotes("");
     onClose();
   };
 
@@ -67,10 +68,10 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
           />
 
           <motion.div
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-50 max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -84,7 +85,10 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+            <form
+              onSubmit={handleSubmit}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 <div>
                   <Label htmlFor="name">Nome da Vacina</Label>
@@ -120,7 +124,7 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      max={new Date().toISOString().split('T')[0]}
+                      max={new Date().toISOString().split("T")[0]}
                       className="mt-1"
                       required
                     />
@@ -128,7 +132,9 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
                 </div>
 
                 <div>
-                  <Label htmlFor="location">Local de Aplicação - Opcional</Label>
+                  <Label htmlFor="location">
+                    Local de Aplicação - Opcional
+                  </Label>
                   <Input
                     id="location"
                     type="text"
@@ -165,7 +171,12 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
               </div>
 
               <div className="p-4 border-t border-border flex gap-3">
-                <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="flex-1"
+                >
                   Cancelar
                 </Button>
                 <Button type="submit" className="flex-1">

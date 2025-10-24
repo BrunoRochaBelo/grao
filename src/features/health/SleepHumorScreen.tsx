@@ -1,36 +1,45 @@
-import { useState } from 'react';
-import { ArrowLeft, Plus, Moon, Smile } from 'lucide-react';
-import { motion } from 'motion/react';
-import { getSleepRecords, SleepRecord } from '@/lib/mockData';
-import { Button } from '@/components/ui/button';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { SleepHumorForm } from './SleepHumorForm';
+import { useState } from "react";
+import { ArrowLeft, Plus, Moon, Smile } from "lucide-react";
+import { motion } from "motion/react";
+import { getSleepRecords } from "@/lib/mockData";
+import type { SleepRecord } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { SleepHumorForm } from "./SleepHumorForm";
 
 interface SleepHumorScreenProps {
   onBack: () => void;
 }
 
 const moodEmojis = {
-  happy: '😄',
-  calm: '😌',
-  fussy: '🥱',
-  crying: '😢',
-  sleepy: '😴',
+  happy: "😄",
+  calm: "😌",
+  fussy: "🥱",
+  crying: "😢",
+  sleepy: "😴",
 };
 
 const moodLabels = {
-  happy: 'Feliz',
-  calm: 'Calmo',
-  fussy: 'Irritado',
-  crying: 'Choroso',
-  sleepy: 'Sonolento',
+  happy: "Feliz",
+  calm: "Calmo",
+  fussy: "Irritado",
+  crying: "Choroso",
+  sleepy: "Sonolento",
 };
 
 const qualityColors = {
-  excellent: '#22C55E',
-  good: '#8B5CF6',
-  fair: '#F59E0B',
-  poor: '#EF4444',
+  excellent: "#22C55E",
+  good: "#8B5CF6",
+  fair: "#F59E0B",
+  poor: "#EF4444",
 };
 
 export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
@@ -41,18 +50,24 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
     setRecords(getSleepRecords());
   };
 
-  const chartData = records.slice(-7).map(e => ({
-    date: new Date(e.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+  const chartData = records.slice(-7).map((e) => ({
+    date: new Date(e.date).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+    }),
     hours: e.duration,
   }));
 
-  const avgSleep = records.length > 0
-    ? (records.reduce((sum, e) => sum + e.duration, 0) / records.length).toFixed(1)
-    : '0';
+  const avgSleep =
+    records.length > 0
+      ? (
+          records.reduce((sum, e) => sum + e.duration, 0) / records.length
+        ).toFixed(1)
+      : "0";
 
-  const sleepRecords = records.filter(r => r.type === 'sleep');
-  const napRecords = records.filter(r => r.type === 'nap');
-  
+  const sleepRecords = records.filter((r) => r.type === "sleep");
+  const napRecords = records.filter((r) => r.type === "nap");
+
   const moodCounts = records.reduce((acc, r) => {
     acc[r.mood] = (acc[r.mood] || 0) + 1;
     return acc;
@@ -133,7 +148,9 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
                       style={{ width: `${(count / records.length) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm text-muted-foreground w-8 text-right">{count}</span>
+                  <span className="text-sm text-muted-foreground w-8 text-right">
+                    {count}
+                  </span>
                 </div>
               </div>
             ))}
@@ -159,8 +176,6 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
           </ResponsiveContainer>
         </motion.div>
 
-
-
         {/* History */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -170,29 +185,45 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
         >
           <h3 className="text-foreground mb-3">Histórico</h3>
           <div className="space-y-3">
-            {[...records].reverse().slice(0, 10).map((record) => (
-              <div
-                key={record.id}
-                className="flex items-center justify-between py-2 border-b border-border last:border-0"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${record.type === 'sleep' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
-                    <Moon className={`w-5 h-5 ${record.type === 'sleep' ? 'text-primary' : 'text-secondary'}`} />
+            {[...records]
+              .reverse()
+              .slice(0, 10)
+              .map((record) => (
+                <div
+                  key={record.id}
+                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`p-2 rounded-lg ${
+                        record.type === "sleep"
+                          ? "bg-primary/10"
+                          : "bg-secondary/10"
+                      }`}
+                    >
+                      <Moon
+                        className={`w-5 h-5 ${
+                          record.type === "sleep"
+                            ? "text-primary"
+                            : "text-secondary"
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-foreground text-sm">
+                        {new Date(record.date).toLocaleDateString("pt-BR")}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {record.duration}h ·{" "}
+                        {record.type === "sleep" ? "Sono Noturno" : "Soneca"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-foreground text-sm">
-                      {new Date(record.date).toLocaleDateString('pt-BR')}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {record.duration}h · {record.type === 'sleep' ? 'Sono Noturno' : 'Soneca'}
-                    </p>
-                  </div>
+                  <span className="text-sm capitalize text-foreground">
+                    {record.mood}
+                  </span>
                 </div>
-                <span className="text-sm capitalize text-foreground">
-                  {record.mood}
-                </span>
-              </div>
-            ))}
+              ))}
           </div>
         </motion.div>
       </div>

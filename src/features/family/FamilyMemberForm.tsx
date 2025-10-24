@@ -1,13 +1,19 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { FamilyMember } from '@/lib/types';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import { motion } from "motion/react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useBabyData } from "@/lib/baby-data-context";
+import type { FamilyMember } from "@/lib/types";
+import { toast } from "sonner";
 
 interface FamilyMemberFormProps {
   isOpen: boolean;
@@ -16,33 +22,37 @@ interface FamilyMemberFormProps {
 }
 
 const RELATIONS = [
-  'Mãe',
-  'Pai',
-  'Avó Materna',
-  'Avô Materno',
-  'Avó Paterna',
-  'Avô Paterno',
-  'Irmão',
-  'Irmã',
-  'Tio',
-  'Tia',
-  'Primo',
-  'Prima',
-  'Padrinho',
-  'Madrinha',
+  "Mãe",
+  "Pai",
+  "Avó Materna",
+  "Avô Materno",
+  "Avó Paterna",
+  "Avô Paterno",
+  "Irmão",
+  "Irmã",
+  "Tio",
+  "Tia",
+  "Primo",
+  "Prima",
+  "Padrinho",
+  "Madrinha",
 ];
 
-export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormProps) {
-  const [name, setName] = useState('');
-  const [relation, setRelation] = useState('');
-  const [birthDate, setBirthDate] = useState('');
+export function FamilyMemberForm({
+  isOpen,
+  onClose,
+  onSave,
+}: FamilyMemberFormProps) {
+  const [name, setName] = useState("");
+  const [relation, setRelation] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const { addFamilyMember } = useBabyData();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !relation) {
-      toast.error('Por favor, preencha o nome e a relação');
+      toast.error("Por favor, preencha o nome e a relação");
       return;
     }
 
@@ -54,16 +64,16 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
     });
 
     if (!newMember) {
-      toast.error('Não foi possível adicionar o familiar. Tente novamente.');
+      toast.error("Não foi possível adicionar o familiar. Tente novamente.");
       return;
     }
 
     onSave(newMember);
-    toast.success('Membro da família adicionado!');
+    toast.success("Membro da família adicionado!");
 
-    setName('');
-    setRelation('');
-    setBirthDate('');
+    setName("");
+    setRelation("");
+    setBirthDate("");
     onClose();
   };
 
@@ -127,13 +137,18 @@ export function FamilyMemberForm({ isOpen, onClose, onSave }: FamilyMemberFormPr
               type="date"
               value={birthDate}
               onChange={(event) => setBirthDate(event.target.value)}
-              max={new Date().toISOString().split('T')[0]}
+              max={new Date().toISOString().split("T")[0]}
               className="mt-1"
             />
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1"
+            >
               Cancelar
             </Button>
             <Button type="submit" className="flex-1">

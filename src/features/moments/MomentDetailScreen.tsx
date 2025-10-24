@@ -1,10 +1,18 @@
-import { ArrowLeft, Calendar, MapPin, Users as UsersIcon, Tag, Lock, Edit } from 'lucide-react';
-import { motion } from 'motion/react';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Moment } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MediaCarousel } from '@/components/shared/MediaCarousel';
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Users as UsersIcon,
+  Tag,
+  Lock,
+  Edit,
+} from "lucide-react";
+import { motion } from "motion/react";
+import { useBabyData } from "@/lib/baby-data-context";
+import type { Moment } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { MediaCarousel } from "@/components/shared/MediaCarousel";
 
 interface MomentDetailScreenProps {
   moment: Moment;
@@ -12,10 +20,13 @@ interface MomentDetailScreenProps {
   onEdit?: () => void;
 }
 
-export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScreenProps) {
+export function MomentDetailScreen({
+  moment,
+  onBack,
+  onEdit,
+}: MomentDetailScreenProps) {
   const { chapters } = useBabyData();
-  const chapter = chapters.find(c => c.id === moment.chapterId);
-
+  const chapter = chapters.find((c) => c.id === moment.chapterId);
 
   return (
     <div className="pb-24 max-w-2xl mx-auto">
@@ -39,7 +50,7 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
                 {chapter.icon} {chapter.name}
               </Badge>
             )}
-            {moment.privacy === 'private' && (
+            {moment.privacy === "private" && (
               <Badge variant="outline" className="gap-1">
                 <Lock className="w-3 h-3" />
                 Privado
@@ -47,7 +58,12 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
             )}
           </div>
           {onEdit && (
-            <Button variant="outline" size="sm" onClick={onEdit} className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+              className="gap-2"
+            >
               <Edit className="w-4 h-4" />
               Editar
             </Button>
@@ -83,7 +99,11 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
           <div className="flex items-center gap-4 text-muted-foreground text-sm">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              <span>{new Date(moment.date).toLocaleDateString('pt-BR', { dateStyle: 'long' })}</span>
+              <span>
+                {new Date(moment.date).toLocaleDateString("pt-BR", {
+                  dateStyle: "long",
+                })}
+              </span>
             </div>
             <span>·</span>
             <span>{moment.age}</span>
@@ -125,18 +145,6 @@ export function MomentDetailScreen({ moment, onBack, onEdit }: MomentDetailScree
                   </Badge>
                 ))}
               </div>
-            </motion.div>
-          )}
-
-          {moment.notes && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-card rounded-xl p-4 shadow-sm border border-border"
-            >
-              <h3 className="text-foreground mb-2">Notas</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{moment.notes}</p>
             </motion.div>
           )}
 

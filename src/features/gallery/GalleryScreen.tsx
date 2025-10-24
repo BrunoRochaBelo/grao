@@ -1,10 +1,23 @@
-import { useState } from 'react';
-import { getMoments, chapters, Moment } from '@/lib/mockData';
-import { Lock, Video, ChevronDown, ChevronUp, Filter, X, Calendar, Users, Tag, Image as ImageIcon, FolderOpen } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Badge } from '@/components/ui/badge';
-import { MediaCarousel } from '@/components/shared/MediaCarousel';
-import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
+import { useState } from "react";
+import { getMoments, chapters } from "@/lib/mockData";
+import type { Moment } from "@/lib/types";
+import {
+  Lock,
+  Video,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  X,
+  Calendar,
+  Users,
+  Tag,
+  Image as ImageIcon,
+  FolderOpen,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Badge } from "@/components/ui/badge";
+import { MediaCarousel } from "@/components/shared/MediaCarousel";
+import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 
 const moments = getMoments();
 
@@ -13,8 +26,8 @@ interface GalleryScreenProps {
 }
 
 interface PhotoCardProps {
-  moment: typeof moments[0];
-  chapter: typeof chapters[0];
+  moment: (typeof moments)[0];
+  chapter: (typeof chapters)[0];
   onClick: () => void;
 }
 
@@ -23,7 +36,7 @@ interface FilterOption {
   label: string;
   icon: React.ReactNode;
   active: boolean;
-  type: 'chapter' | 'type' | 'period' | 'people' | 'tags' | 'media' | 'privacy';
+  type: "chapter" | "type" | "period" | "people" | "tags" | "media" | "privacy";
   tone: HighlightTone;
 }
 
@@ -49,7 +62,7 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
                 <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 to-transparent" />
                 <div
                   className="pointer-events-none absolute top-2 left-2 px-2 py-1 rounded-lg text-xs backdrop-blur-sm"
-                  style={{ backgroundColor: chapter.color + 'DD' }}
+                  style={{ backgroundColor: chapter.color + "DD" }}
                 >
                   {chapter.icon} {chapter.name}
                 </div>
@@ -59,7 +72,7 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
                       <Video className="w-4 h-4 text-white" />
                     </div>
                   )}
-                  {moment.privacy === 'private' && (
+                  {moment.privacy === "private" && (
                     <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
                       <Lock className="w-4 h-4 text-white" />
                     </div>
@@ -76,7 +89,9 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
             <h3 className="text-foreground mb-1">{moment.title}</h3>
-            <p className="text-muted-foreground text-sm">{moment.age} · {new Date(moment.date).toLocaleDateString('pt-BR')}</p>
+            <p className="text-muted-foreground text-sm">
+              {moment.age} · {new Date(moment.date).toLocaleDateString("pt-BR")}
+            </p>
           </div>
           <button
             onClick={(e) => {
@@ -84,7 +99,7 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
               setExpanded(!expanded);
             }}
             className="p-1 hover:bg-muted rounded-lg transition-colors"
-            aria-label={expanded ? 'Recolher' : 'Expandir'}
+            aria-label={expanded ? "Recolher" : "Expandir"}
           >
             {expanded ? (
               <ChevronUp className="w-5 h-5 text-muted-foreground" />
@@ -98,16 +113,20 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
           {expanded && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
               {moment.noteShort && (
-                <p className="text-foreground text-sm mb-2">{moment.noteShort}</p>
+                <p className="text-foreground text-sm mb-2">
+                  {moment.noteShort}
+                </p>
               )}
               {moment.noteLong && (
-                <p className="text-foreground text-sm mb-2">{moment.noteLong}</p>
+                <p className="text-foreground text-sm mb-2">
+                  {moment.noteLong}
+                </p>
               )}
               {moment.tags && moment.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
@@ -130,71 +149,99 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
-  const [mediaFilter, setMediaFilter] = useState<'all' | 'photo' | 'video'>('all');
+  const [mediaFilter, setMediaFilter] = useState<"all" | "photo" | "video">(
+    "all"
+  );
 
   const availableFilters: FilterOption[] = [
     {
-      id: 'chapter',
-      label: 'Capítulo',
+      id: "chapter",
+      label: "Capítulo",
       icon: <FolderOpen className="w-4 h-4" />,
       active: !!selectedChapter,
-      type: 'chapter',
-      tone: 'lavender',
+      type: "chapter",
+      tone: "lavender",
     },
     {
-      id: 'period',
-      label: 'Período',
+      id: "period",
+      label: "Período",
       icon: <Calendar className="w-4 h-4" />,
       active: !!selectedPeriod,
-      type: 'period',
-      tone: 'babyBlue',
+      type: "period",
+      tone: "babyBlue",
     },
     {
-      id: 'media',
-      label: 'Mídia',
+      id: "media",
+      label: "Mídia",
       icon: <ImageIcon className="w-4 h-4" />,
-      active: mediaFilter !== 'all',
-      type: 'media',
-      tone: 'mint',
+      active: mediaFilter !== "all",
+      type: "media",
+      tone: "mint",
     },
-    { id: 'people', label: 'Pessoas', icon: <Users className="w-4 h-4" />, active: false, type: 'people', tone: 'mint' },
-    { id: 'tags', label: 'Tags', icon: <Tag className="w-4 h-4" />, active: false, type: 'tags', tone: 'babyBlue' },
+    {
+      id: "people",
+      label: "Pessoas",
+      icon: <Users className="w-4 h-4" />,
+      active: false,
+      type: "people",
+      tone: "mint",
+    },
+    {
+      id: "tags",
+      label: "Tags",
+      icon: <Tag className="w-4 h-4" />,
+      active: false,
+      type: "tags",
+      tone: "babyBlue",
+    },
   ];
 
   const toggleFilter = (filterId: string) => {
-    if (filterId === 'chapter') {
+    if (filterId === "chapter") {
       // Open chapter selector (for now, just toggle)
       setSelectedChapter(selectedChapter ? null : chapters[0].id);
-    } else if (filterId === 'period') {
-      setSelectedPeriod(selectedPeriod ? null : 'last-month');
-    } else if (filterId === 'media') {
-      setMediaFilter(mediaFilter === 'all' ? 'photo' : mediaFilter === 'photo' ? 'video' : 'all');
+    } else if (filterId === "period") {
+      setSelectedPeriod(selectedPeriod ? null : "last-month");
+    } else if (filterId === "media") {
+      setMediaFilter(
+        mediaFilter === "all"
+          ? "photo"
+          : mediaFilter === "photo"
+          ? "video"
+          : "all"
+      );
     }
   };
 
   const clearAllFilters = () => {
     setSelectedChapter(null);
     setSelectedPeriod(null);
-    setMediaFilter('all');
+    setMediaFilter("all");
   };
 
-  const hasActiveFilters = selectedChapter || selectedPeriod || mediaFilter !== 'all';
+  const hasActiveFilters =
+    selectedChapter || selectedPeriod || mediaFilter !== "all";
 
   // Filter moments
   let filteredMoments = [...moments];
   if (selectedChapter) {
-    filteredMoments = filteredMoments.filter(m => m.chapterId === selectedChapter);
+    filteredMoments = filteredMoments.filter(
+      (m) => m.chapterId === selectedChapter
+    );
   }
-  if (mediaFilter === 'photo') {
-    filteredMoments = filteredMoments.filter(m => !m.hasVideo);
-  } else if (mediaFilter === 'video') {
-    filteredMoments = filteredMoments.filter(m => m.hasVideo);
+  if (mediaFilter === "photo") {
+    filteredMoments = filteredMoments.filter((m) => !m.hasVideo);
+  } else if (mediaFilter === "video") {
+    filteredMoments = filteredMoments.filter((m) => m.hasVideo);
   }
 
   // Group moments by month
   const groupedMoments = filteredMoments.reduce((acc, moment) => {
     const date = new Date(moment.date);
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
     if (!acc[key]) {
       acc[key] = [];
     }
@@ -203,9 +250,9 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
   }, {} as Record<string, typeof moments>);
 
   const getMonthLabel = (key: string) => {
-    const [year, month] = key.split('-');
+    const [year, month] = key.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
   };
 
   return (
@@ -214,7 +261,8 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
       <div className="px-4 pt-6 pb-3">
         <h1 className="text-foreground mb-1">Galeria</h1>
         <p className="text-muted-foreground text-sm">
-          {filteredMoments.length} {filteredMoments.length === 1 ? 'momento' : 'momentos'}
+          {filteredMoments.length}{" "}
+          {filteredMoments.length === 1 ? "momento" : "momentos"}
         </p>
       </div>
 
@@ -222,7 +270,7 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
       <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2 mb-2">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
-            {availableFilters.map(filterOption => {
+            {availableFilters.map((filterOption) => {
               const isActive = filterOption.active;
               return (
                 <button
@@ -230,12 +278,20 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
                   onClick={() => toggleFilter(filterOption.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors border ${
                     isActive
-                      ? 'shadow-soft'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                      ? "shadow-soft"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
                   }`}
-                  style={isActive ? getHighlightStyle(filterOption.tone) : undefined}
+                  style={
+                    isActive ? getHighlightStyle(filterOption.tone) : undefined
+                  }
                 >
-                  <div className={isActive ? 'text-inherit' : 'text-muted-foreground'}>{filterOption.icon}</div>
+                  <div
+                    className={
+                      isActive ? "text-inherit" : "text-muted-foreground"
+                    }
+                  >
+                    {filterOption.icon}
+                  </div>
                   {filterOption.label}
                 </button>
               );
@@ -264,7 +320,9 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
             </div>
             <h3 className="text-foreground mb-2">Nenhum momento encontrado</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-4">
-              {hasActiveFilters ? 'Tente ajustar os filtros' : 'Comece registrando momentos especiais'}
+              {hasActiveFilters
+                ? "Tente ajustar os filtros"
+                : "Comece registrando momentos especiais"}
             </p>
             {hasActiveFilters && (
               <button
@@ -286,7 +344,9 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {groupedMoments[monthKey].map((moment) => {
-                    const chapter = chapters.find((ch) => ch.id === moment.chapterId);
+                    const chapter = chapters.find(
+                      (ch) => ch.id === moment.chapterId
+                    );
                     return chapter ? (
                       <PhotoCard
                         key={moment.id}

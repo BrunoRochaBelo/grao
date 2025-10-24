@@ -1,18 +1,29 @@
-import { useState } from 'react';
-import { ArrowLeft, Plus, TrendingUp } from 'lucide-react';
-import { motion } from 'motion/react';
-import { getGrowthMeasurements, GrowthMeasurement } from '@/lib/mockData';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Button } from '@/components/ui/button';
-import { GrowthForm } from './GrowthForm';
-import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
+import { useState } from "react";
+import { ArrowLeft, Plus, TrendingUp } from "lucide-react";
+import { motion } from "motion/react";
+import { getGrowthMeasurements } from "@/lib/mockData";
+import type { GrowthMeasurement } from "@/lib/types";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { Button } from "@/components/ui/button";
+import { GrowthForm } from "./GrowthForm";
+import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 
 interface GrowthScreenProps {
   onBack: () => void;
 }
 
 export function GrowthScreen({ onBack }: GrowthScreenProps) {
-  const [activeFilter, setActiveFilter] = useState<'weight' | 'height' | 'head'>('weight');
+  const [activeFilter, setActiveFilter] = useState<
+    "weight" | "height" | "head"
+  >("weight");
   const [showForm, setShowForm] = useState(false);
   const [measurements, setMeasurements] = useState(getGrowthMeasurements());
 
@@ -20,7 +31,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
     setMeasurements(getGrowthMeasurements());
   };
 
-  const chartData = measurements.map(m => ({
+  const chartData = measurements.map((m) => ({
     age: m.age,
     weight: m.weight,
     height: m.height,
@@ -30,21 +41,31 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
   const latestMeasurement = measurements[measurements.length - 1];
   const previousMeasurement = measurements[measurements.length - 2];
 
-  const weightChange = latestMeasurement && previousMeasurement
-    ? (latestMeasurement.weight - previousMeasurement.weight).toFixed(1)
-    : '0';
+  const weightChange =
+    latestMeasurement && previousMeasurement
+      ? (latestMeasurement.weight - previousMeasurement.weight).toFixed(1)
+      : "0";
 
-  const heightChange = latestMeasurement && previousMeasurement
-    ? (latestMeasurement.height - previousMeasurement.height).toFixed(0)
-    : '0';
+  const heightChange =
+    latestMeasurement && previousMeasurement
+      ? (latestMeasurement.height - previousMeasurement.height).toFixed(0)
+      : "0";
 
-  const avgWeightGrowth = measurements.length > 1
-    ? ((latestMeasurement.weight - measurements[0].weight) / measurements.length).toFixed(2)
-    : '0';
+  const avgWeightGrowth =
+    measurements.length > 1
+      ? (
+          (latestMeasurement.weight - measurements[0].weight) /
+          measurements.length
+        ).toFixed(2)
+      : "0";
 
-  const avgHeightGrowth = measurements.length > 1
-    ? ((latestMeasurement.height - measurements[0].height) / measurements.length).toFixed(1)
-    : '0';
+  const avgHeightGrowth =
+    measurements.length > 1
+      ? (
+          (latestMeasurement.height - measurements[0].height) /
+          measurements.length
+        ).toFixed(1)
+      : "0";
 
   return (
     <div className="pb-24 max-w-2xl mx-auto">
@@ -82,10 +103,13 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
               <TrendingUp className="w-5 h-5" />
               <span className="text-sm">Última Medição</span>
             </div>
-            <p className="text-2xl text-foreground mb-1">{latestMeasurement?.weight} kg</p>
+            <p className="text-2xl text-foreground mb-1">
+              {latestMeasurement?.weight} kg
+            </p>
             <p className="text-sm text-muted-foreground">
               {latestMeasurement?.height} cm
-              {latestMeasurement?.headCircumference && ` · ${latestMeasurement.headCircumference} cm PC`}
+              {latestMeasurement?.headCircumference &&
+                ` · ${latestMeasurement.headCircumference} cm PC`}
             </p>
           </motion.div>
 
@@ -100,7 +124,9 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
               <span className="text-sm">Desde o Último Mês</span>
             </div>
             <p className="text-2xl text-foreground mb-1">+{weightChange} kg</p>
-            <p className="text-sm text-muted-foreground">+{heightChange} cm de altura</p>
+            <p className="text-sm text-muted-foreground">
+              +{heightChange} cm de altura
+            </p>
           </motion.div>
         </div>
 
@@ -108,11 +134,15 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
         <div className="flex gap-2 mb-4">
           {(
             [
-              { id: 'weight', label: 'Peso', tone: 'mint' },
-              { id: 'height', label: 'Altura', tone: 'babyBlue' },
-              { id: 'head', label: 'Perímetro Cefálico', tone: 'lavender' },
-            ] satisfies { id: 'weight' | 'height' | 'head'; label: string; tone: HighlightTone }[]
-          ).map(option => {
+              { id: "weight", label: "Peso", tone: "mint" },
+              { id: "height", label: "Altura", tone: "babyBlue" },
+              { id: "head", label: "Perímetro Cefálico", tone: "lavender" },
+            ] satisfies {
+              id: "weight" | "height" | "head";
+              label: string;
+              tone: HighlightTone;
+            }[]
+          ).map((option) => {
             const isActive = activeFilter === option.id;
             return (
               <button
@@ -120,8 +150,8 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 onClick={() => setActiveFilter(option.id)}
                 className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
                   isActive
-                    ? 'shadow-soft'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                    ? "shadow-soft"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
                 }`}
                 style={isActive ? getHighlightStyle(option.tone) : undefined}
               >
@@ -145,35 +175,47 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
               <XAxis dataKey="age" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip />
-              {activeFilter === 'weight' && (
+              {activeFilter === "weight" && (
                 <Line
                   type="monotone"
                   dataKey="weight"
                   stroke="var(--highlight-mint, #8FE7DA)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-mint, #8FE7DA)', r: 4, strokeWidth: 0 }}
+                  dot={{
+                    fill: "var(--highlight-mint, #8FE7DA)",
+                    r: 4,
+                    strokeWidth: 0,
+                  }}
                   connectNulls
                   name="Peso (kg)"
                 />
               )}
-              {activeFilter === 'height' && (
+              {activeFilter === "height" && (
                 <Line
                   type="monotone"
                   dataKey="height"
                   stroke="var(--highlight-baby-blue, #A6DCFF)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-baby-blue, #A6DCFF)', r: 4, strokeWidth: 0 }}
+                  dot={{
+                    fill: "var(--highlight-baby-blue, #A6DCFF)",
+                    r: 4,
+                    strokeWidth: 0,
+                  }}
                   connectNulls
                   name="Altura (cm)"
                 />
               )}
-              {activeFilter === 'head' && (
+              {activeFilter === "head" && (
                 <Line
                   type="monotone"
                   dataKey="head"
                   stroke="var(--highlight-lavender, #C3CBFF)"
                   strokeWidth={2}
-                  dot={{ fill: 'var(--highlight-lavender, #C3CBFF)', r: 4, strokeWidth: 0 }}
+                  dot={{
+                    fill: "var(--highlight-lavender, #C3CBFF)",
+                    r: 4,
+                    strokeWidth: 0,
+                  }}
                   connectNulls
                   name="PC (cm)"
                 />
@@ -192,11 +234,15 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
           <h3 className="text-foreground mb-3">Estatísticas</h3>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Média de peso por mês:</span>
+              <span className="text-muted-foreground">
+                Média de peso por mês:
+              </span>
               <span className="text-foreground">+{avgWeightGrowth} kg</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Média de altura por mês:</span>
+              <span className="text-muted-foreground">
+                Média de altura por mês:
+              </span>
               <span className="text-foreground">+{avgHeightGrowth} cm</span>
             </div>
             <div className="flex justify-between text-sm">
@@ -223,13 +269,17 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
                 <div>
                   <p className="text-foreground">{measurement.age}</p>
                   <p className="text-muted-foreground text-sm">
-                    {new Date(measurement.date).toLocaleDateString('pt-BR')}
+                    {new Date(measurement.date).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-foreground">{measurement.weight} kg · {measurement.height} cm</p>
+                  <p className="text-foreground">
+                    {measurement.weight} kg · {measurement.height} cm
+                  </p>
                   {measurement.headCircumference && (
-                    <p className="text-muted-foreground text-sm">PC: {measurement.headCircumference} cm</p>
+                    <p className="text-muted-foreground text-sm">
+                      PC: {measurement.headCircumference} cm
+                    </p>
                   )}
                 </div>
               </div>

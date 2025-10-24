@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 import {
   X,
   Camera,
@@ -8,17 +8,17 @@ import {
   Tag,
   Check,
   Link as LinkIcon,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useForm } from 'react-hook-form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import type { PlaceholderTemplate, Chapter } from '@/lib/types';
-import { toast } from 'sonner@2.0.3';
-import { getHighlightStyle } from '@/lib/highlights';
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import type { PlaceholderTemplate, Chapter } from "@/lib/types";
+import { toast } from "sonner";
+import { getHighlightStyle } from "@/lib/highlights";
 import {
   buildDefaultValues,
   formatDateLabel,
@@ -28,8 +28,8 @@ import {
   MAX_TAGS,
   type MomentFormValues,
   type PrivacyOption,
-} from './forms/momentFormConfig';
-import { useMomentActions } from './hooks/useMomentActions';
+} from "./forms/momentFormConfig";
+import { useMomentActions } from "./hooks/useMomentActions";
 
 interface MomentFormProps {
   isOpen: boolean;
@@ -47,13 +47,19 @@ interface PrivacyDisplay {
 }
 
 const PRIVACY_OPTIONS: PrivacyDisplay[] = [
-  { id: 'private', label: 'Privado', tone: 'lavender', Icon: Lock },
-  { id: 'people', label: 'Pessoas', tone: 'mint', Icon: Users },
-  { id: 'link', label: 'Link', tone: 'babyBlue', Icon: LinkIcon },
+  { id: "private", label: "Privado", tone: "lavender", Icon: Lock },
+  { id: "people", label: "Pessoas", tone: "mint", Icon: Users },
+  { id: "link", label: "Link", tone: "babyBlue", Icon: LinkIcon },
 ];
 
-export function MomentForm({ isOpen, onClose, template, chapter, onSave }: MomentFormProps) {
-  const [currentTag, setCurrentTag] = useState('');
+export function MomentForm({
+  isOpen,
+  onClose,
+  template,
+  chapter,
+  onSave,
+}: MomentFormProps) {
+  const [currentTag, setCurrentTag] = useState("");
   const [tagError, setTagError] = useState<string | null>(null);
   const {
     register,
@@ -64,27 +70,30 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
     formState: { errors, isSubmitting, isDirty },
   } = useForm<MomentFormValues>({
     defaultValues: buildDefaultValues(template.name),
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
   const { createMoment, getAgeLabel, isBabySelected } = useMomentActions();
 
-  const dateValue = watch('date');
-  const timeValue = watch('time');
-  const tags = watch('tags');
-  const privacy = watch('privacy');
+  const dateValue = watch("date");
+  const timeValue = watch("time");
+  const tags = watch("tags");
+  const privacy = watch("privacy");
 
-  const ageLabel = useMemo(() => (isValidDateValue(dateValue) ? getAgeLabel(dateValue) : ''), [dateValue, getAgeLabel]);
+  const ageLabel = useMemo(
+    () => (isValidDateValue(dateValue) ? getAgeLabel(dateValue) : ""),
+    [dateValue, getAgeLabel]
+  );
 
   useEffect(() => {
-    register('status');
-    register('tags');
-    register('privacy');
+    register("status");
+    register("tags");
+    register("privacy");
   }, [register]);
 
   useEffect(() => {
     reset(buildDefaultValues(template.name));
-    setCurrentTag('');
+    setCurrentTag("");
     setTagError(null);
   }, [reset, template.id, template.name]);
 
@@ -98,20 +107,23 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
     }
 
     if (tags.includes(normalizedTag)) {
-      toast.info('Esta etiqueta já foi adicionada.');
+      toast.info("Esta etiqueta já foi adicionada.");
       return;
     }
 
-    setValue('tags', [...tags, normalizedTag], { shouldDirty: true, shouldValidate: true });
-    setCurrentTag('');
+    setValue("tags", [...tags, normalizedTag], {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setCurrentTag("");
     setTagError(null);
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setValue(
-      'tags',
-      tags.filter(tag => tag !== tagToRemove),
-      { shouldDirty: true, shouldValidate: true },
+      "tags",
+      tags.filter((tag) => tag !== tagToRemove),
+      { shouldDirty: true, shouldValidate: true }
     );
     if (tagError) {
       setTagError(null);
@@ -120,7 +132,7 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
 
   const onSubmit = async (values: MomentFormValues) => {
     if (!isBabySelected) {
-      toast.error('Nenhum bebê ativo selecionado.');
+      toast.error("Nenhum bebê ativo selecionado.");
       return;
     }
 
@@ -144,36 +156,36 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
       });
 
       if (!created) {
-        throw new Error('Falha ao criar momento');
+        throw new Error("Falha ao criar momento");
       }
 
       toast.success(
-        values.status === 'published'
+        values.status === "published"
           ? `${template.icon} ${template.name} registrado com sucesso!`
-          : 'Rascunho salvo com sucesso',
+          : "Rascunho salvo com sucesso"
       );
 
       onSave?.();
       onClose();
     } catch (error) {
-      toast.error('Erro ao salvar momento. Tente novamente.');
+      toast.error("Erro ao salvar momento. Tente novamente.");
     }
   };
 
   const onInvalid = () => {
-    toast.error('Revise os campos destacados para continuar.');
+    toast.error("Revise os campos destacados para continuar.");
   };
 
   const submitForm = handleSubmit(onSubmit, onInvalid);
 
-  const handleSubmitStatus = (status: 'published' | 'draft') => () => {
-    setValue('status', status, { shouldDirty: true, shouldValidate: true });
+  const handleSubmitStatus = (status: "published" | "draft") => () => {
+    setValue("status", status, { shouldDirty: true, shouldValidate: true });
     void submitForm();
   };
 
   const handleDiscard = () => {
     if (isDirty) {
-      if (confirm('Descartar alterações?')) {
+      if (confirm("Descartar alterações?")) {
         reset(buildDefaultValues(template.name));
         onClose();
       }
@@ -196,10 +208,10 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
           />
 
           <motion.div
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-50 max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -207,7 +219,9 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                 <span className="text-2xl">{template.icon}</span>
                 <div>
                   <h2 className="text-foreground">{template.name}</h2>
-                  <p className="text-muted-foreground text-sm">{chapter.name}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {chapter.name}
+                  </p>
                 </div>
               </div>
               <button
@@ -237,13 +251,15 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                     id="title"
                     placeholder="Conte este momento em uma frase..."
                     className="mt-1"
-                    {...register('title', {
-                      required: 'Informe um título para o momento.',
-                      setValueAs: value => (value as string).trimStart(),
+                    {...register("title", {
+                      required: "Informe um título para o momento.",
+                      setValueAs: (value) => (value as string).trimStart(),
                     })}
                   />
                   {errors.title && (
-                    <p className="text-destructive text-sm mt-1">{errors.title.message}</p>
+                    <p className="text-destructive text-sm mt-1">
+                      {errors.title.message}
+                    </p>
                   )}
                 </div>
 
@@ -254,14 +270,18 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       id="date"
                       type="date"
                       className="mt-1"
-                      max={new Date().toISOString().split('T')[0]}
-                      {...register('date', {
-                        required: 'Selecione uma data.',
-                        validate: value => isValidDateValue(value) || 'A data não pode estar no futuro.',
+                      max={new Date().toISOString().split("T")[0]}
+                      {...register("date", {
+                        required: "Selecione uma data.",
+                        validate: (value) =>
+                          isValidDateValue(value) ||
+                          "A data não pode estar no futuro.",
                       })}
                     />
                     {errors.date && (
-                      <p className="text-destructive text-sm mt-1">{errors.date.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.date.message}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -270,21 +290,28 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       id="time"
                       type="time"
                       className="mt-1"
-                      {...register('time', {
-                        required: 'Selecione um horário.',
-                        validate: value => isValidTime(value) || 'Informe um horário válido.',
+                      {...register("time", {
+                        required: "Selecione um horário.",
+                        validate: (value) =>
+                          isValidTime(value) || "Informe um horário válido.",
                       })}
                     />
                     {errors.time && (
-                      <p className="text-destructive text-sm mt-1">{errors.time.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.time.message}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between bg-muted/60 border border-border rounded-xl p-3">
                   <div>
-                    <p className="text-sm text-muted-foreground">Idade registrada</p>
-                    <p className="text-foreground font-medium">{ageLabel || '—'}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Idade registrada
+                    </p>
+                    <p className="text-foreground font-medium">
+                      {ageLabel || "—"}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="w-4 h-4" />
@@ -299,12 +326,17 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       id="location"
                       placeholder="Onde aconteceu?"
                       className="mt-1"
-                      {...register('location', {
-                        maxLength: { value: 120, message: 'O local pode ter no máximo 120 caracteres.' },
+                      {...register("location", {
+                        maxLength: {
+                          value: 120,
+                          message: "O local pode ter no máximo 120 caracteres.",
+                        },
                       })}
                     />
                     {errors.location && (
-                      <p className="text-destructive text-sm mt-1">{errors.location.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.location.message}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -313,15 +345,18 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       id="people"
                       placeholder="Separe os nomes com vírgula"
                       className="mt-1"
-                      {...register('peopleRaw', {
+                      {...register("peopleRaw", {
                         maxLength: {
                           value: 200,
-                          message: 'O campo "Pessoas" pode ter no máximo 200 caracteres.',
+                          message:
+                            'O campo "Pessoas" pode ter no máximo 200 caracteres.',
                         },
                       })}
                     />
                     {errors.peopleRaw && (
-                      <p className="text-destructive text-sm mt-1">{errors.peopleRaw.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.peopleRaw.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -334,15 +369,18 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       placeholder="Escreva uma frase marcante..."
                       className="mt-1"
                       rows={3}
-                      {...register('noteShort', {
+                      {...register("noteShort", {
                         maxLength: {
                           value: 160,
-                          message: 'O resumo pode ter no máximo 160 caracteres.',
+                          message:
+                            "O resumo pode ter no máximo 160 caracteres.",
                         },
                       })}
                     />
                     {errors.noteShort && (
-                      <p className="text-destructive text-sm mt-1">{errors.noteShort.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.noteShort.message}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -352,15 +390,18 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       placeholder="Conte mais detalhes e sentimentos sobre este momento..."
                       className="mt-1"
                       rows={4}
-                      {...register('noteLong', {
+                      {...register("noteLong", {
                         maxLength: {
                           value: 2000,
-                          message: 'O depoimento pode ter no máximo 2000 caracteres.',
+                          message:
+                            "O depoimento pode ter no máximo 2000 caracteres.",
                         },
                       })}
                     />
                     {errors.noteLong && (
-                      <p className="text-destructive text-sm mt-1">{errors.noteLong.message}</p>
+                      <p className="text-destructive text-sm mt-1">
+                        {errors.noteLong.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -371,24 +412,30 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                     <Input
                       id="tags"
                       value={currentTag}
-                      onChange={event => setCurrentTag(event.target.value)}
+                      onChange={(event) => setCurrentTag(event.target.value)}
                       placeholder="Digite e pressione enter"
-                      onKeyDown={event => {
-                        if (event.key === 'Enter') {
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
                           event.preventDefault();
                           handleAddTag();
                         }
                       }}
                     />
-                    <Button type="button" variant="secondary" onClick={handleAddTag}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleAddTag}
+                    >
                       Adicionar
                     </Button>
                   </div>
                   {(tagError || errors.tags) && (
-                    <p className="text-destructive text-sm mt-1">{tagError ?? errors.tags?.message}</p>
+                    <p className="text-destructive text-sm mt-1">
+                      {tagError ?? errors.tags?.message}
+                    </p>
                   )}
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {tags.map(tag => (
+                    {tags.map((tag) => (
                       <Badge
                         key={tag}
                         variant="secondary"
@@ -407,7 +454,9 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                       </Badge>
                     ))}
                     {tags.length === 0 && (
-                      <span className="text-sm text-muted-foreground">Nenhuma etiqueta adicionada.</span>
+                      <span className="text-sm text-muted-foreground">
+                        Nenhuma etiqueta adicionada.
+                      </span>
                     )}
                   </div>
                 </div>
@@ -415,18 +464,22 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                 <div className="space-y-3">
                   <Label>Privacidade</Label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {PRIVACY_OPTIONS.map(option => {
+                    {PRIVACY_OPTIONS.map((option) => {
                       const style = getHighlightStyle(option.tone);
                       const isActive = privacy === option.id;
                       return (
                         <button
                           key={option.id}
                           type="button"
-                          onClick={() => setValue('privacy', option.id, { shouldDirty: true })}
+                          onClick={() =>
+                            setValue("privacy", option.id, {
+                              shouldDirty: true,
+                            })
+                          }
                           className={`rounded-xl border transition-all text-left p-3 space-y-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                             isActive
-                              ? 'border-transparent ring-2 ring-offset-2 ring-offset-background'
-                              : 'border-border hover:border-primary'
+                              ? "border-transparent ring-2 ring-offset-2 ring-offset-background"
+                              : "border-border hover:border-primary"
                           }`}
                           style={isActive ? style : undefined}
                         >
@@ -434,11 +487,11 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                           <div>
                             <p className="font-medium">{option.label}</p>
                             <p className="text-sm text-muted-foreground">
-                              {option.id === 'private'
-                                ? 'Visível apenas para você e administradores.'
-                                : option.id === 'people'
-                                ? 'Compartilhe com familiares e amigos conectados.'
-                                : 'Disponibilize por link compartilhável.'}
+                              {option.id === "private"
+                                ? "Visível apenas para você e administradores."
+                                : option.id === "people"
+                                ? "Compartilhe com familiares e amigos conectados."
+                                : "Disponibilize por link compartilhável."}
                             </p>
                           </div>
                           {isActive && (
@@ -468,14 +521,14 @@ export function MomentForm({ isOpen, onClose, template, chapter, onSave }: Momen
                     type="button"
                     variant="outline"
                     disabled={isSubmitting}
-                    onClick={handleSubmitStatus('draft')}
+                    onClick={handleSubmitStatus("draft")}
                   >
                     Salvar como rascunho
                   </Button>
                   <Button
                     type="button"
                     disabled={isSubmitting}
-                    onClick={handleSubmitStatus('published')}
+                    onClick={handleSubmitStatus("published")}
                   >
                     Publicar momento
                   </Button>

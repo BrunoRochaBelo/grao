@@ -1,30 +1,36 @@
-import { useState } from 'react';
-import { ChevronLeft, ExternalLink, HelpCircle, Search, Send } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner@2.0.3';
+import { useState } from "react";
+import {
+  ChevronLeft,
+  ExternalLink,
+  HelpCircle,
+  Search,
+  Send,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface HelpAndSupportScreenProps {
   onBack: () => void;
 }
 
 export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
 
   const handleSubmit = () => {
     if (!contactName || !contactEmail || !contactMessage) {
-      toast.error('Preencha nome, email e mensagem para enviar.');
+      toast.error("Preencha nome, email e mensagem para enviar.");
       return;
     }
 
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
-    toast.success('Sua mensagem foi enviada! Responderemos por email.');
+    setContactName("");
+    setContactEmail("");
+    setContactMessage("");
+    toast.success("Sua mensagem foi enviada! Responderemos por email.");
   };
 
   const openDocument = (label: string) => {
@@ -37,7 +43,9 @@ export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
         <button onClick={onBack} className="p-2" type="button">
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-medium text-center flex-1">Central de ajuda</h1>
+        <h1 className="text-xl font-medium text-center flex-1">
+          Central de ajuda
+        </h1>
       </div>
 
       <div className="relative mb-6">
@@ -52,12 +60,29 @@ export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
         </div>
         <div className="space-y-2">
           {[
-            { question: 'Como adicionar um bebe?', answer: 'Acesse Perfil > Adicionar bebe para criar um novo album.' },
-            { question: 'Como exportar um album?', answer: 'Perfil > Exportar album em PDF e siga as configuracoes desejadas.' },
-            { question: 'Como restaurar um backup?', answer: 'Ative backup automatico em Preferencias e acesse a mesma tela para restaurar.' },
+            {
+              question: "Como adicionar um bebe?",
+              answer:
+                "Acesse Perfil > Adicionar bebe para criar um novo album.",
+            },
+            {
+              question: "Como exportar um album?",
+              answer:
+                "Perfil > Exportar album em PDF e siga as configuracoes desejadas.",
+            },
+            {
+              question: "Como restaurar um backup?",
+              answer:
+                "Ative backup automatico em Preferencias e acesse a mesma tela para restaurar.",
+            },
           ].map((faq) => (
-            <div key={faq.question} className="rounded-lg border border-border bg-card p-3">
-              <p className="text-sm font-medium text-foreground">{faq.question}</p>
+            <div
+              key={faq.question}
+              className="rounded-lg border border-border bg-card p-3"
+            >
+              <p className="text-sm font-medium text-foreground">
+                {faq.question}
+              </p>
               <p className="text-sm text-muted-foreground mt-1">{faq.answer}</p>
             </div>
           ))}
@@ -103,7 +128,8 @@ export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
             Enviar
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            Voce pode anexar capturas de tela respondendo ao email de confirmacao.
+            Voce pode anexar capturas de tela respondendo ao email de
+            confirmacao.
           </p>
         </div>
       </section>
@@ -113,7 +139,7 @@ export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
           type="button"
           variant="outline"
           className="w-full justify-between"
-          onClick={() => openDocument('Politica de privacidade')}
+          onClick={() => openDocument("Politica de privacidade")}
         >
           <span>Politica de privacidade</span>
           <ExternalLink className="w-4 h-4" />
@@ -122,7 +148,7 @@ export function HelpAndSupportScreen({ onBack }: HelpAndSupportScreenProps) {
           type="button"
           variant="outline"
           className="w-full justify-between"
-          onClick={() => openDocument('Termos de uso')}
+          onClick={() => openDocument("Termos de uso")}
         >
           <span>Termos de uso</span>
           <ExternalLink className="w-4 h-4" />

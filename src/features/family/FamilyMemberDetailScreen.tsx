@@ -1,8 +1,9 @@
-import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
-import { motion } from 'motion/react';
-import { FamilyMember, getMoments, chapters } from '@/lib/mockData';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Calendar, MapPin, Users } from "lucide-react";
+import { motion } from "motion/react";
+import { getMoments, chapters } from "@/lib/mockData";
+import type { FamilyMember } from "@/lib/types";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface FamilyMemberDetailScreenProps {
   member: FamilyMember;
@@ -10,18 +11,27 @@ interface FamilyMemberDetailScreenProps {
   onSelectMoment?: (momentId: string) => void;
 }
 
-export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: FamilyMemberDetailScreenProps) {
+export function FamilyMemberDetailScreen({
+  member,
+  onBack,
+  onSelectMoment,
+}: FamilyMemberDetailScreenProps) {
   const allMoments = getMoments();
-  
+
   // Filter moments where this member participated
-  const memberMoments = allMoments.filter(moment => 
-    moment.people?.some(person => 
-      person.toLowerCase() === member.name.toLowerCase()
+  const memberMoments = allMoments.filter((moment) =>
+    moment.people?.some(
+      (person) => person.toLowerCase() === member.name.toLowerCase()
     )
   );
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
   };
 
   const getAge = (birthDate?: string) => {
@@ -30,13 +40,13 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
     const now = new Date();
     const years = now.getFullYear() - birth.getFullYear();
     const months = now.getMonth() - birth.getMonth();
-    
+
     if (years === 0) {
-      return `${months} ${months === 1 ? 'mês' : 'meses'}`;
+      return `${months} ${months === 1 ? "mês" : "meses"}`;
     } else if (months < 0) {
-      return `${years - 1} ${years - 1 === 1 ? 'ano' : 'anos'}`;
+      return `${years - 1} ${years - 1 === 1 ? "ano" : "anos"}`;
     }
-    return `${years} ${years === 1 ? 'ano' : 'anos'}`;
+    return `${years} ${years === 1 ? "ano" : "anos"}`;
   };
 
   return (
@@ -85,7 +95,7 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
             </div>
             <div className="text-center">
               <p className="text-2xl text-foreground">
-                {new Set(memberMoments.map(m => m.chapterId)).size}
+                {new Set(memberMoments.map((m) => m.chapterId)).size}
               </p>
               <p className="text-sm text-muted-foreground">Capítulos</p>
             </div>
@@ -98,8 +108,10 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h2 className="text-foreground mb-3">Momentos com {member.name.split(' ')[0]}</h2>
-          
+          <h2 className="text-foreground mb-3">
+            Momentos com {member.name.split(" ")[0]}
+          </h2>
+
           {memberMoments.length === 0 ? (
             <div className="bg-card rounded-2xl p-8 shadow-sm border border-border text-center">
               <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
@@ -110,8 +122,8 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
           ) : (
             <div className="space-y-3">
               {memberMoments.map((moment, index) => {
-                const chapter = chapters.find(c => c.id === moment.chapterId);
-                
+                const chapter = chapters.find((c) => c.id === moment.chapterId);
+
                 return (
                   <motion.div
                     key={moment.id}
@@ -130,10 +142,12 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
                         />
                       </div>
                     )}
-                    
+
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-foreground flex-1">{moment.title}</h3>
+                        <h3 className="text-foreground flex-1">
+                          {moment.title}
+                        </h3>
                         {chapter && (
                           <Badge
                             className="text-white ml-2"
@@ -143,11 +157,13 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          <span>{new Date(moment.date).toLocaleDateString('pt-BR')}</span>
+                          <span>
+                            {new Date(moment.date).toLocaleDateString("pt-BR")}
+                          </span>
                         </div>
                         <span>·</span>
                         <span>{moment.age}</span>
@@ -163,10 +179,17 @@ export function FamilyMemberDetailScreen({ member, onBack, onSelectMoment }: Fam
                       {moment.people && moment.people.length > 1 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {moment.people
-                            .filter(p => p.toLowerCase() !== member.name.toLowerCase())
+                            .filter(
+                              (p) =>
+                                p.toLowerCase() !== member.name.toLowerCase()
+                            )
                             .slice(0, 3)
                             .map((person, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs">
+                              <Badge
+                                key={i}
+                                variant="secondary"
+                                className="text-xs"
+                              >
                                 {person}
                               </Badge>
                             ))}

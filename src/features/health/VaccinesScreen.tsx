@@ -1,28 +1,30 @@
-import { useMemo, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { motion } from 'motion/react';
+import { useMemo, useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { motion } from "motion/react";
 import {
-  Chapter,
-  PlaceholderTemplate,
   chapters,
   currentBaby,
   getBabyAgeInDays,
   getMoments,
   getPlaceholdersForChapter,
-} from '@/lib/mockData';
-import { Progress } from '@/components/ui/progress';
-import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
-import { MomentTemplateCard } from '../chapters/MomentTemplateCard';
+} from "@/lib/mockData";
+import type { Chapter, PlaceholderTemplate } from "@/lib/types";
+import { Progress } from "@/components/ui/progress";
+import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
+import { MomentTemplateCard } from "../chapters/MomentTemplateCard";
 
 interface VaccinesScreenProps {
   onBack: () => void;
   onOpenTemplate: (template: PlaceholderTemplate, chapter: Chapter) => void;
 }
 
-type VaccineFilter = 'all' | 'completed' | 'pending';
+type VaccineFilter = "all" | "completed" | "pending";
 
-export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) {
-  const chapter = useMemo(() => chapters.find((item) => item.id === '3'), []);
+export function VaccinesScreen({
+  onBack,
+  onOpenTemplate,
+}: VaccinesScreenProps) {
+  const chapter = useMemo(() => chapters.find((item) => item.id === "3"), []);
 
   const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
   const moments = getMoments();
@@ -33,10 +35,12 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
     }
 
     return getPlaceholdersForChapter(chapter.id, babyAgeInDays)
-      .filter((placeholder) => placeholder.templateType === 'vacina')
+      .filter((placeholder) => placeholder.templateType === "vacina")
       .sort((a, b) => a.ageRangeStart - b.ageRangeStart)
       .map((placeholder) => {
-        const moment = moments.find((item) => item.templateId === placeholder.id);
+        const moment = moments.find(
+          (item) => item.templateId === placeholder.id
+        );
 
         return {
           ...placeholder,
@@ -51,18 +55,21 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
     return null;
   }
 
-  const completedCount = vaccineTemplates.filter((template) => template.isCompleted).length;
+  const completedCount = vaccineTemplates.filter(
+    (template) => template.isCompleted
+  ).length;
   const totalCount = vaccineTemplates.length;
   const pendingCount = totalCount - completedCount;
-  const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const percentage =
+    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const [filter, setFilter] = useState<VaccineFilter>('all');
+  const [filter, setFilter] = useState<VaccineFilter>("all");
 
   const filteredTemplates = vaccineTemplates.filter((template) => {
-    if (filter === 'completed') {
+    if (filter === "completed") {
       return template.isCompleted;
     }
-    if (filter === 'pending') {
+    if (filter === "pending") {
       return !template.isCompleted;
     }
     return true;
@@ -96,8 +103,10 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
           <Progress value={percentage} className="h-2 mb-2" />
           <p className="text-muted-foreground text-sm">
             {pendingCount > 0
-              ? `${pendingCount} ${pendingCount === 1 ? 'pendente' : 'pendentes'}`
-              : 'Todas em dia!'}
+              ? `${pendingCount} ${
+                  pendingCount === 1 ? "pendente" : "pendentes"
+                }`
+              : "Todas em dia!"}
           </p>
         </div>
       </div>
@@ -106,10 +115,14 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
         <div className="flex gap-2 mb-4">
           {(
             [
-              { id: 'all', label: 'Todas', tone: 'lavender' },
-              { id: 'completed', label: 'Feitas', tone: 'mint' },
-              { id: 'pending', label: 'Pendentes', tone: 'babyBlue' },
-            ] satisfies { id: VaccineFilter; label: string; tone: HighlightTone }[]
+              { id: "all", label: "Todas", tone: "lavender" },
+              { id: "completed", label: "Feitas", tone: "mint" },
+              { id: "pending", label: "Pendentes", tone: "babyBlue" },
+            ] satisfies {
+              id: VaccineFilter;
+              label: string;
+              tone: HighlightTone;
+            }[]
           ).map((option) => {
             const isActive = filter === option.id;
             return (
@@ -118,8 +131,8 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
                 onClick={() => setFilter(option.id)}
                 className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
                   isActive
-                    ? 'shadow-soft'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border-transparent'
+                    ? "shadow-soft"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
                 }`}
                 style={isActive ? getHighlightStyle(option.tone) : undefined}
               >
@@ -132,9 +145,9 @@ export function VaccinesScreen({ onBack, onOpenTemplate }: VaccinesScreenProps) 
         {filteredTemplates.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              {filter === 'completed'
-                ? 'Nenhuma vacina registrada ainda.'
-                : 'Nenhuma vacina pendente!'}
+              {filter === "completed"
+                ? "Nenhuma vacina registrada ainda."
+                : "Nenhuma vacina pendente!"}
             </p>
           </div>
         ) : (
