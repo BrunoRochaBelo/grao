@@ -3,7 +3,7 @@
 ## ✅ Navegação Completa
 
 ### Navegação de Múltiplos Níveis
-- ✅ Home → Galeria → Capítulos → Pesquisar → Perfil (navegação inferior)
+- ✅ Início → Momentos → Novo → Sussurros → Perfil (navegação inferior)
 - ✅ Capítulos → Detalhe do Capítulo → Formulário de Momento
 - ✅ Botão voltar funcional em todos os níveis
 - ✅ Transições suaves entre telas
@@ -61,7 +61,7 @@
 - ✅ **Idade recalculada** para data escolhida
 - ✅ **Progresso de capítulos** atualizado em tempo real
 - ✅ **Contadores da Home** atualizados automaticamente
-- ✅ **Galeria reordenada** cronologicamente
+- ✅ **Momentos reordenados** cronologicamente
 
 ## 💾 Persistência de Dados
 
@@ -108,8 +108,8 @@
   - Capítulos (progresso geral)
 - ✅ Próximos marcos sugeridos
 
-### Galeria
-- ✅ Timeline visual agrupado por mês/ano
+### Momentos
+- ✅ Linha do tempo visual agrupada por mês/ano
 - ✅ Cards de foto com:
   - Pílula de capítulo colorida
   - Ícones de vídeo/privacidade
