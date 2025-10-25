@@ -73,7 +73,7 @@ export function NotificationsSettingsScreen({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-medium text-center flex-1">
-          Notificacoes e preferencias
+          Sussurros e preferências
         </h1>
       </div>
 
@@ -81,13 +81,13 @@ export function NotificationsSettingsScreen({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             <BellRing className="w-4 h-4" />
-            <span>Notificacoes</span>
+            <span>Sussurros</span>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">
-                Receber notificacoes
+                Receber sussurros
               </p>
               <p className="text-sm text-muted-foreground">
                 Ative ou pause todos os alertas enviados pelo aplicativo.
@@ -96,7 +96,7 @@ export function NotificationsSettingsScreen({
             <Switch
               checked={receiveNotifications}
               onCheckedChange={setReceiveNotifications}
-              aria-label="Receber notificacoes"
+              aria-label="Receber sussurros"
             />
           </div>
 
