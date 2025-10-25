@@ -109,12 +109,11 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'new') {
+    if (tab === 'chapters') {
       setShowAddMoment(true);
-      return;
+    } else {
+      navigateToMain(tab as Screen);
     }
-
-    navigateToMain(tab as Screen);
   };
 
   const isNavigatedToChapters = () => {
