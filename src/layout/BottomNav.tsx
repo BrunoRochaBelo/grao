@@ -16,8 +16,11 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
+    <nav className="fixed inset-x-0 bottom-4 z-50 px-4">
+      <div
+        className="mx-auto flex items-center justify-around rounded-[25px] border border-border/70 bg-card/95 px-4 py-3 shadow-2xl backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-md supports-[backdrop-filter]:bg-card/75"
+        style={{ maxWidth: '700px' }}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
