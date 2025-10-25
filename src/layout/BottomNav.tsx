@@ -1,68 +1,67 @@
+import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  isHidden?: boolean;
 }
 
-const tabs = [
-  { id: 'home', label: 'Início', icon: '🏠' },
-  { id: 'gallery', label: 'Momentos', icon: '🌸' },
-  { id: 'chapters', label: 'Novo', icon: '➕', isAction: true },
-  { id: 'notifications', label: 'Sussurros', icon: '🔔' },
-  { id: 'profile', label: 'Jornada', icon: '👶' },
-];
+export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const tabs = [
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'gallery', label: 'Galeria', icon: Image },
+    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
+    { id: 'notifications', label: 'Notificações', icon: Bell },
+    { id: 'profile', label: 'Perfil', icon: Baby },
+  ];
 
-export function BottomNav({ activeTab, onTabChange, isHidden = false }: BottomNavProps) {
   return (
-    <motion.nav
-      initial={{ y: 120, opacity: 0 }}
-      animate={{ y: isHidden ? 120 : 0, opacity: isHidden ? 0 : 1 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-      className="fixed inset-x-0 bottom-5 z-50 flex justify-center px-4 pointer-events-none"
-      aria-label="Navegação principal"
-    >
-      <div
-        className="pointer-events-auto flex w-full max-w-xl items-center justify-between gap-1 rounded-full border border-white/40 bg-white/80 px-2 py-2 shadow-lg shadow-black/5 backdrop-blur-xl transition-colors dark:border-white/10 dark:bg-zinc-900/80"
-      >
-        {tabs.map(tab => {
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 
           if (tab.isAction) {
             return (
-              <motion.button
+              <button
                 key={tab.id}
-                whileTap={{ scale: 0.94 }}
                 onClick={() => onTabChange(tab.id)}
-                className="flex h-16 w-16 items-center justify-center"
+                className="flex flex-col items-center gap-1 relative"
                 aria-label={tab.label}
               >
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-2xl text-white shadow-lg shadow-violet-500/40">
-                  {tab.icon}
-                </span>
-              </motion.button>
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
+                >
+                  <Icon className="w-6 h-6" />
+                </motion.div>
+              </button>
             );
           }
 
           return (
-            <motion.button
+            <button
               key={tab.id}
-              whileTap={{ scale: 0.98 }}
-              animate={{ scale: isActive ? 1.05 : 1 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
               onClick={() => onTabChange(tab.id)}
-              className={`flex min-h-[44px] min-w-[56px] flex-col items-center rounded-full px-3 py-2 text-[11px] font-medium transition-colors ${
-                isActive ? 'text-violet-600 dark:text-violet-300' : 'text-zinc-400 dark:text-zinc-500'
+              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
+                isActive ? 'text-primary' : 'text-muted-foreground'
               }`}
               aria-label={tab.label}
             >
-              <span className="text-xl leading-none">{tab.icon}</span>
-              <span className="mt-1">{tab.label}</span>
-            </motion.button>
+              <Icon className="w-6 h-6" />
+              <span className="text-[11px]">{tab.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </button>
           );
         })}
       </div>
-    </motion.nav>
+    </nav>
   );
 }
