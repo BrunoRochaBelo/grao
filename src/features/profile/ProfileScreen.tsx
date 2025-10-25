@@ -264,8 +264,8 @@ export function ProfileScreen({
           />
           <ActionCard
             icon={<Bell className="w-5 h-5" />}
-            title="Sussurros e preferências"
-            subtitle="Alertas, idioma, backup e exibição"
+            title="Notificacoes e preferencias"
+            subtitle="Alertas, idioma, backup e exibicao"
             onClick={onNavigateToNotificationsSettings}
           />
         </div>
