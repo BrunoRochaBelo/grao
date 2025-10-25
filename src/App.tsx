@@ -32,7 +32,7 @@ import {
   PlaceholderTemplate,
 } from './lib/types';
 
-type Screen = 'home' | 'momentos' | 'chapters' | 'sussurros' | 'profile';
+type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
 type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
@@ -109,7 +109,7 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'add') {
+    if (tab === 'chapters') {
       setShowAddMoment(true);
     } else {
       navigateToMain(tab as Screen);
@@ -157,7 +157,7 @@ function AppContent() {
               onOpenChapter={handleSelectChapter}
             />
           );
-        case 'momentos':
+        case 'gallery':
           return (
             <GalleryScreen
               onSelectMoment={moment => navigateTo({ type: 'moment-detail', moment })}
@@ -170,7 +170,7 @@ function AppContent() {
               onBack={isNavigatedToChapters() ? goBack : undefined}
             />
           );
-        case 'sussurros':
+        case 'notifications':
           return <NotificationsScreen />;
         case 'profile':
           return (
@@ -191,9 +191,9 @@ function AppContent() {
                 navigateTo({ type: 'help-and-support' })
               }
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
-              onNavigateToMoments={() => navigateToMain('momentos')}
+              onNavigateToMoments={() => navigateToMain('gallery')}
               onNavigateToChapters={() => navigateToMain('chapters')}
-              onNavigateToMedia={() => navigateToMain('momentos')}
+              onNavigateToMedia={() => navigateToMain('gallery')}
               onEditBaby={() => {
                 if (currentBaby) {
                   navigateTo({ type: 'edit-baby', baby: currentBaby });
