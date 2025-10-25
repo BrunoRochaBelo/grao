@@ -1,410 +1,366 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState } from "react";
+import { getMoments, chapters } from "@/lib/mockData";
+import type { Moment } from "@/lib/types";
 import {
-  CalendarDays,
-  ChevronRight,
+  Lock,
+  Video,
+  ChevronDown,
+  ChevronUp,
   Filter,
-  MapPin,
-  Search,
-  Tag,
-  Users,
   X,
-} from 'lucide-react';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Moment } from '@/lib/types';
+  Calendar,
+  Users,
+  Tag,
+  Image as ImageIcon,
+  FolderOpen,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Badge } from "@/components/ui/badge";
+import { MediaCarousel } from "@/components/shared/MediaCarousel";
+import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
+
+const moments = getMoments();
 
 interface GalleryScreenProps {
   onSelectMoment?: (moment: Moment) => void;
 }
 
-type FilterKey = 'all' | 'month' | 'people' | 'places' | 'types';
+interface PhotoCardProps {
+  moment: (typeof moments)[0];
+  chapter: (typeof chapters)[0];
+  onClick: () => void;
+}
 
-const filterChips: Array<{ id: FilterKey | 'clear'; label: string }> = [
-  { id: 'all', label: 'Todos' },
-  { id: 'month', label: 'Por mês' },
-  { id: 'people', label: 'Pessoas' },
-  { id: 'places', label: 'Lugares' },
-  { id: 'types', label: 'Tipos' },
-  { id: 'clear', label: 'Limpar' },
-];
+interface FilterOption {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  type: "chapter" | "type" | "period" | "people" | "tags" | "media" | "privacy";
+  tone: HighlightTone;
+}
 
-const formatMonthHeading = (value: Date) =>
-  new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(value);
+function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const hasMedia = moment.media && moment.media.length > 0;
 
-const formatDate = (value: string | Date) =>
-  new Intl.DateTimeFormat('pt-BR', {
-    day: 'numeric',
-    month: 'long',
-  }).format(typeof value === 'string' ? new Date(value) : value);
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border"
+    >
+      {hasMedia && (
+        <div className="relative" onClick={onClick}>
+          <MediaCarousel
+            items={moment.media}
+            aspectRatioClass="aspect-[4/3]"
+            roundedClass="rounded-2xl"
+            onItemClick={() => onClick?.()}
+            overlay={() => (
+              <>
+                <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-black/35 to-transparent" />
+                <div
+                  className="pointer-events-none absolute top-2 left-2 px-2 py-1 rounded-lg text-xs backdrop-blur-sm"
+                  style={{ backgroundColor: chapter.color + "DD" }}
+                >
+                  {chapter.icon} {chapter.name}
+                </div>
+                <div className="pointer-events-none absolute top-2 right-2 flex gap-1">
+                  {moment.hasVideo && (
+                    <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <Video className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  {moment.privacy === "private" && (
+                    <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <Lock className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          />
+        </div>
+      )}
 
-const suggestionPills = ['Vovó Maria', 'Setembro 2024', 'Praia'];
+      {/* Content */}
+      <div className="p-3">
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1">
+            <h3 className="text-foreground mb-1">{moment.title}</h3>
+            <p className="text-muted-foreground text-sm">
+              {moment.age} · {new Date(moment.date).toLocaleDateString("pt-BR")}
+            </p>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded(!expanded);
+            }}
+            className="p-1 hover:bg-muted rounded-lg transition-colors"
+            aria-label={expanded ? "Recolher" : "Expandir"}
+          >
+            {expanded ? (
+              <ChevronUp className="w-5 h-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            )}
+          </button>
+        </div>
 
-export function GalleryScreen({ onSelectMoment: _ }: GalleryScreenProps) {
-  const { getMoments } = useBabyData();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilters, setActiveFilters] = useState<FilterKey[]>(['all']);
-  const [viewerState, setViewerState] = useState<{ isOpen: boolean; index: number; items: Moment[] }>({
-    isOpen: false,
-    index: 0,
-    items: [],
-  });
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              {moment.noteShort && (
+                <p className="text-foreground text-sm mb-2">
+                  {moment.noteShort}
+                </p>
+              )}
+              {moment.noteLong && (
+                <p className="text-foreground text-sm mb-2">
+                  {moment.noteLong}
+                </p>
+              )}
+              {moment.tags && moment.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {moment.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
 
-  const rawMoments = getMoments();
+export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
+  const [mediaFilter, setMediaFilter] = useState<"all" | "photo" | "video">(
+    "all"
+  );
 
-  const orderedMoments = useMemo(() => {
-    return rawMoments.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [rawMoments]);
+  const availableFilters: FilterOption[] = [
+    {
+      id: "chapter",
+      label: "Capítulo",
+      icon: <FolderOpen className="w-4 h-4" />,
+      active: !!selectedChapter,
+      type: "chapter",
+      tone: "lavender",
+    },
+    {
+      id: "period",
+      label: "Período",
+      icon: <Calendar className="w-4 h-4" />,
+      active: !!selectedPeriod,
+      type: "period",
+      tone: "babyBlue",
+    },
+    {
+      id: "media",
+      label: "Mídia",
+      icon: <ImageIcon className="w-4 h-4" />,
+      active: mediaFilter !== "all",
+      type: "media",
+      tone: "mint",
+    },
+    {
+      id: "people",
+      label: "Pessoas",
+      icon: <Users className="w-4 h-4" />,
+      active: false,
+      type: "people",
+      tone: "mint",
+    },
+    {
+      id: "tags",
+      label: "Tags",
+      icon: <Tag className="w-4 h-4" />,
+      active: false,
+      type: "tags",
+      tone: "babyBlue",
+    },
+  ];
 
-  const filteredMoments = useMemo(() => {
-    return orderedMoments.filter(moment => {
-      const matchesSearch = searchTerm
-        ? [
-            moment.title,
-            moment.noteShort ?? '',
-            moment.noteLong ?? '',
-            moment.location ?? '',
-            ...(moment.tags ?? []),
-            ...(moment.people ?? []),
-          ]
-            .join(' ')
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        : true;
-
-      if (!matchesSearch) return false;
-
-      if (activeFilters.includes('people') && (!moment.people || moment.people.length === 0)) {
-        return false;
-      }
-
-      if (activeFilters.includes('places') && !moment.location) {
-        return false;
-      }
-
-      if (activeFilters.includes('types')) {
-        const hasVideo = !!moment.hasVideo;
-        if (!hasVideo) return false;
-      }
-
-      return true;
-    });
-  }, [orderedMoments, searchTerm, activeFilters]);
-
-  const groupedMoments = useMemo(() => {
-    const groups = new Map<string, { label: string; items: Moment[] }>();
-
-    filteredMoments.forEach(moment => {
-      const date = new Date(moment.date);
-      const key = `${date.getFullYear()}-${date.getMonth()}`;
-      if (!groups.has(key)) {
-        groups.set(key, { label: formatMonthHeading(date), items: [] });
-      }
-      groups.get(key)?.items.push(moment);
-    });
-
-    return Array.from(groups.entries())
-      .sort((a, b) => (a[0] > b[0] ? -1 : 1))
-      .map(([, value]) => ({ ...value, items: value.items }));
-  }, [filteredMoments]);
-
-  const openViewer = (items: Moment[], index: number) => {
-    setViewerState({ isOpen: true, index, items });
+  const toggleFilter = (filterId: string) => {
+    if (filterId === "chapter") {
+      // Open chapter selector (for now, just toggle)
+      setSelectedChapter(selectedChapter ? null : chapters[0].id);
+    } else if (filterId === "period") {
+      setSelectedPeriod(selectedPeriod ? null : "last-month");
+    } else if (filterId === "media") {
+      setMediaFilter(
+        mediaFilter === "all"
+          ? "photo"
+          : mediaFilter === "photo"
+          ? "video"
+          : "all"
+      );
+    }
   };
 
-  const closeViewer = () => setViewerState({ isOpen: false, index: 0, items: [] });
+  const clearAllFilters = () => {
+    setSelectedChapter(null);
+    setSelectedPeriod(null);
+    setMediaFilter("all");
+  };
 
-  useEffect(() => {
-    if (!viewerState.isOpen) return;
+  const hasActiveFilters =
+    selectedChapter || selectedPeriod || mediaFilter !== "all";
 
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeViewer();
-      }
-      if (event.key === 'ArrowRight') {
-        setViewerState(state => ({
-          ...state,
-          index: Math.min(state.index + 1, state.items.length - 1),
-        }));
-      }
-      if (event.key === 'ArrowLeft') {
-        setViewerState(state => ({
-          ...state,
-          index: Math.max(state.index - 1, 0),
-        }));
-      }
-    };
+  // Filter moments
+  let filteredMoments = [...moments];
+  if (selectedChapter) {
+    filteredMoments = filteredMoments.filter(
+      (m) => m.chapterId === selectedChapter
+    );
+  }
+  if (mediaFilter === "photo") {
+    filteredMoments = filteredMoments.filter((m) => !m.hasVideo);
+  } else if (mediaFilter === "video") {
+    filteredMoments = filteredMoments.filter((m) => m.hasVideo);
+  }
 
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [viewerState.isOpen]);
-
-  const toggleFilter = (filter: FilterKey | 'clear') => {
-    if (filter === 'clear') {
-      setActiveFilters(['all']);
-      return;
+  // Group moments by month
+  const groupedMoments = filteredMoments.reduce((acc, moment) => {
+    const date = new Date(moment.date);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+    if (!acc[key]) {
+      acc[key] = [];
     }
-    if (filter === 'all') {
-      setActiveFilters(['all']);
-      return;
-    }
-    setActiveFilters(prev => {
-      const withoutAll = prev.filter(item => item !== 'all');
-      if (withoutAll.includes(filter)) {
-        const next = withoutAll.filter(item => item !== filter);
-        return next.length ? next : ['all'];
-      }
-      return [...withoutAll, filter];
-    });
+    acc[key].push(moment);
+    return acc;
+  }, {} as Record<string, typeof moments>);
+
+  const getMonthLabel = (key: string) => {
+    const [year, month] = key.split("-");
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
   };
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-3xl px-5 pb-32 pt-8">
-      <header className="mb-8 space-y-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-zinc-400">🌸 Momentos</p>
-          <h1 className="mt-2 text-3xl font-semibold text-zinc-800">Um passeio pelos primeiros 6 meses</h1>
-        </div>
-        <button className="flex w-full items-center justify-between rounded-3xl bg-gradient-to-br from-violet-500/10 via-transparent to-fuchsia-500/10 px-6 py-5 text-left shadow-sm transition hover:shadow-md">
-          <div>
-            <p className="text-sm text-violet-500">✨ Sugestão automática</p>
-            <p className="text-lg font-semibold text-violet-700">"Um passeio pelos primeiros 6 meses"</p>
-          </div>
-          <ChevronRight className="h-5 w-5 text-violet-500" />
-        </button>
-      </header>
+    <div className="pb-24 max-w-2xl mx-auto">
+      {/* Header with title */}
+      <div className="px-4 pt-6 pb-3">
+        <h1 className="text-foreground mb-1">Galeria</h1>
+        <p className="text-muted-foreground text-sm">
+          {filteredMoments.length}{" "}
+          {filteredMoments.length === 1 ? "momento" : "momentos"}
+        </p>
+      </div>
 
-      <section className="mb-6 space-y-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-1 items-center gap-3 rounded-full bg-zinc-100 px-5 py-3">
-            <Search className="h-5 w-5 text-zinc-400" />
-            <input
-              value={searchTerm}
-              onChange={event => setSearchTerm(event.target.value)}
-              placeholder="Procurar por data, pessoa, lugar..."
-              className="w-full bg-transparent text-sm text-zinc-600 placeholder:text-zinc-400 focus:outline-none"
-            />
-            {searchTerm && (
-              <button onClick={() => setSearchTerm('')} className="text-zinc-400 hover:text-zinc-600">
-                <X className="h-4 w-4" />
+      {/* Filters */}
+      <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
+            {availableFilters.map((filterOption) => {
+              const isActive = filterOption.active;
+              return (
+                <button
+                  key={filterOption.id}
+                  onClick={() => toggleFilter(filterOption.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm whitespace-nowrap transition-colors border ${
+                    isActive
+                      ? "shadow-soft"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
+                  }`}
+                  style={
+                    isActive ? getHighlightStyle(filterOption.tone) : undefined
+                  }
+                >
+                  <div
+                    className={
+                      isActive ? "text-inherit" : "text-muted-foreground"
+                    }
+                  >
+                    {filterOption.icon}
+                  </div>
+                  {filterOption.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-4 h-4" />
+            Limpar filtros
+          </button>
+        )}
+      </div>
+
+      {/* Gallery Grid */}
+      <div className="px-4 pt-4">
+        {Object.keys(groupedMoments).length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <ImageIcon className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-foreground mb-2">Nenhum momento encontrado</h3>
+            <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-4">
+              {hasActiveFilters
+                ? "Tente ajustar os filtros"
+                : "Comece registrando momentos especiais"}
+            </p>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="text-primary hover:underline text-sm"
+              >
+                Limpar filtros
               </button>
             )}
           </div>
-          <button className="rounded-full bg-zinc-900 px-4 py-3 text-sm font-semibold text-white shadow-sm">
-            <Filter className="mr-2 inline h-4 w-4" /> Filtros avançados
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {suggestionPills.map(pill => (
-            <button
-              key={pill}
-              onClick={() => setSearchTerm(pill)}
-              className="rounded-full bg-zinc-100 px-4 py-2 text-sm text-zinc-500 hover:bg-zinc-200"
-            >
-              {pill}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {filterChips.map(chip => {
-            const isActive = activeFilters.includes(chip.id as FilterKey) || (chip.id === 'clear' && activeFilters.length > 1);
-            return (
-              <button
-                key={chip.id}
-                onClick={() => toggleFilter(chip.id)}
-                className={`rounded-full px-4 py-2 text-sm transition ${
-                  isActive ? 'bg-violet-500 text-white shadow-sm' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
-                }`}
-              >
-                {chip.label}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="space-y-10">
-        {groupedMoments.map(group => (
-          <div key={group.label} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-zinc-400">
-                <CalendarDays className="h-4 w-4 text-violet-500" />
-                {group.label}
-              </div>
-              <button className="rounded-full border border-dashed border-violet-300 px-4 py-2 text-sm text-violet-500 hover:bg-violet-50">
-                + Nesta data
-              </button>
-            </div>
-            <div className="columns-2 gap-3 space-y-3">
-              {group.items.map((moment, index) => (
-                <article
-                  key={moment.id}
-                  className="group break-inside-avoid overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                  onClick={() => {
-                    openViewer(filteredMoments, filteredMoments.indexOf(moment));
-                  }}
-                >
-                  {moment.media?.[0] && (
-                    <div className="relative">
-                      <img src={moment.media[0]} alt={moment.title} className="h-full w-full object-cover" />
-                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 via-black/20 to-transparent p-3 text-xs text-white">
-                        <span>{moment.age}</span>
-                        {moment.hasVideo && (
-                          <span className="rounded-full bg-black/50 px-3 py-1 text-[11px]">▶ Vídeo</span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  <div className="space-y-2 p-4">
-                    <h3 className="text-base font-semibold text-zinc-800">{moment.title}</h3>
-                    <p className="flex items-center gap-2 text-xs text-zinc-400">
-                      <CalendarDays className="h-3.5 w-3.5" />
-                      {formatDate(moment.date)}
-                    </p>
-                    {moment.location && (
-                      <p className="flex items-center gap-2 text-xs text-zinc-400">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {moment.location}
-                      </p>
-                    )}
-                    {moment.people && moment.people.length > 0 && (
-                      <p className="flex items-center gap-2 text-xs text-zinc-400">
-                        <Users className="h-3.5 w-3.5" />
-                        {moment.people.join(', ')}
-                      </p>
-                    )}
-                    {moment.tags && moment.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {moment.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="rounded-full bg-zinc-100 px-3 py-1 text-[11px] text-zinc-500">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <AnimatePresence>
-        {viewerState.isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-          >
-            <div className="absolute inset-0" onClick={closeViewer} />
-            <div className="relative z-10 flex h-[80vh] w-[90vw] max-w-2xl flex-col overflow-hidden rounded-3xl bg-white/95 shadow-2xl">
-              <button
-                onClick={closeViewer}
-                className="absolute right-4 top-4 z-20 rounded-full bg-black/30 p-2 text-white hover:bg-black/40"
-              >
-                <X className="h-5 w-5" />
-              </button>
-              <AnimatePresence initial={false} mode="wait">
-                <motion.div
-                  key={viewerState.index}
-                  initial={{ opacity: 0, x: 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -60 }}
-                  transition={{ duration: 0.25 }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.x < -120 && viewerState.index < viewerState.items.length - 1) {
-                      setViewerState(state => ({ ...state, index: state.index + 1 }));
-                    }
-                    if (info.offset.x > 120 && viewerState.index > 0) {
-                      setViewerState(state => ({ ...state, index: state.index - 1 }));
-                    }
-                  }}
-                  className="flex flex-1 flex-col"
-                >
-                  <div className="flex-1 bg-black/5">
-                    {viewerState.items[viewerState.index]?.media?.[0] && (
-                      <img
-                        src={viewerState.items[viewerState.index].media[0]}
-                        alt={viewerState.items[viewerState.index].title}
-                        className="h-full w-full object-cover"
+        ) : (
+          Object.keys(groupedMoments)
+            .sort()
+            .reverse()
+            .map((monthKey) => (
+              <div key={monthKey} className="mb-6">
+                <h2 className="text-foreground mb-3 capitalize sticky top-24 bg-background py-2">
+                  {getMonthLabel(monthKey)}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {groupedMoments[monthKey].map((moment) => {
+                    const chapter = chapters.find(
+                      (ch) => ch.id === moment.chapterId
+                    );
+                    return chapter ? (
+                      <PhotoCard
+                        key={moment.id}
+                        moment={moment}
+                        chapter={chapter}
+                        onClick={() => onSelectMoment?.(moment)}
                       />
-                    )}
-                  </div>
-                  <div className="border-t border-zinc-200 bg-white/90 p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-zinc-800">
-                          {viewerState.items[viewerState.index]?.title}
-                        </h3>
-                        <p className="text-sm text-zinc-500">
-                          {formatDate(viewerState.items[viewerState.index]?.date ?? new Date())}
-                          {viewerState.items[viewerState.index]?.location
-                            ? ` · ${viewerState.items[viewerState.index]?.location}`
-                            : ''}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="rounded-full border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100">
-                          ✏️ Editar
-                        </button>
-                        <button className="rounded-full border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100">
-                          🔗 Compartilhar
-                        </button>
-                        <button className="rounded-full border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100">
-                          🗑️ Excluir
-                        </button>
-                      </div>
-                    </div>
-                    {viewerState.items[viewerState.index]?.noteLong && (
-                      <p className="mt-4 text-sm text-zinc-600">
-                        {viewerState.items[viewerState.index]?.noteLong}
-                      </p>
-                    )}
-                    {viewerState.items[viewerState.index]?.tags && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {viewerState.items[viewerState.index]?.tags?.map(tag => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-500"
-                          >
-                            <Tag className="h-3 w-3" />#{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-              <div className="absolute inset-y-0 left-3 flex items-center">
-                <button
-                  onClick={() =>
-                    setViewerState(state => ({ ...state, index: Math.max(state.index - 1, 0) }))
-                  }
-                  className="rounded-full bg-black/40 p-2 text-white hover:bg-black/60"
-                >
-                  ‹
-                </button>
+                    ) : null;
+                  })}
+                </div>
               </div>
-              <div className="absolute inset-y-0 right-3 flex items-center">
-                <button
-                  onClick={() =>
-                    setViewerState(state => ({
-                      ...state,
-                      index: Math.min(state.index + 1, state.items.length - 1),
-                    }))
-                  }
-                  className="rounded-full bg-black/40 p-2 text-white hover:bg-black/60"
-                >
-                  ›
-                </button>
-              </div>
-            </div>
-          </motion.div>
+            ))
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }
