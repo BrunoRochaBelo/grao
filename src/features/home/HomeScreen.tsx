@@ -1,23 +1,52 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { useMemo, useState } from 'react';
+import { useBabyData } from '@/lib/baby-data-context';
+import type { Chapter, PlaceholderTemplate } from '@/lib/types';
 import {
-  Baby,
-  CalendarDays,
-  Camera,
+  BookOpen,
+  Calendar,
+  ChevronDown,
   ChevronRight,
-  Cake,
-  Flower2,
-  Leaf,
-  MoonStar,
-  PartyPopper,
-  Sparkles,
-  Sun,
+  Moon,
+  Syringe,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BabySelectorModal } from '../baby/BabySelectorModal';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Chapter, Moment, PlaceholderTemplate } from '@/lib/types';
-import { Sparkline } from '@/components/shared/Sparkline';
+import { Progress } from '@/components/ui/progress';
+
+interface StatWidgetProps {
+  title: string;
+  icon: React.ReactNode;
+  value: string;
+  subtitle?: string;
+  color: string;
+  onClick?: () => void;
+}
+
+function StatWidget({ title, icon, value, subtitle, color, onClick }: StatWidgetProps) {
+  return (
+    <motion.button
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left relative overflow-hidden"
+      style={{ backgroundColor: `${color}20` }}
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="p-2 rounded-xl" style={{ backgroundColor: `${color}40` }}>
+          {icon}
+        </div>
+        {onClick && (
+          <ChevronRight className="w-5 h-5 text-muted-foreground absolute top-4 right-4" />
+        )}
+      </div>
+      <h3 className="text-muted-foreground mb-1">{title}</h3>
+      <p className="text-foreground mb-0.5">{value}</p>
+      {subtitle && <p className="text-muted-foreground text-xs">{subtitle}</p>}
+    </motion.button>
+  );
+}
 
 interface HomeScreenProps {
   onNavigateToGrowth?: () => void;
@@ -27,94 +56,6 @@ interface HomeScreenProps {
   onNavigateToChapters?: () => void;
   onOpenTemplate?: (chapterId: string, templateId: string) => void;
   onOpenChapter?: (chapter: Chapter) => void;
-  onOpenMoment?: (moment: Moment) => void;
-}
-
-type TimePeriod = 'morning' | 'afternoon' | 'night';
-
-type SuggestionId =
-  | 'marco_esperado'
-  | 'mesversario_proximo'
-  | 'lacuna_temporal'
-  | 'celebracao_retroativa';
-
-interface SuggestionCard {
-  id: SuggestionId;
-  title: string;
-  description?: string;
-  icon: ReactNode;
-  style: string;
-  cta: Array<{ label: string; onClick?: () => void; variant?: 'primary' | 'ghost' }>;
-}
-
-const HERO_GRADIENTS: Record<TimePeriod, string> = {
-  morning: 'from-amber-50 to-orange-50',
-  afternoon: 'from-sky-50 to-blue-50',
-  night: 'from-indigo-50 to-purple-50',
-};
-
-function getTimePeriod(date: Date): TimePeriod {
-  const hour = date.getHours();
-  if (hour >= 5 && hour < 12) return 'morning';
-  if (hour >= 12 && hour < 18) return 'afternoon';
-  return 'night';
-}
-
-function getDaysBetween(dateA: Date, dateB: Date) {
-  const diff = dateA.getTime() - dateB.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
-
-function formatDateTime(dateString: string) {
-  const formatter = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-  });
-  return formatter.format(new Date(dateString));
-}
-
-function formatTime(dateString: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateString));
-}
-
-function getInitials(name?: string) {
-  if (!name) return '?';
-  return name
-    .split(' ')
-    .map(part => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-}
-
-function calculateDaysUntilMonthiversary(birthDate: string) {
-  const birth = new Date(birthDate);
-  const now = new Date();
-  const monthsAlive =
-    now.getFullYear() * 12 + now.getMonth() - (birth.getFullYear() * 12 + birth.getMonth());
-  const nextMonthiversary = new Date(birth);
-  nextMonthiversary.setMonth(birth.getMonth() + monthsAlive + 1);
-  const diff = Math.ceil((nextMonthiversary.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  return { diff, date: nextMonthiversary };
-}
-
-function findCelebrationMoment(moments: Moment[]): Moment | null {
-  const now = new Date();
-  const celebratoryIntervals = [30, 90, 180, 365];
-
-  for (const moment of moments) {
-    const momentDate = new Date(moment.date);
-    const daysAgo = getDaysBetween(now, momentDate);
-    if (celebratoryIntervals.some(interval => Math.abs(daysAgo - interval) <= 1)) {
-      return moment;
-    }
-  }
-
-  return null;
 }
 
 export function HomeScreen({
@@ -125,9 +66,9 @@ export function HomeScreen({
   onNavigateToChapters,
   onOpenTemplate,
   onOpenChapter,
-  onOpenMoment,
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
+  const [showChaptersDrawer, setShowChaptersDrawer] = useState(false);
   const {
     currentBaby,
     chapters,
@@ -141,33 +82,50 @@ export function HomeScreen({
     getFamilyMembers,
   } = useBabyData();
 
-  const moments = useMemo(() => {
-    return getMoments()
-      .slice()
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [getMoments]);
-
-  const now = new Date();
-  const timePeriod = getTimePeriod(now);
-  const heroGradient = HERO_GRADIENTS[timePeriod];
+  const moments = getMoments();
   const ageLabel = currentBaby ? calculateAge(currentBaby.birthDate) : '';
-  const city = currentBaby?.city ?? 'São Paulo, SP';
-  const lastMoment = moments[0];
-
-  const narrative = useMemo(() => {
-    if (!currentBaby) {
-      return 'Acompanhe os detalhes do seu bebê com carinho todos os dias.';
-    }
-
-    const babyName = currentBaby.name.split(' ')[0];
-    const weatherIcon = timePeriod === 'night' ? '🌙' : timePeriod === 'afternoon' ? '🌤️' : '☀️';
-    const moonPhase = 'Lua Crescente';
-    const lastMemory = lastMoment ? `A última memória foi “${lastMoment.title}”.` : 'Vamos registrar um momento hoje?';
-
-    return `${babyName} aproveita o ${weatherIcon} em ${city.split(',')[0]}. ${moonPhase} ilumina a noite. ${lastMemory}`;
-  }, [city, currentBaby, lastMoment, timePeriod]);
-
   const babyAgeInDays = currentBaby ? getBabyAgeInDays(currentBaby.birthDate) : 0;
+
+  const chapterSummaries = useMemo(() => {
+    return chapters.map((chapter) => {
+      const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
+      const completed = placeholders.filter((placeholder) =>
+        moments.some((moment) => moment.templateId === placeholder.id),
+      ).length;
+      const total = placeholders.length;
+      const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+      return { chapter, completed, total, percentage };
+    });
+  }, [babyAgeInDays, moments]);
+
+  const totals = chapterSummaries.reduce(
+    (acc, item) => ({
+      completed: acc.completed + item.completed,
+      total: acc.total + item.total,
+    }),
+    { completed: 0, total: 0 },
+  );
+
+  const growthMeasurements = getGrowthMeasurements();
+  const latestGrowth = growthMeasurements[growthMeasurements.length - 1];
+  const previousGrowth = growthMeasurements[growthMeasurements.length - 2];
+  const weightChange =
+    latestGrowth && previousGrowth
+      ? (latestGrowth.weight - previousGrowth.weight).toFixed(1)
+      : '0';
+
+  const vaccines = getVaccines();
+  const completedVaccines = vaccines.filter((vaccine) => vaccine.status === 'completed').length;
+  const totalVaccines = vaccines.length;
+  const pendingVaccines = vaccines.filter((vaccine) => vaccine.status === 'pending').length;
+
+  const sleepEntries = getSleepHumorEntries();
+  const averageSleep =
+    sleepEntries.length > 0
+      ? (sleepEntries.reduce((sum, entry) => sum + entry.sleepHours, 0) / sleepEntries.length).toFixed(1)
+      : '0';
+
+  const familyMembers = getFamilyMembers();
 
   const upcomingMilestones = useMemo(() => {
     const items: Array<{
@@ -176,11 +134,14 @@ export function HomeScreen({
       daysUntil: number;
     }> = [];
 
-    chapters.forEach(chapter => {
+    chapters.forEach((chapter) => {
       const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays)
-        .filter(template => {
-          if (template.allowMultiple) return true;
-          return !moments.some(moment => moment.templateId === template.id);
+        .filter((placeholder) => {
+          const hasMoment = moments.some((moment) => moment.templateId === placeholder.id);
+          if (placeholder.allowMultiple) {
+            return true;
+          }
+          return !hasMoment;
         })
         .sort((a, b) => (a.ageRangeStart ?? 0) - (b.ageRangeStart ?? 0));
 
@@ -191,485 +152,222 @@ export function HomeScreen({
       }
     });
 
-    return items.sort((a, b) => a.daysUntil - b.daysUntil);
-  }, [babyAgeInDays, chapters, getPlaceholdersForChapter, moments]);
+    return items
+      .sort((a, b) => a.daysUntil - b.daysUntil)
+      .slice(0, 3)
+      .map((item) => ({
+        ...item,
+        label:
+          item.daysUntil === 0
+            ? 'Disponível agora'
+            : `em ${item.daysUntil} ${item.daysUntil === 1 ? 'dia' : 'dias'}`,
+      }));
+  }, [babyAgeInDays, moments]);
 
-  const growthMeasurements = getGrowthMeasurements();
-  const growthTrend = growthMeasurements.slice(-6).map(item => item.weight);
-  const latestGrowth = growthMeasurements[growthMeasurements.length - 1];
-  const previousGrowth = growthMeasurements[growthMeasurements.length - 2];
-  const weightChange =
-    latestGrowth && previousGrowth
-      ? (latestGrowth.weight - previousGrowth.weight).toFixed(1)
-      : '0';
-
-  const vaccines = getVaccines();
-  const completedVaccines = vaccines.filter(vaccine => vaccine.status === 'completed').length;
-  const totalVaccines = vaccines.length;
-  const pendingVaccines = vaccines.filter(vaccine => vaccine.status !== 'completed').length;
-
-  const sleepEntries = getSleepHumorEntries();
-  const sleepTrend = sleepEntries.slice(-7).map(entry => entry.sleepHours);
-  const averageSleep =
-    sleepEntries.length > 0
-      ? (sleepEntries.reduce((sum, entry) => sum + entry.sleepHours, 0) / sleepEntries.length).toFixed(1)
-      : '0';
-
-  const familyMembers = getFamilyMembers();
-
-  const { diff: daysUntilMonthiversary, date: nextMonthiversaryDate } = currentBaby
-    ? calculateDaysUntilMonthiversary(currentBaby.birthDate)
-    : { diff: Infinity, date: new Date() };
-
-  const daysSinceLastMoment = lastMoment ? getDaysBetween(now, new Date(lastMoment.date)) : Infinity;
-  const celebrationMoment = findCelebrationMoment(moments);
-
-  const suggestions = useMemo(() => {
-    const currentDate = new Date();
-    const list: SuggestionCard[] = [];
-
-    const nextMilestone = upcomingMilestones[0];
-    if (nextMilestone) {
-      list.push({
-        id: 'marco_esperado',
-        title: nextMilestone.template.name,
-        description: `${nextMilestone.chapter.name} · janela ${nextMilestone.template.ageRangeStart}-${nextMilestone.template.ageRangeEnd ?? nextMilestone.template.ageRangeStart} dias`,
-        icon: <Sparkles className="w-5 h-5 text-violet-600" aria-hidden />,
-        style: 'bg-violet-50/50 border-2 border-violet-200',
-        cta: [
-          {
-            label: 'Já aconteceu!',
-            onClick: () =>
-              onOpenTemplate?.(nextMilestone.chapter.id, nextMilestone.template.id),
-            variant: 'primary',
-          },
-          {
-            label: 'Ainda não',
-            onClick: () => undefined,
-            variant: 'ghost',
-          },
-        ],
-      });
-    }
-
-    if (daysUntilMonthiversary === 1 && currentBaby) {
-      const formatted = new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-      }).format(nextMonthiversaryDate);
-      list.push({
-        id: 'mesversario_proximo',
-        title: `${calculateAge(currentBaby.birthDate).split(' ')[0]} meses amanhã`,
-        description: formatted,
-        icon: <Cake className="w-5 h-5 text-rose-500" aria-hidden />,
-        style: 'bg-rose-50/50 border-2 border-rose-200',
-        cta: [
-          {
-            label: 'Criar álbum do mês',
-            onClick: () => onNavigateToChapters?.(),
-            variant: 'primary',
-          },
-          { label: 'Dispensar', onClick: () => undefined, variant: 'ghost' },
-        ],
-      });
-    }
-
-    if (daysSinceLastMoment >= 3) {
-      list.push({
-        id: 'lacuna_temporal',
-        title: 'Que tal guardar um momento de hoje?',
-        description: 'Estamos há alguns dias sem novos registros.',
-        icon: <Leaf className="w-5 h-5 text-emerald-600" aria-hidden />,
-        style: 'bg-emerald-50/50 border-2 border-emerald-200',
-        cta: [
-          {
-            label: '＋ Capturar agora',
-            onClick: () => onNavigateToChapters?.(),
-            variant: 'primary',
-          },
-        ],
-      });
-    }
-
-    if (celebrationMoment) {
-      list.push({
-        id: 'celebracao_retroativa',
-        title: `Faz ${getDaysBetween(currentDate, new Date(celebrationMoment.date))} dias desde ${celebrationMoment.title}`,
-        description: 'Reviva a memória ou escreva uma reflexão.',
-        icon: <PartyPopper className="w-5 h-5 text-amber-600" aria-hidden />,
-        style: 'bg-amber-50/50 border-2 border-amber-200',
-        cta: [
-          { label: 'Ver memória', onClick: () => onOpenMoment?.(celebrationMoment), variant: 'primary' },
-          { label: 'Escrever reflexão', onClick: () => onNavigateToChapters?.(), variant: 'ghost' },
-        ],
-      });
-    }
-
-    return list.slice(0, 3);
-  }, [
-    celebrationMoment,
-    currentBaby,
-    upcomingMilestones,
-    daysSinceLastMoment,
-    daysUntilMonthiversary,
-    nextMonthiversaryDate,
-    onNavigateToChapters,
-    onOpenMoment,
-    onOpenTemplate,
-    calculateAge,
-  ]);
-
-  const timelineItems = useMemo(() => {
-    return moments.slice(0, 5).map(moment => ({
-      id: moment.id,
-      title: moment.title,
-      subtitle: moment.age,
-      date: new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-      }).format(new Date(moment.date)),
-      moment,
-    }));
-  }, [moments]);
+  const getInitials = (name: string) =>
+    name
+      .split(' ')
+      .map((segment) => segment[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
 
   return (
-    <div className="pb-32 px-4 pt-6 max-w-3xl mx-auto space-y-10">
+    <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
       <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         onClick={() => setShowBabySelector(true)}
-        className="flex items-center gap-4 w-full text-left hover:opacity-90 transition-opacity"
-        whileTap={{ scale: 0.98 }}
+        className="flex items-center gap-4 mb-6 w-full text-left hover:opacity-80 transition-opacity"
       >
-        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-          <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê atual'} />
-          <AvatarFallback className="bg-primary/10 text-primary text-3xl">
-            {getInitials(currentBaby?.name)}
+        <Avatar className="w-20 h-20 border-2 border-primary">
+          <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
+          <AvatarFallback className="bg-primary/10 text-primary text-2xl">
+            {currentBaby ? getInitials(currentBaby.name) : '?'}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <p className="text-sm uppercase tracking-wide text-zinc-400">bebê do dia</p>
-          <h1 className="text-3xl font-semibold text-zinc-900 dark:text-white">{currentBaby?.name ?? 'Bebê atual'}</h1>
-          <p className="text-zinc-600 dark:text-zinc-300">{ageLabel}</p>
+          <h1 className="text-foreground mb-1">{currentBaby?.name ?? 'Bebê atual'}</h1>
+          <p className="text-muted-foreground">{ageLabel}</p>
+          <p className="text-muted-foreground text-sm">{currentBaby?.city}</p>
         </div>
-        <ChevronRight className="w-6 h-6 text-zinc-400" aria-hidden />
+        <ChevronRight className="w-6 h-6 text-muted-foreground" />
       </motion.button>
 
-      <section
-        className={`relative rounded-3xl p-6 min-h-[40vh] bg-gradient-to-br ${heroGradient} overflow-hidden`}
-        aria-label="Resumo contextual do dia"
+      <p className="text-muted-foreground text-center mb-6">
+        Pequenas grandes memórias de cada dia.
+      </p>
+
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <StatWidget
+          title="Crescimento"
+          icon={<TrendingUp className="w-5 h-5 text-primary" />}
+          value={
+            latestGrowth
+              ? `${latestGrowth.weight} kg · ${latestGrowth.height} cm`
+              : 'Sem medições'
+          }
+          subtitle={`+${weightChange} kg este mês`}
+          color="#4F46E5"
+          onClick={onNavigateToGrowth}
+        />
+        <StatWidget
+          title="Vacinas"
+          icon={<Syringe className="w-5 h-5 text-primary" />}
+          value={`${completedVaccines} de ${totalVaccines} aplicadas`}
+          subtitle={
+            pendingVaccines > 0
+              ? `${pendingVaccines} ${pendingVaccines === 1 ? 'pendente' : 'pendentes'}`
+              : 'Todas em dia!'
+          }
+          color="#8B5CF6"
+          onClick={onNavigateToVaccines}
+        />
+        <StatWidget
+          title="Sono & Humor"
+          icon={<Moon className="w-5 h-5 text-primary" />}
+          value={`${averageSleep}h média`}
+          subtitle="Média semanal"
+          color="#6366F1"
+          onClick={onNavigateToSleepHumor}
+        />
+        <StatWidget
+          title="Família"
+          icon={<Users className="w-5 h-5 text-primary" />}
+          value={`${familyMembers.length} membros`}
+          subtitle="Ver árvore"
+          color="#EC4899"
+          onClick={onNavigateToFamily}
+        />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-card rounded-2xl shadow-sm border border-border mb-4 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-white/40 mix-blend-overlay" aria-hidden />
-        <div className="relative z-10 flex flex-col gap-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm text-zinc-500">{city}</p>
-              <p className="text-5xl font-light text-zinc-900 dark:text-zinc-900">
-                {timePeriod === 'night' ? 'Boa noite' : timePeriod === 'afternoon' ? 'Boa tarde' : 'Bom dia'}
-              </p>
-              <p className="text-zinc-600 max-w-lg leading-relaxed mt-3">{narrative}</p>
-            </div>
-            <div className="hidden md:block rounded-2xl overflow-hidden shadow-lg">
-              {lastMoment ? (
-                <img
-                  src={lastMoment.media[0]}
-                  alt={lastMoment.title}
-                  className="w-40 h-40 object-cover"
-                />
-              ) : (
-                <div className="w-40 h-40 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                  <Camera className="w-10 h-10 text-zinc-400" aria-hidden />
-                </div>
-              )}
-            </div>
+        <button
+          onClick={() => setShowChaptersDrawer((prev) => !prev)}
+          className="w-full p-4 flex items-center gap-3 text-left hover:bg-muted/70 transition-colors"
+        >
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary">
+            <BookOpen className="w-5 h-5" />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="flex items-center gap-3 bg-white/70 backdrop-blur-md rounded-2xl p-3">
-              <Sun className="w-5 h-5 text-amber-500" aria-hidden />
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Agora</p>
-                <p className="text-sm text-zinc-700">{new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(now)}</p>
-              </div>
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-foreground">Capítulos</h3>
+              <span className="text-muted-foreground text-sm">
+                {totals.completed} de {totals.total}
+              </span>
             </div>
-            <div className="flex items-center gap-3 bg-white/70 backdrop-blur-md rounded-2xl p-3">
-              <MoonStar className="w-5 h-5 text-indigo-500" aria-hidden />
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Fase da lua</p>
-                <p className="text-sm text-zinc-700">Lua Crescente</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 bg-white/70 backdrop-blur-md rounded-2xl p-3">
-              <Flower2 className="w-5 h-5 text-violet-500" aria-hidden />
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Última memória</p>
-                <p className="text-sm text-zinc-700">
-                  {lastMoment ? formatDateTime(lastMoment.date) : 'Registre um momento'}
-                </p>
-              </div>
-            </div>
+            <Progress
+              value={totals.total > 0 ? (totals.completed / totals.total) * 100 : 0}
+              className="h-2 mb-1"
+            />
+            <p className="text-muted-foreground text-sm">
+              {totals.total > 0 ? Math.round((totals.completed / totals.total) * 100) : 0}% completo
+            </p>
           </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="suggestions-heading" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <p id="suggestions-heading" className="text-sm uppercase tracking-wide text-zinc-400">
-            Para você
-          </p>
-          <span className="text-xs text-zinc-400">Sugestões suaves, no seu ritmo</span>
-        </div>
-        <div className="-mx-4 px-4">
-          <div className="flex gap-4 overflow-x-auto snap-x pb-1">
-            {suggestions.map(card => (
-              <motion.div
-                key={card.id}
-                className={`snap-start min-w-[260px] rounded-3xl p-6 border ${card.style} shadow-sm flex flex-col justify-between`}
-                whileHover={{ translateY: -4 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="p-3 rounded-2xl bg-white/70 shadow-sm">{card.icon}</div>
-                  <div>
-                    <p className="font-medium text-zinc-900">{card.title}</p>
-                    {card.description && (
-                      <p className="text-sm text-zinc-600 mt-1">{card.description}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {card.cta.map(action => (
-                    <button
-                      key={action.label}
-                      onClick={action.onClick}
-                      className={`rounded-full px-4 py-2 text-sm font-medium transition-colors min-w-[44px] min-h-[40px] ${
-                        action.variant === 'primary'
-                          ? 'bg-zinc-900 text-white hover:bg-zinc-800'
-                          : 'bg-white/80 text-zinc-600 hover:bg-white'
-                      }`}
-                    >
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-            {suggestions.length === 0 && (
-              <div className="text-zinc-500 text-sm">Tudo em dia! Voltamos com novas sugestões em breve.</div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="panorama-heading" className="space-y-4">
-        <p id="panorama-heading" className="text-sm uppercase tracking-wide text-zinc-400">
-          Panorama
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={onNavigateToGrowth}
-            className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-zinc-200/70 dark:border-zinc-800 text-left flex flex-col gap-4"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Crescimento</p>
-                <p className="text-lg text-zinc-900 dark:text-white">
-                  {latestGrowth
-                    ? `${latestGrowth.weight} kg · ${latestGrowth.height} cm`
-                    : 'Sem medições'}
-                </p>
-                <p className="text-sm text-emerald-600">+{weightChange} kg este mês</p>
-              </div>
-              <Baby className="w-6 h-6 text-violet-500" aria-hidden />
-            </div>
-            <Sparkline data={growthTrend} stroke="#7C3AED" fill="#7C3AED" />
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={onNavigateToSleepHumor}
-            className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-zinc-200/70 dark:border-zinc-800 text-left flex flex-col gap-4"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Sono</p>
-                <p className="text-lg text-zinc-900 dark:text-white">{averageSleep}h por noite</p>
-                <p className="text-sm text-zinc-500">Média dos últimos registros</p>
-              </div>
-              <MoonStar className="w-6 h-6 text-indigo-500" aria-hidden />
-            </div>
-            <Sparkline data={sleepTrend} stroke="#6366F1" fill="#6366F1" />
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={onNavigateToVaccines}
-            className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-zinc-200/70 dark:border-zinc-800 text-left flex flex-col gap-2"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Vacinas</p>
-                <p className="text-lg text-zinc-900 dark:text-white">
-                  {completedVaccines} de {totalVaccines}
-                </p>
-                <p className="text-sm text-zinc-500">
-                  {pendingVaccines === 0
-                    ? 'Tudo em dia!'
-                    : `${pendingVaccines} ${pendingVaccines === 1 ? 'pendente' : 'pendentes'}`}
-                </p>
-              </div>
-              <CalendarDays className="w-6 h-6 text-fuchsia-500" aria-hidden />
-            </div>
-          </motion.button>
-
-          <motion.div
-            className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-zinc-200/70 dark:border-zinc-800 flex flex-col gap-4 col-span-1 sm:col-span-2"
-            whileHover={{ translateY: -2 }}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-zinc-400">Família</p>
-                <p className="text-lg text-zinc-900 dark:text-white">{familyMembers.length} pessoas conectadas</p>
-                <p className="text-sm text-zinc-500">Árvore viva de afetos</p>
-              </div>
-              <button
-                onClick={onNavigateToFamily}
-                className="rounded-full px-4 py-2 bg-violet-100 text-violet-700 text-sm font-medium hover:bg-violet-200 transition-colors"
-              >
-                Ver árvore →
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {familyMembers.slice(0, 5).map(member => (
-                <div
-                  key={member.id}
-                  className="flex items-center gap-2 bg-zinc-100/70 dark:bg-zinc-800/80 rounded-full px-3 py-1.5"
-                >
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>{getInitials(member.name)}</AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm">
-                    <p className="text-zinc-800 dark:text-zinc-100 font-medium leading-tight">{member.name}</p>
-                    <p className="text-zinc-500 text-xs">{member.relation}</p>
-                  </div>
-                </div>
-              ))}
-              {familyMembers.length === 0 && (
-                <p className="text-sm text-zinc-500">Convide familiares para acompanhar por aqui.</p>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <section aria-labelledby="recent-heading" className="space-y-4">
-        <p id="recent-heading" className="text-sm uppercase tracking-wide text-zinc-400">
-          Últimos dias
-        </p>
-        <div className="columns-2 gap-4 [column-fill:_balance]">
-          {moments.slice(0, 8).map(moment => (
-            <button
-              key={moment.id}
-              onClick={() => onOpenMoment?.(moment)}
-              className="mb-4 w-full text-left break-inside-avoid rounded-2xl overflow-hidden shadow-sm border border-zinc-200/80 hover:-translate-y-1 transition-transform"
-            >
-              <div className="relative">
-                {moment.media[0] ? (
-                  <img src={moment.media[0]} alt={moment.title} className="w-full h-auto object-cover" />
-                ) : (
-                  <div className="w-full h-40 bg-zinc-100 flex items-center justify-center">
-                    <Camera className="w-8 h-8 text-zinc-400" aria-hidden />
-                  </div>
-                )}
-                {moment.hasVideo && (
-                  <span className="absolute top-3 left-3 px-2 py-1 rounded-full bg-black/70 text-white text-xs flex items-center gap-1">
-                    ▶ Vídeo
-                  </span>
-                )}
-                {moment.tags?.includes('marco') && (
-                  <span className="absolute top-3 right-3 px-2 py-1 rounded-full bg-violet-600 text-white text-xs">
-                    🌙 Marco
-                  </span>
-                )}
-              </div>
-              <div className="p-3 bg-white">
-                <p className="font-medium text-zinc-900">{moment.title}</p>
-                <p className="text-sm text-zinc-500">
-                  {formatDateTime(moment.date)} · {moment.location ?? 'Lar'} · {formatTime(moment.date)}
-                </p>
-              </div>
-            </button>
-          ))}
-          {moments.length === 0 && (
-            <p className="text-sm text-zinc-500">Quando você registrar novos momentos eles aparecerão aqui.</p>
-          )}
-        </div>
-      </section>
-
-      <section aria-labelledby="timeline-heading" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 id="timeline-heading" className="text-lg font-semibold text-zinc-900 dark:text-white">
-            História de {currentBaby?.name?.split(' ')[0] ?? 'Aurora'}
-          </h2>
-          <button
-            onClick={onNavigateToChapters}
-            className="text-sm text-violet-600 hover:text-violet-700"
-          >
-            Ver linha do tempo completa →
-          </button>
-        </div>
-        <div className="relative pl-6">
-          <span className="absolute left-2 top-1 bottom-1 w-0.5 bg-violet-200" aria-hidden />
-          <div className="space-y-6">
-            {timelineItems.map((item, index) => (
-              <div key={item.id} className="relative">
-                <span
-                  className={`absolute -left-[14px] mt-1 w-3 h-3 rounded-full border-2 ${
-                    index === 0 ? 'bg-violet-500 border-violet-500' : 'border-violet-300 bg-white'
-                  }`}
-                  aria-hidden
-                />
-                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-4 shadow-sm">
-                  <p className="text-sm uppercase tracking-wide text-zinc-400">{item.date}</p>
-                  <p className="text-lg text-zinc-900 dark:text-white">{item.title}</p>
-                  <p className="text-sm text-zinc-500">{item.subtitle}</p>
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() => onOpenMoment?.(item.moment)}
-                      className="px-3 py-1.5 text-sm rounded-full bg-violet-100 text-violet-700 hover:bg-violet-200"
-                    >
-                      Rever
-                    </button>
-                    <button
-                      onClick={() => {
-                        const chapter = chapters.find(chapter => chapter.id === item.moment.chapterId);
-                        if (chapter) {
-                          onOpenChapter?.(chapter);
-                        }
-                      }}
-                      className="px-3 py-1.5 text-sm rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
-                    >
-                      Capítulo
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <AnimatePresence>
-        {showBabySelector && (
-          <BabySelectorModal
-            isOpen={showBabySelector}
-            onClose={() => setShowBabySelector(false)}
-            onBabyChange={() => undefined}
+          <ChevronDown
+            className={`w-5 h-5 text-muted-foreground transition-transform ${
+              showChaptersDrawer ? 'rotate-180' : ''
+            }`}
           />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {showChaptersDrawer && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-t border-border"
+            >
+              <div className="p-4 space-y-3">
+                {chapterSummaries.map((summary) => (
+                  <button
+                    key={summary.chapter.id}
+                    onClick={() => onOpenChapter?.(summary.chapter)}
+                    className="w-full text-left bg-muted/40 hover:bg-muted transition-colors rounded-xl p-3 flex items-start gap-3 border border-border"
+                  >
+                    <div
+                      className="w-12 h-12 rounded-lg flex items-center justify-center text-xl"
+                      style={{ backgroundColor: `${summary.chapter.color}40` }}
+                    >
+                      {summary.chapter.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-foreground">{summary.chapter.name}</h4>
+                        <span className="text-muted-foreground text-sm">
+                          {summary.completed}/{summary.total}
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground text-sm mb-2">
+                        {summary.chapter.description}
+                      </p>
+                      <Progress value={summary.percentage} className="h-1.5" />
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground mt-1" />
+                  </button>
+                ))}
+                <button
+                  onClick={onNavigateToChapters}
+                  className="w-full h-11 rounded-xl border border-border text-sm text-muted-foreground hover:bg-muted transition-colors"
+                >
+                  Ver todos os capítulos
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mb-6"
+      >
+        <h3 className="text-foreground mb-3">Próximos marcos</h3>
+        {upcomingMilestones.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            Sem marcos pendentes no momento. Explore os capítulos para criar novos registros.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {upcomingMilestones.map((item) => (
+              <button
+                key={item.template.id}
+                onClick={() =>
+                  onOpenTemplate
+                    ? onOpenTemplate(item.chapter.id, item.template.id)
+                    : onNavigateToChapters?.()
+                }
+                className="w-full bg-card rounded-xl p-3 shadow-sm border border-border flex items-center gap-3 hover:shadow-md transition-shadow text-left"
+              >
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Calendar className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-foreground">{item.template.name}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {item.chapter.name} — {item.label}
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </button>
+            ))}
+          </div>
         )}
-      </AnimatePresence>
+      </motion.div>
+
+      <BabySelectorModal
+        isOpen={showBabySelector}
+        onClose={() => setShowBabySelector(false)}
+        onBabyChange={() => undefined}
+      />
     </div>
   );
 }
-

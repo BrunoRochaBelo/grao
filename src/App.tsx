@@ -109,22 +109,11 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'create') {
+    if (tab === 'chapters') {
       setShowAddMoment(true);
-      return;
+    } else {
+      navigateToMain(tab as Screen);
     }
-
-    if (tab === 'moments') {
-      navigateToMain('gallery');
-      return;
-    }
-
-    if (tab === 'whispers') {
-      navigateToMain('notifications');
-      return;
-    }
-
-    navigateToMain(tab as Screen);
   };
 
   const isNavigatedToChapters = () => {
@@ -166,7 +155,6 @@ function AppContent() {
               }
               onOpenTemplate={openChapterTemplate}
               onOpenChapter={handleSelectChapter}
-              onOpenMoment={moment => navigateTo({ type: 'moment-detail', moment })}
             />
           );
         case 'gallery':
@@ -289,12 +277,9 @@ function AppContent() {
 
   const getCurrentTab = (): string => {
     if (currentView.type === 'main') {
-      if (currentView.screen === 'gallery') return 'moments';
-      if (currentView.screen === 'notifications') return 'whispers';
-      if (currentView.screen === 'chapters') return 'moments';
       return currentView.screen;
     } else if (currentView.type === 'chapter-detail') {
-      return 'moments';
+      return 'chapters';
     }
     return 'home';
   };
