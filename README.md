@@ -36,7 +36,7 @@ O **Livro do Bebê** é um álbum digital interativo que reúne memórias, marco
 
 ### ✨ Visão geral do app
 
-- **Navegação de múltiplos níveis** com animações (Home → Galeria → Capítulos → Detalhes → Formulários), controlada pelo stack de telas em `App.tsx`.
+- **Navegação de múltiplos níveis** com animações (Início → Momentos → Novo → Sussurros → Detalhes → Formulários), controlada pelo stack de telas em `App.tsx`.
 - **Placeholders guiados por idade** que sugerem registros relevantes por capítulo e acompanham o progresso do álbum.
 - **Formulários completos de momentos** com validações, tags, privacidade e persistência local (draft/publicado).
 - **Painéis de saúde e bem-estar** para crescimento, vacinas e sono & humor, incluindo gráficos com Recharts.
@@ -48,13 +48,13 @@ O **Livro do Bebê** é um álbum digital interativo que reúne memórias, marco
 | Tela | Destaques |
 | --- | --- |
 | **Home** | Seleção de bebê, cards de progresso (crescimento, vacinas, sono, família) e atalhos para capítulos e marcos próximos. |
-| **Galeria** | Feed agrupado por mês, filtros por capítulo/período/mídia e cards com notas, tags e indicadores de privacidade/vídeo. |
+| **Momentos** | Feed agrupado por mês, filtros por capítulo/período/mídia e cards com notas, tags e indicadores de privacidade/vídeo. |
 | **Capítulos** | Lista de capítulos com progresso por placeholder, acesso ao detalhe e abertura do formulário de novo momento. |
 | **Detalhes do capítulo** | Placeholders filtrados por status (todos/preenchidos/pendentes) e acesso direto ao formulário. |
 | **Formulário de momento** | Upload de mídia (placeholder), campos obrigatórios, cálculo automático de idade, tags, privacidade e ações (salvar, rascunho, descartar). |
 | **Saúde** | Telas de Crescimento, Vacinas e Sono & Humor com gráficos, estatísticas e cadastros adicionais. |
 | **Família** | Árvore genealógica, cartões de parentes e detalhe com momentos relacionados. |
-| **Perfil & Notificações** | Preferências, estatísticas gerais, toasts e lista de alertas simulados. |
+| **Perfil & Sussurros** | Preferências, estatísticas gerais, toasts e lista de alertas simulados. |
 
 > 📄 Consulte `src/FEATURES.md` para a lista completa e detalhada de funcionalidades já implementadas e ideias futuras.
 
@@ -132,9 +132,9 @@ src/
 
 - **Tudo é um Momento:** cada lembrança, foto, vacina, ou nota livre é um registro unificado.
 - **Capítulos:** agrupam momentos por tema (Nascimento, Saúde, Família, Mêsversários etc).
-- **Galeria:** exibe a linha do tempo visual de todas as mídias.
+- **Momentos:** exibe a linha do tempo visual de todas as mídias.
 - **Séries:** controlam eventos recorrentes (ex.: Mêsversário, Consultas).
-- **Notificações Inteligentes:** avisos automáticos por idade, vacinas, marcos e retroativos.
+- **Sussurros Inteligentes:** avisos automáticos por idade, vacinas, marcos e retroativos.
 - **Privacidade:** controle granular (privado / pessoas / link).
 - **Exportação:** gera PDF ou álbum físico.
 - **Retroatividade:** registros antigos com cálculo automático da idade e reorganização do feed.
