@@ -31,6 +31,7 @@ import {
   Moment,
   PlaceholderTemplate,
 } from './lib/types';
+import { useFloatingNavVisibility } from './lib/useFloatingNavVisibility';
 
 type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
 type ViewState =
@@ -68,6 +69,7 @@ function AppContent() {
   } = useBabyData();
 
   const currentView = viewStack[viewStack.length - 1];
+  const { isHidden: isNavHidden } = useFloatingNavVisibility();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -310,7 +312,11 @@ function AppContent() {
       </AnimatePresence>
 
       {currentView.type === 'main' && (
-        <BottomNav activeTab={getCurrentTab()} onTabChange={handleTabChange} />
+        <BottomNav
+          activeTab={getCurrentTab()}
+          onTabChange={handleTabChange}
+          isHidden={isNavHidden}
+        />
       )}
 
       <AddMomentSheet
