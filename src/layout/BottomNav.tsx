@@ -1,67 +1,112 @@
-import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
-import { motion } from 'motion/react';
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import { Home, Flower2, Plus, Bell, Baby } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
+interface TabConfig {
+  id: string;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+  isAction?: boolean;
+}
+
+const useScrollDirection = () => {
+  const [direction, setDirection] = useState<'up' | 'down'>('up');
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (Math.abs(currentScrollY - lastScrollY.current) < 6) return;
+
+      if (currentScrollY > lastScrollY.current) {
+        setDirection('down');
+      } else {
+        setDirection('up');
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return direction;
+};
+
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
-  const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'gallery', label: 'Galeria', icon: Image },
-    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
-    { id: 'notifications', label: 'Notificações', icon: Bell },
-    { id: 'profile', label: 'Perfil', icon: Baby },
-  ];
+  const direction = useScrollDirection();
+
+  const tabs: TabConfig[] = useMemo(
+    () => [
+      { id: 'home', label: 'Início', icon: Home },
+      { id: 'gallery', label: 'Momentos', icon: Flower2 },
+      { id: 'chapters', label: 'Novo', icon: Plus, isAction: true },
+      { id: 'notifications', label: 'Sussurros', icon: Bell },
+      { id: 'profile', label: 'Perfil', icon: Baby },
+    ],
+    [],
+  );
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+    <AnimatePresence>
+      <motion.nav
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: direction === 'down' ? 120 : 0, opacity: 1 }}
+        exit={{ y: 120, opacity: 0 }}
+        transition={{ type: 'spring', damping: 22, stiffness: 180 }}
+        className="fixed bottom-5 left-1/2 z-50 w-full max-w-xl -translate-x-1/2 px-4"
+      >
+        <div className="mx-auto flex w-full items-center justify-between gap-2 rounded-full bg-white/80 px-5 py-3 shadow-[0px_18px_60px_-25px_rgba(79,70,229,0.45)] backdrop-blur-xl">
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
 
-          if (tab.isAction) {
+            if (tab.isAction) {
+              return (
+                <motion.button
+                  key={tab.id}
+                  whileTap={{ scale: 0.92 }}
+                  onClick={() => onTabChange(tab.id)}
+                  className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg"
+                  aria-label={tab.label}
+                >
+                  <Icon className="h-7 w-7" />
+                </motion.button>
+              );
+            }
+
             return (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="flex flex-col items-center gap-1 relative"
+                className="group relative flex flex-1 flex-col items-center gap-1"
                 aria-label={tab.label}
               >
-                <motion.div
-                  whileTap={{ scale: 0.9 }}
-                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
+                <Icon
+                  className={`h-5 w-5 transition-transform duration-200 ${
+                    isActive
+                      ? 'scale-[1.05] text-violet-600'
+                      : 'text-zinc-400 group-hover:text-zinc-500'
+                  }`}
+                />
+                <span
+                  className={`text-[11px] font-medium transition-colors ${
+                    isActive ? 'text-violet-600' : 'text-zinc-400'
+                  }`}
                 >
-                  <Icon className="w-6 h-6" />
-                </motion.div>
+                  {tab.label}
+                </span>
               </button>
             );
-          }
-
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
-              }`}
-              aria-label={tab.label}
-            >
-              <Icon className="w-6 h-6" />
-              <span className="text-[11px]">{tab.label}</span>
-              {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
+          })}
+        </div>
+      </motion.nav>
+    </AnimatePresence>
   );
 }
