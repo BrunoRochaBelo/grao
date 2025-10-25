@@ -259,7 +259,7 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
     <div className="pb-24 max-w-2xl mx-auto">
       {/* Header with title */}
       <div className="px-4 pt-6 pb-3">
-        <h1 className="text-foreground mb-1">Galeria</h1>
+        <h1 className="text-foreground mb-1">Momentos</h1>
         <p className="text-muted-foreground text-sm">
           {filteredMoments.length}{" "}
           {filteredMoments.length === 1 ? "momento" : "momentos"}
