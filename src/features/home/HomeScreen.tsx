@@ -12,9 +12,9 @@ import {
   Users,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BabySelectorModal } from '../baby/BabySelectorModal';
 import { Progress } from '@/components/ui/progress';
-import { HomeHero } from './HomeHero';
 
 interface StatWidgetProps {
   title: string;
@@ -164,22 +164,43 @@ export function HomeScreen({
       }));
   }, [babyAgeInDays, moments]);
 
+  const getInitials = (name: string) =>
+    name
+      .split(' ')
+      .map((segment) => segment[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+
   return (
-    <div className="pb-24 max-w-2xl mx-auto">
-      <HomeHero
-        baby={currentBaby}
-        ageLabel={ageLabel}
-        onBabySelectorOpen={() => setShowBabySelector(true)}
-      />
+    <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        onClick={() => setShowBabySelector(true)}
+        className="flex items-center gap-4 mb-6 w-full text-left hover:opacity-80 transition-opacity"
+      >
+        <Avatar className="w-20 h-20 border-2 border-primary">
+          <AvatarImage src={currentBaby?.avatar} alt={currentBaby?.name ?? 'Bebê'} />
+          <AvatarFallback className="bg-primary/10 text-primary text-2xl">
+            {currentBaby ? getInitials(currentBaby.name) : '?'}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <h1 className="text-foreground mb-1">{currentBaby?.name ?? 'Bebê atual'}</h1>
+          <p className="text-muted-foreground">{ageLabel}</p>
+          <p className="text-muted-foreground text-sm">{currentBaby?.city}</p>
+        </div>
+        <ChevronRight className="w-6 h-6 text-muted-foreground" />
+      </motion.button>
 
-      <div className="px-4">
-        <p className="text-muted-foreground text-center mb-6 -mt-2">
-          Pequenas grandes memórias de cada dia.
-        </p>
+      <p className="text-muted-foreground text-center mb-6">
+        Pequenas grandes memórias de cada dia.
+      </p>
 
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <StatWidget
-            title="Crescimento"
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <StatWidget
+          title="Crescimento"
           icon={<TrendingUp className="w-5 h-5 text-primary" />}
           value={
             latestGrowth
@@ -347,7 +368,6 @@ export function HomeScreen({
         onClose={() => setShowBabySelector(false)}
         onBabyChange={() => undefined}
       />
-      </div>
     </div>
   );
 }
