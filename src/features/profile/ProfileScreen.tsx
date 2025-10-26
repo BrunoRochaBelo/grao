@@ -10,7 +10,7 @@ import {
 import {
   Download,
   Settings,
-  Bell,
+  BellRing,
   HelpCircle,
   ChevronRight,
   Users,
@@ -31,7 +31,7 @@ interface ProfileScreenProps {
   onNavigateToManageBabies: () => void;
   onNavigateToExportAlbum: () => void;
   onNavigateToManageAccount: () => void;
-  onNavigateToNotificationsSettings: () => void;
+  onNavigateToWhispersSettings: () => void;
   onNavigateToHelpAndSupport: () => void;
   onNavigateToAddBaby: () => void;
   onNavigateToMoments: () => void;
@@ -99,7 +99,7 @@ export function ProfileScreen({
   onNavigateToManageBabies,
   onNavigateToExportAlbum,
   onNavigateToManageAccount,
-  onNavigateToNotificationsSettings,
+  onNavigateToWhispersSettings,
   onNavigateToHelpAndSupport,
   onNavigateToAddBaby,
   onNavigateToMoments,
@@ -263,10 +263,10 @@ export function ProfileScreen({
             onClick={onNavigateToManageAccount}
           />
           <ActionCard
-            icon={<Bell className="w-5 h-5" />}
-            title="Notificacoes e preferencias"
-            subtitle="Alertas, idioma, backup e exibicao"
-            onClick={onNavigateToNotificationsSettings}
+            icon={<BellRing className="w-5 h-5" />}
+            title="Sussurros e preferências"
+            subtitle="Alertas, idioma, backup e exibição"
+            onClick={onNavigateToWhispersSettings}
           />
         </div>
       </motion.section>
