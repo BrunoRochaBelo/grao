@@ -496,7 +496,7 @@ export function NotificationsScreen() {
         {/* Header */}
         <div className="px-4 pt-6 pb-4 space-y-4">
           <div>
-            <h1 className="text-foreground text-xl">Notificações</h1>
+            <h1 className="text-foreground text-xl">Sussurros</h1>
             <p className="text-muted-foreground">
               Lembretes e sugestões para o Livro do Bebê
             </p>
