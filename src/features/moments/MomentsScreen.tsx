@@ -21,7 +21,7 @@ import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 
 const moments = getMoments();
 
-interface GalleryScreenProps {
+interface MomentsScreenProps {
   onSelectMoment?: (moment: Moment) => void;
 }
 
@@ -145,7 +145,7 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
   );
 }
 
-export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
+export function MomentsScreen({ onSelectMoment }: MomentsScreenProps) {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
@@ -259,7 +259,7 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
     <div className="pb-24 max-w-2xl mx-auto">
       {/* Header with title */}
       <div className="px-4 pt-6 pb-3">
-        <h1 className="text-foreground mb-1">Galeria</h1>
+        <h1 className="text-foreground mb-1">Momentos</h1>
         <p className="text-muted-foreground text-sm">
           {filteredMoments.length}{" "}
           {filteredMoments.length === 1 ? "momento" : "momentos"}
