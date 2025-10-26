@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './layout/BottomNav';
-import HomeRefactor from './features/home/HomeRefactor';
+import { HomeScreen } from './features/home/HomeScreen';
 import { GalleryScreen } from './features/gallery/GalleryScreen';
 import { ChaptersScreen } from './features/chapters/ChaptersScreen';
 import { ChapterDetail } from './features/chapters/ChapterDetail';
@@ -144,7 +144,19 @@ function AppContent() {
     if (currentView.type === 'main') {
       switch (currentView.screen) {
         case 'home':
-          return <HomeRefactor />;
+          return (
+            <HomeScreen
+              onNavigateToGrowth={() => navigateTo({ type: 'growth' })}
+              onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
+              onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
+              onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
+              onNavigateToChapters={() =>
+                navigateTo({ type: 'main', screen: 'chapters' })
+              }
+              onOpenTemplate={openChapterTemplate}
+              onOpenChapter={handleSelectChapter}
+            />
+          );
         case 'gallery':
           return (
             <GalleryScreen
