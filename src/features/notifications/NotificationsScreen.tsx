@@ -56,7 +56,7 @@ interface Notification {
 
 type NotificationFilter = "all" | Notification["type"];
 
-export function WhispersScreen() {
+export function NotificationsScreen() {
   const currentBaby = getCurrentBaby();
   const [notifications, setNotifications] = useState<Notification[]>(
     getNotifications()
@@ -68,7 +68,7 @@ export function WhispersScreen() {
     label: string;
     tone: HighlightTone;
   }[] = [
-    { id: "all", label: "Todos os sussurros", tone: "babyBlue" },
+    { id: "all", label: "Todas", tone: "babyBlue" },
     { id: "action", label: "Ações sugeridas", tone: "mint" },
     { id: "reminder", label: "Lembretes", tone: "lavender" },
     { id: "milestone", label: "Marcos", tone: "babyBlue" },
@@ -496,9 +496,9 @@ export function WhispersScreen() {
         {/* Header */}
         <div className="px-4 pt-6 pb-4 space-y-4">
           <div>
-            <h1 className="text-foreground text-xl">Sussurros</h1>
+            <h1 className="text-foreground text-xl">Notificações</h1>
             <p className="text-muted-foreground">
-              Lembretes gentis e sugestões para o Livro do Bebê
+              Lembretes e sugestões para o Livro do Bebê
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -560,7 +560,7 @@ export function WhispersScreen() {
               </div>
               <h3 className="text-foreground mb-2">Tudo em dia! 🎉</h3>
               <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                Você não tem sussurros pendentes no momento
+                Você não tem notificações pendentes no momento
               </p>
             </div>
           ) : (
@@ -637,13 +637,13 @@ export function WhispersScreen() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-foreground mb-1">
-                    Personalize seus sussurros
+                    Configure suas notificações
                   </h3>
                   <p className="text-muted-foreground text-sm mb-3">
-                    Ajuste lembretes e alertas no perfil
+                    Personalize lembretes e alertas no perfil
                   </p>
                   <Button variant="outline" size="sm" className="rounded-xl">
-                    Abrir preferências
+                    Ir para Configurações
                   </Button>
                 </div>
               </div>

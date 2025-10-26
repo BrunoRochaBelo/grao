@@ -14,14 +14,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-interface WhispersSettingsScreenProps {
+interface NotificationsSettingsScreenProps {
   onBack: () => void;
 }
 
-export function WhispersSettingsScreen({
+export function NotificationsSettingsScreen({
   onBack,
-}: WhispersSettingsScreenProps) {
-  const [receiveWhispers, setReceiveWhispers] = useState(true);
+}: NotificationsSettingsScreenProps) {
+  const [receiveNotifications, setReceiveNotifications] = useState(true);
   const [frequency, setFrequency] = useState("daily");
   const [quietStart, setQuietStart] = useState("22:00");
   const [quietEnd, setQuietEnd] = useState("08:00");
@@ -37,7 +37,7 @@ export function WhispersSettingsScreen({
   >("system");
   const [language, setLanguage] = useState("pt-BR");
   const [autoBackup, setAutoBackup] = useState(true);
-  const [momentsView, setMomentsView] = useState<"timeline" | "grid">(
+  const [galleryView, setGalleryView] = useState<"timeline" | "grid">(
     "timeline"
   );
   const [showTips, setShowTips] = useState(true);
@@ -47,7 +47,7 @@ export function WhispersSettingsScreen({
   };
 
   const handleReset = () => {
-    setReceiveWhispers(true);
+    setReceiveNotifications(true);
     setFrequency("daily");
     setQuietStart("22:00");
     setQuietEnd("08:00");
@@ -61,9 +61,9 @@ export function WhispersSettingsScreen({
     setThemePreference("system");
     setLanguage("pt-BR");
     setAutoBackup(true);
-    setMomentsView("timeline");
+    setGalleryView("timeline");
     setShowTips(true);
-    toast.success("Preferências redefinidas.");
+    toast.success("Preferencias redefinidas.");
   };
 
   return (
@@ -73,7 +73,7 @@ export function WhispersSettingsScreen({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-medium text-center flex-1">
-          Sussurros e preferências
+          Notificacoes e preferencias
         </h1>
       </div>
 
@@ -81,28 +81,28 @@ export function WhispersSettingsScreen({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             <BellRing className="w-4 h-4" />
-            <span>Sussurros</span>
+            <span>Notificacoes</span>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">
-                Receber sussurros
+                Receber notificacoes
               </p>
               <p className="text-sm text-muted-foreground">
-                Ative ou pause todos os sussurros enviados pelo aplicativo.
+                Ative ou pause todos os alertas enviados pelo aplicativo.
               </p>
             </div>
             <Switch
-              checked={receiveWhispers}
-              onCheckedChange={setReceiveWhispers}
-              aria-label="Receber sussurros"
+              checked={receiveNotifications}
+              onCheckedChange={setReceiveNotifications}
+              aria-label="Receber notificacoes"
             />
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <Label className="text-sm font-medium text-foreground">
-              Frequência
+              Frequencia
             </Label>
             <RadioGroup
               value={frequency}
@@ -111,7 +111,7 @@ export function WhispersSettingsScreen({
             >
               {[
                 { id: "immediate", label: "Imediato" },
-                { id: "daily", label: "Diário" },
+                { id: "daily", label: "Diario" },
                 { id: "weekly", label: "Semanal" },
                 { id: "monthly", label: "Mensal" },
               ].map((option) => (
@@ -135,11 +135,11 @@ export function WhispersSettingsScreen({
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
               <Timer className="w-4 h-4" />
-              <span>Horário silencioso</span>
+              <span>Horario silencioso</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label htmlFor="quiet-start">Início</Label>
+                <Label htmlFor="quiet-start">Inicio</Label>
                 <Input
                   id="quiet-start"
                   type="time"
@@ -148,7 +148,7 @@ export function WhispersSettingsScreen({
                 />
               </div>
               <div>
-                <Label htmlFor="quiet-end">Término</Label>
+                <Label htmlFor="quiet-end">Termino</Label>
                 <Input
                   id="quiet-end"
                   type="time"
@@ -158,7 +158,7 @@ export function WhispersSettingsScreen({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Durante este intervalo nenhum sussurro push será enviado.
+              Durante este intervalo nenhuma notificacao push sera enviada.
             </p>
           </div>
 
@@ -169,9 +169,9 @@ export function WhispersSettingsScreen({
             {[
               { key: "vaccines", label: "Vacinas" },
               { key: "milestones", label: "Marcos" },
-              { key: "series", label: "Séries / Mêsversário" },
+              { key: "series", label: "Series / Mesversario" },
               { key: "retrospectives", label: "Retroativos" },
-              { key: "digest", label: "Resumo semanal" },
+              { key: "digest", label: "Digest semanal" },
             ].map((item) => (
               <label
                 key={item.key}
@@ -192,7 +192,7 @@ export function WhispersSettingsScreen({
               </label>
             ))}
             <p className="text-xs text-muted-foreground flex items-center gap-1">
-              Preferências salvas automaticamente.
+              Preferencias salvas automaticamente.
             </p>
           </div>
         </section>
@@ -200,7 +200,7 @@ export function WhispersSettingsScreen({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             <Globe className="w-4 h-4" />
-            <span>Preferências gerais</span>
+            <span>Preferencias gerais</span>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-4">
@@ -218,7 +218,7 @@ export function WhispersSettingsScreen({
                 <SelectContent>
                   <SelectItem value="light">Claro</SelectItem>
                   <SelectItem value="dark">Escuro</SelectItem>
-                  <SelectItem value="system">Automático</SelectItem>
+                  <SelectItem value="system">Automatico</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -230,9 +230,9 @@ export function WhispersSettingsScreen({
                   <SelectValue placeholder="Selecione o idioma" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                  <SelectItem value="pt-BR">Portugues (Brasil)</SelectItem>
                   <SelectItem value="en-US">English</SelectItem>
-                  <SelectItem value="es-ES">Español</SelectItem>
+                  <SelectItem value="es-ES">Espanol</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -240,7 +240,7 @@ export function WhispersSettingsScreen({
             <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 flex items-center justify-between">
               <div>
                 <p className="text-sm text-foreground font-medium">
-                  Backup automático
+                  Backup automatico
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Sincronize em nuvem sempre que abrir o app.
@@ -249,7 +249,7 @@ export function WhispersSettingsScreen({
               <Switch
                 checked={autoBackup}
                 onCheckedChange={setAutoBackup}
-                aria-label="Backup automático"
+                aria-label="Backup automatico"
               />
             </div>
 
@@ -260,7 +260,7 @@ export function WhispersSettingsScreen({
                   <SelectValue placeholder="Selecione o destino" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cloud">Nuvem do Livro do Bebê</SelectItem>
+                  <SelectItem value="cloud">Nuvem do Livro do Bebe</SelectItem>
                   <SelectItem value="drive">Google Drive</SelectItem>
                   <SelectItem value="dropbox">Dropbox</SelectItem>
                 </SelectContent>
@@ -268,15 +268,15 @@ export function WhispersSettingsScreen({
             </div>
 
             <div className="space-y-2">
-              <Label>Exibição padrão de Momentos</Label>
+              <Label>Exibicao padrao da galeria</Label>
               <Select
-                value={momentsView}
+                value={galleryView}
                 onValueChange={(value) =>
-                  setMomentsView(value as typeof momentsView)
+                  setGalleryView(value as typeof galleryView)
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Escolha uma visualização" />
+                  <SelectValue placeholder="Escolha uma visualizacao" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="timeline">Linha do tempo</SelectItem>
@@ -302,12 +302,12 @@ export function WhispersSettingsScreen({
             </div>
 
             <Button variant="outline" onClick={handleReset}>
-              Redefinir preferências
+              Redefinir preferencias
             </Button>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">
-            Último backup: 22/10/2025 às 10:37
+            Ultimo backup: 22/10/2025 as 10:37
           </p>
         </section>
       </div>
