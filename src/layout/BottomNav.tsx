@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { Home, Flower2, Plus, Bell, Baby } from 'lucide-react';
+import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface BottomNavProps {
@@ -8,106 +7,61 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      const isScrollingDown = currentY > lastScrollY.current;
-      const isScrollingUp = currentY < lastScrollY.current;
-      const hasClearedThreshold = currentY <= 80;
-
-      if (isScrollingDown && currentY > 80) {
-        setIsVisible(false);
-      } else if (isScrollingUp || hasClearedThreshold) {
-        setIsVisible(true);
-      }
-
-      lastScrollY.current = currentY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const tabs = [
-    { id: 'home', label: 'Início', icon: Home },
-    { id: 'gallery', label: 'Momentos', icon: Flower2 },
-    { id: 'new', label: 'Novo', icon: Plus, isAction: true },
-    { id: 'notifications', label: 'Sussurros', icon: Bell },
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'gallery', label: 'Galeria', icon: Image },
+    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
+    { id: 'notifications', label: 'Notificações', icon: Bell },
     { id: 'profile', label: 'Perfil', icon: Baby },
   ];
 
   return (
-    <motion.nav
-      initial={false}
-      animate={{ y: isVisible ? 0 : 120, opacity: isVisible ? 1 : 0 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
-      className={`fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 transition-transform sm:bottom-6 sm:px-6 ${
-        isVisible ? 'pointer-events-auto' : 'pointer-events-none'
-      }`}
-    >
-      <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-2 shadow-[0_18px_45px_-20px_rgba(91,33,182,0.55)] transition-all dark:border-white/10 dark:bg-zinc-900">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
+      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 
           if (tab.isAction) {
             return (
-              <motion.button
+              <button
                 key={tab.id}
-                type="button"
                 onClick={() => onTabChange(tab.id)}
-                className="-translate-y-6 flex shrink-0 items-center justify-center"
+                className="flex flex-col items-center gap-1 relative"
                 aria-label={tab.label}
-                whileTap={{ scale: 0.92 }}
               >
                 <motion.div
-                  layout
-                  animate={{ scale: 1.15 }}
-                  className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-[0_12px_30px_-12px_rgba(217,70,239,0.65)]"
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
                 >
-                  <Icon className="h-7 w-7" />
+                  <Icon className="w-6 h-6" />
                 </motion.div>
-              </motion.button>
+              </button>
             );
           }
 
           return (
-            <motion.button
+            <button
               key={tab.id}
-              type="button"
               onClick={() => onTabChange(tab.id)}
-              className="relative flex flex-1 flex-col items-center gap-1.5 px-3 py-2"
+              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
+                isActive ? 'text-primary' : 'text-muted-foreground'
+              }`}
               aria-label={tab.label}
-              whileTap={{ scale: 0.95 }}
             >
-              <motion.span
-                animate={{ scale: isActive ? 1.05 : 1 }}
-                className={`transition-colors ${
-                  isActive
-                    ? 'text-violet-600 dark:text-violet-400'
-                    : 'text-zinc-400 dark:text-zinc-500'
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-              </motion.span>
-              <span
-                className={`text-[11px] font-medium leading-4 transition-colors ${
-                  isActive
-                    ? 'text-foreground'
-                    : 'text-zinc-400 dark:text-zinc-500'
-                }`}
-              >
-                {tab.label}
-              </span>
-            </motion.button>
+              <Icon className="w-6 h-6" />
+              <span className="text-[11px]">{tab.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </button>
           );
         })}
       </div>
-    </motion.nav>
+    </nav>
   );
 }
