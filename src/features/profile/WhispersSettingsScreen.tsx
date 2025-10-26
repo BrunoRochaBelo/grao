@@ -14,14 +14,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-interface NotificationsSettingsScreenProps {
+interface WhispersSettingsScreenProps {
   onBack: () => void;
 }
 
-export function NotificationsSettingsScreen({
+export function WhispersSettingsScreen({
   onBack,
-}: NotificationsSettingsScreenProps) {
-  const [receiveNotifications, setReceiveNotifications] = useState(true);
+}: WhispersSettingsScreenProps) {
+  const [receiveWhispers, setReceiveWhispers] = useState(true);
   const [frequency, setFrequency] = useState("daily");
   const [quietStart, setQuietStart] = useState("22:00");
   const [quietEnd, setQuietEnd] = useState("08:00");
@@ -37,7 +37,7 @@ export function NotificationsSettingsScreen({
   >("system");
   const [language, setLanguage] = useState("pt-BR");
   const [autoBackup, setAutoBackup] = useState(true);
-  const [galleryView, setGalleryView] = useState<"timeline" | "grid">(
+  const [momentsView, setMomentsView] = useState<"timeline" | "grid">(
     "timeline"
   );
   const [showTips, setShowTips] = useState(true);
@@ -47,7 +47,7 @@ export function NotificationsSettingsScreen({
   };
 
   const handleReset = () => {
-    setReceiveNotifications(true);
+    setReceiveWhispers(true);
     setFrequency("daily");
     setQuietStart("22:00");
     setQuietEnd("08:00");
@@ -61,9 +61,9 @@ export function NotificationsSettingsScreen({
     setThemePreference("system");
     setLanguage("pt-BR");
     setAutoBackup(true);
-    setGalleryView("timeline");
+    setMomentsView("timeline");
     setShowTips(true);
-    toast.success("Preferencias redefinidas.");
+    toast.success("Preferências redefinidas.");
   };
 
   return (
@@ -73,7 +73,7 @@ export function NotificationsSettingsScreen({
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-medium text-center flex-1">
-          Notificacoes e preferencias
+          Sussurros e preferências
         </h1>
       </div>
 
@@ -81,28 +81,28 @@ export function NotificationsSettingsScreen({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             <BellRing className="w-4 h-4" />
-            <span>Notificacoes</span>
+            <span>Sussurros</span>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-foreground">
-                Receber notificacoes
+                Receber sussurros
               </p>
               <p className="text-sm text-muted-foreground">
-                Ative ou pause todos os alertas enviados pelo aplicativo.
+                Ative ou pause todos os sussurros enviados pelo aplicativo.
               </p>
             </div>
             <Switch
-              checked={receiveNotifications}
-              onCheckedChange={setReceiveNotifications}
-              aria-label="Receber notificacoes"
+              checked={receiveWhispers}
+              onCheckedChange={setReceiveWhispers}
+              aria-label="Receber sussurros"
             />
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <Label className="text-sm font-medium text-foreground">
-              Frequencia
+              Frequência
             </Label>
             <RadioGroup
               value={frequency}
@@ -111,7 +111,7 @@ export function NotificationsSettingsScreen({
             >
               {[
                 { id: "immediate", label: "Imediato" },
-                { id: "daily", label: "Diario" },
+                { id: "daily", label: "Diário" },
                 { id: "weekly", label: "Semanal" },
                 { id: "monthly", label: "Mensal" },
               ].map((option) => (
@@ -135,11 +135,11 @@ export function NotificationsSettingsScreen({
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
               <Timer className="w-4 h-4" />
-              <span>Horario silencioso</span>
+              <span>Horário silencioso</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label htmlFor="quiet-start">Inicio</Label>
+                <Label htmlFor="quiet-start">Início</Label>
                 <Input
                   id="quiet-start"
                   type="time"
@@ -148,7 +148,7 @@ export function NotificationsSettingsScreen({
                 />
               </div>
               <div>
-                <Label htmlFor="quiet-end">Termino</Label>
+                <Label htmlFor="quiet-end">Término</Label>
                 <Input
                   id="quiet-end"
                   type="time"
@@ -158,7 +158,7 @@ export function NotificationsSettingsScreen({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Durante este intervalo nenhuma notificacao push sera enviada.
+              Durante este intervalo nenhum sussurro push será enviado.
             </p>
           </div>
 
@@ -169,9 +169,9 @@ export function NotificationsSettingsScreen({
             {[
               { key: "vaccines", label: "Vacinas" },
               { key: "milestones", label: "Marcos" },
-              { key: "series", label: "Series / Mesversario" },
+              { key: "series", label: "Séries / Mêsversário" },
               { key: "retrospectives", label: "Retroativos" },
-              { key: "digest", label: "Digest semanal" },
+              { key: "digest", label: "Resumo semanal" },
             ].map((item) => (
               <label
                 key={item.key}
@@ -192,7 +192,7 @@ export function NotificationsSettingsScreen({
               </label>
             ))}
             <p className="text-xs text-muted-foreground flex items-center gap-1">
-              Preferencias salvas automaticamente.
+              Preferências salvas automaticamente.
             </p>
           </div>
         </section>
@@ -200,7 +200,7 @@ export function NotificationsSettingsScreen({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             <Globe className="w-4 h-4" />
-            <span>Preferencias gerais</span>
+            <span>Preferências gerais</span>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4 space-y-4">
@@ -218,7 +218,7 @@ export function NotificationsSettingsScreen({
                 <SelectContent>
                   <SelectItem value="light">Claro</SelectItem>
                   <SelectItem value="dark">Escuro</SelectItem>
-                  <SelectItem value="system">Automatico</SelectItem>
+                  <SelectItem value="system">Automático</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -230,9 +230,9 @@ export function NotificationsSettingsScreen({
                   <SelectValue placeholder="Selecione o idioma" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pt-BR">Portugues (Brasil)</SelectItem>
+                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
                   <SelectItem value="en-US">English</SelectItem>
-                  <SelectItem value="es-ES">Espanol</SelectItem>
+                  <SelectItem value="es-ES">Español</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -240,7 +240,7 @@ export function NotificationsSettingsScreen({
             <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 flex items-center justify-between">
               <div>
                 <p className="text-sm text-foreground font-medium">
-                  Backup automatico
+                  Backup automático
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Sincronize em nuvem sempre que abrir o app.
@@ -249,7 +249,7 @@ export function NotificationsSettingsScreen({
               <Switch
                 checked={autoBackup}
                 onCheckedChange={setAutoBackup}
-                aria-label="Backup automatico"
+                aria-label="Backup automático"
               />
             </div>
 
@@ -260,7 +260,7 @@ export function NotificationsSettingsScreen({
                   <SelectValue placeholder="Selecione o destino" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cloud">Nuvem do Livro do Bebe</SelectItem>
+                  <SelectItem value="cloud">Nuvem do Livro do Bebê</SelectItem>
                   <SelectItem value="drive">Google Drive</SelectItem>
                   <SelectItem value="dropbox">Dropbox</SelectItem>
                 </SelectContent>
@@ -268,15 +268,15 @@ export function NotificationsSettingsScreen({
             </div>
 
             <div className="space-y-2">
-              <Label>Exibicao padrao da galeria</Label>
+              <Label>Exibição padrão de Momentos</Label>
               <Select
-                value={galleryView}
+                value={momentsView}
                 onValueChange={(value) =>
-                  setGalleryView(value as typeof galleryView)
+                  setMomentsView(value as typeof momentsView)
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Escolha uma visualizacao" />
+                  <SelectValue placeholder="Escolha uma visualização" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="timeline">Linha do tempo</SelectItem>
@@ -302,12 +302,12 @@ export function NotificationsSettingsScreen({
             </div>
 
             <Button variant="outline" onClick={handleReset}>
-              Redefinir preferencias
+              Redefinir preferências
             </Button>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">
-            Ultimo backup: 22/10/2025 as 10:37
+            Último backup: 22/10/2025 às 10:37
           </p>
         </section>
       </div>
