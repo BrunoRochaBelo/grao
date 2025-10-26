@@ -18,7 +18,6 @@ import { MomentForm } from './features/moments/MomentForm';
 import { MomentDetailScreen } from './features/moments/MomentDetailScreen';
 import { GrowthScreen } from './features/health/GrowthScreen';
 import { VaccinesScreen } from './features/health/VaccinesScreen';
-import { ConsultationsScreen } from './features/health/ConsultationsScreen';
 import { SleepHumorScreen } from './features/health/SleepHumorScreen';
 import { FamilyTreeScreen } from './features/family/FamilyTreeScreen';
 import { FamilyMemberDetailScreen } from './features/family/FamilyMemberDetailScreen';
@@ -40,7 +39,6 @@ type ViewState =
   | { type: 'moment-form'; template: PlaceholderTemplate; chapter: Chapter }
   | { type: 'moment-detail'; moment: Moment }
   | { type: 'growth' }
-  | { type: 'consultations' }
   | { type: 'vaccines' }
   | { type: 'sleep-humor' }
   | { type: 'family-tree' }
@@ -142,13 +140,6 @@ function AppContent() {
     goBack();
   };
 
-  const handleOpenMomentDetail = (momentId: string) => {
-    const moment = getMoments().find(item => item.id === momentId);
-    if (moment) {
-      navigateTo({ type: 'moment-detail', moment });
-    }
-  };
-
   const renderCurrentView = () => {
     if (currentView.type === 'main') {
       switch (currentView.screen) {
@@ -157,16 +148,13 @@ function AppContent() {
             <HomeScreen
               onNavigateToGrowth={() => navigateTo({ type: 'growth' })}
               onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
-              onNavigateToConsultations={() => navigateTo({ type: 'consultations' })}
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
               onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
               onNavigateToChapters={() =>
                 navigateTo({ type: 'main', screen: 'chapters' })
               }
-              onNavigateToMoments={() => navigateToMain('gallery')}
               onOpenTemplate={openChapterTemplate}
               onOpenChapter={handleSelectChapter}
-              onOpenMomentDetail={handleOpenMomentDetail}
             />
           );
         case 'gallery':
@@ -224,15 +212,6 @@ function AppContent() {
       );
     } else if (currentView.type === 'growth') {
       return <GrowthScreen onBack={goBack} />;
-    } else if (currentView.type === 'consultations') {
-      return (
-        <ConsultationsScreen
-          onBack={goBack}
-          onOpenTemplate={(template, chapter) =>
-            handleOpenTemplate(template, chapter)
-          }
-        />
-      );
     } else if (currentView.type === 'vaccines') {
       return (
         <VaccinesScreen
