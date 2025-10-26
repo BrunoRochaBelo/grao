@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './layout/BottomNav';
 import { HomeScreen } from './features/home/HomeScreen';
-import { GalleryScreen } from './features/gallery/GalleryScreen';
+import { MomentsScreen } from './features/moments/MomentsScreen';
 import { ChaptersScreen } from './features/chapters/ChaptersScreen';
 import { ChapterDetail } from './features/chapters/ChapterDetail';
-import { NotificationsScreen } from './features/notifications/NotificationsScreen';
+import { SussurrosScreen } from './features/sussurros/SussurrosScreen';
 import { ProfileScreen } from './features/profile/ProfileScreen';
 import { ManageBabiesScreen } from './features/profile/ManageBabiesScreen';
 import { EditBabyScreen } from './features/profile/EditBabyScreen';
@@ -32,7 +32,7 @@ import {
   PlaceholderTemplate,
 } from './lib/types';
 
-type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
+type Screen = 'home' | 'momentos' | 'chapters' | 'sussurros' | 'profile';
 type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
@@ -109,7 +109,7 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'chapters') {
+    if (tab === 'add') {
       setShowAddMoment(true);
     } else {
       navigateToMain(tab as Screen);
@@ -157,9 +157,9 @@ function AppContent() {
               onOpenChapter={handleSelectChapter}
             />
           );
-        case 'gallery':
+        case 'momentos':
           return (
-            <GalleryScreen
+            <MomentsScreen
               onSelectMoment={moment => navigateTo({ type: 'moment-detail', moment })}
             />
           );
@@ -170,8 +170,8 @@ function AppContent() {
               onBack={isNavigatedToChapters() ? goBack : undefined}
             />
           );
-        case 'notifications':
-          return <NotificationsScreen />;
+        case 'sussurros':
+          return <SussurrosScreen />;
         case 'profile':
           return (
             <ProfileScreen
@@ -191,9 +191,9 @@ function AppContent() {
                 navigateTo({ type: 'help-and-support' })
               }
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
-              onNavigateToMoments={() => navigateToMain('gallery')}
+              onNavigateToMoments={() => navigateToMain('momentos')}
               onNavigateToChapters={() => navigateToMain('chapters')}
-              onNavigateToMedia={() => navigateToMain('gallery')}
+              onNavigateToMedia={() => navigateToMain('momentos')}
               onEditBaby={() => {
                 if (currentBaby) {
                   navigateTo({ type: 'edit-baby', baby: currentBaby });
@@ -296,18 +296,20 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={viewStack.length}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
-          className="min-h-screen"
-        >
-          {renderCurrentView()}
-        </motion.div>
-      </AnimatePresence>
+      <div className="pb-24">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={viewStack.length}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="min-h-screen"
+          >
+            {renderCurrentView()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {currentView.type === 'main' && (
         <BottomNav activeTab={getCurrentTab()} onTabChange={handleTabChange} />

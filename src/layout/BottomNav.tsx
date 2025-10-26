@@ -1,4 +1,4 @@
-import { Home, Image, PlusCircle, Bell, Baby } from 'lucide-react';
+import { Home, Flower2, Plus, Sparkles, Baby } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface BottomNavProps {
@@ -8,17 +8,21 @@ interface BottomNavProps {
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'gallery', label: 'Galeria', icon: Image },
-    { id: 'chapters', label: 'Capítulos', icon: PlusCircle, isAction: true },
-    { id: 'notifications', label: 'Notificações', icon: Bell },
+    { id: 'home', label: 'Início', icon: Home },
+    { id: 'momentos', label: 'Momentos', icon: Flower2 },
+    { id: 'add', label: 'Novo', icon: Plus, isAction: true },
+    { id: 'sussurros', label: 'Sussurros', icon: Sparkles },
     { id: 'profile', label: 'Perfil', icon: Baby },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
-        {tabs.map((tab) => {
+    <nav className="fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+      <div
+        className="flex items-center justify-around w-full max-w-[calc(100%-32px)] sm:max-w-md mx-auto h-16
+                   rounded-2xl shadow-soft backdrop-blur-md
+                   bg-card/70 border border-border"
+      >
+        {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 
@@ -26,15 +30,17 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             return (
               <button
                 key={tab.id}
+                id="add"
                 onClick={() => onTabChange(tab.id)}
-                className="flex flex-col items-center gap-1 relative"
+                className="flex-1 flex justify-center items-center h-full relative"
                 aria-label={tab.label}
               >
                 <motion.div
                   whileTap={{ scale: 0.9 }}
-                  className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg"
+                  className="w-16 h-16 -translate-y-4 rounded-full flex items-center justify-center
+                             bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg"
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-7 h-7" />
                 </motion.div>
               </button>
             );
@@ -44,18 +50,24 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 min-w-[44px] min-h-[44px] transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
-              }`}
+              className="flex-1 flex flex-col items-center justify-center gap-1 h-full relative"
               aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="w-6 h-6" />
-              <span className="text-[11px]">{tab.label}</span>
+              <motion.div
+                animate={{ scale: isActive ? 1.1 : 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className={`flex flex-col items-center gap-1 ${
+                  isActive ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[11px] font-medium">{tab.label}</span>
+              </motion.div>
               {isActive && (
                 <motion.div
-                  layoutId="activeTab"
-                  className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                  layoutId="activeTabIndicator"
+                  className="absolute bottom-1 w-1.5 h-1.5 bg-primary rounded-full"
                 />
               )}
             </button>
