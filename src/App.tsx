@@ -32,7 +32,7 @@ import {
   PlaceholderTemplate,
 } from './lib/types';
 
-type Screen = 'home' | 'momentos' | 'chapters' | 'sussurros' | 'profile';
+type Screen = 'home' | 'momentos' | 'sussurros' | 'profile';
 type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
@@ -111,17 +111,9 @@ function AppContent() {
   const handleTabChange = (tab: string) => {
     if (tab === 'add') {
       setShowAddMoment(true);
-    } else {
+    } else if (['home', 'momentos', 'sussurros', 'profile'].includes(tab)) {
       navigateToMain(tab as Screen);
     }
-  };
-
-  const isNavigatedToChapters = () => {
-    return (
-      currentView.type === 'main' &&
-      currentView.screen === 'chapters' &&
-      viewStack.length > 1
-    );
   };
 
   const handleSelectChapter = (chapter: Chapter) => {
@@ -150,9 +142,6 @@ function AppContent() {
               onNavigateToVaccines={() => navigateTo({ type: 'vaccines' })}
               onNavigateToSleepHumor={() => navigateTo({ type: 'sleep-humor' })}
               onNavigateToFamily={() => navigateTo({ type: 'family-tree' })}
-              onNavigateToChapters={() =>
-                navigateTo({ type: 'main', screen: 'chapters' })
-              }
               onOpenTemplate={openChapterTemplate}
               onOpenChapter={handleSelectChapter}
             />
@@ -161,13 +150,6 @@ function AppContent() {
           return (
             <GalleryScreen
               onSelectMoment={moment => navigateTo({ type: 'moment-detail', moment })}
-            />
-          );
-        case 'chapters':
-          return (
-            <ChaptersScreen
-              onSelectChapter={handleSelectChapter}
-              onBack={isNavigatedToChapters() ? goBack : undefined}
             />
           );
         case 'sussurros':
@@ -192,7 +174,6 @@ function AppContent() {
               }
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
               onNavigateToMoments={() => navigateToMain('momentos')}
-              onNavigateToChapters={() => navigateToMain('chapters')}
               onNavigateToMedia={() => navigateToMain('momentos')}
               onEditBaby={() => {
                 if (currentBaby) {
@@ -278,9 +259,10 @@ function AppContent() {
   const getCurrentTab = (): string => {
     if (currentView.type === 'main') {
       return currentView.screen;
-    } else if (currentView.type === 'chapter-detail') {
-      return 'chapters';
     }
+    // For any non-main view (like chapter-detail, moment-detail, etc.),
+    // we can default to 'home' or another sensible default as none of the
+    // main tabs are technically 'active'.
     return 'home';
   };
 
