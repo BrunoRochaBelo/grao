@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './layout/BottomNav';
 import { HomeScreen } from './features/home/HomeScreen';
-import { MomentsScreen } from './features/moments/MomentsScreen';
+import { GalleryScreen } from './features/gallery/GalleryScreen';
 import { ChaptersScreen } from './features/chapters/ChaptersScreen';
 import { ChapterDetail } from './features/chapters/ChapterDetail';
-import { WhispersScreen } from './features/whispers/WhispersScreen';
+import { NotificationsScreen } from './features/notifications/NotificationsScreen';
 import { ProfileScreen } from './features/profile/ProfileScreen';
 import { ManageBabiesScreen } from './features/profile/ManageBabiesScreen';
 import { EditBabyScreen } from './features/profile/EditBabyScreen';
 import { ExportAlbumScreen } from './features/profile/ExportAlbumScreen';
 import { ManageAccountScreen } from './features/profile/ManageAccountScreen';
-import { WhispersSettingsScreen } from './features/profile/WhispersSettingsScreen';
+import { NotificationsSettingsScreen } from './features/profile/NotificationsSettingsScreen';
 import { HelpAndSupportScreen } from './features/profile/HelpAndSupportScreen';
 import { AddMomentSheet } from './features/chapters/AddMomentSheet';
 import { MomentForm } from './features/moments/MomentForm';
@@ -32,7 +32,7 @@ import {
   PlaceholderTemplate,
 } from './lib/types';
 
-type Screen = 'home' | 'moments' | 'chapters' | 'whispers' | 'profile';
+type Screen = 'home' | 'gallery' | 'chapters' | 'notifications' | 'profile';
 type ViewState =
   | { type: 'main'; screen: Screen }
   | { type: 'chapter-detail'; chapter: Chapter }
@@ -48,7 +48,7 @@ type ViewState =
   | { type: 'add-baby' }
   | { type: 'export-album' }
   | { type: 'manage-account' }
-  | { type: 'whispers-settings' }
+  | { type: 'notifications-settings' }
   | { type: 'help-and-support' };
 
 function AppContent() {
@@ -108,8 +108,8 @@ function AppContent() {
     }
   };
 
-  const handleTabChange = (tab: 'home' | 'moments' | 'whispers' | 'profile' | 'create') => {
-    if (tab === 'create') {
+  const handleTabChange = (tab: string) => {
+    if (tab === 'chapters') {
       setShowAddMoment(true);
     } else {
       navigateToMain(tab as Screen);
@@ -157,9 +157,9 @@ function AppContent() {
               onOpenChapter={handleSelectChapter}
             />
           );
-        case 'moments':
+        case 'gallery':
           return (
-            <MomentsScreen
+            <GalleryScreen
               onSelectMoment={moment => navigateTo({ type: 'moment-detail', moment })}
             />
           );
@@ -170,8 +170,8 @@ function AppContent() {
               onBack={isNavigatedToChapters() ? goBack : undefined}
             />
           );
-        case 'whispers':
-          return <WhispersScreen />;
+        case 'notifications':
+          return <NotificationsScreen />;
         case 'profile':
           return (
             <ProfileScreen
@@ -184,16 +184,16 @@ function AppContent() {
               onNavigateToManageAccount={() =>
                 navigateTo({ type: 'manage-account' })
               }
-              onNavigateToWhispersSettings={() =>
-                navigateTo({ type: 'whispers-settings' })
+              onNavigateToNotificationsSettings={() =>
+                navigateTo({ type: 'notifications-settings' })
               }
               onNavigateToHelpAndSupport={() =>
                 navigateTo({ type: 'help-and-support' })
               }
               onNavigateToAddBaby={() => navigateTo({ type: 'add-baby' })}
-              onNavigateToMoments={() => navigateToMain('moments')}
+              onNavigateToMoments={() => navigateToMain('gallery')}
               onNavigateToChapters={() => navigateToMain('chapters')}
-              onNavigateToMedia={() => navigateToMain('moments')}
+              onNavigateToMedia={() => navigateToMain('gallery')}
               onEditBaby={() => {
                 if (currentBaby) {
                   navigateTo({ type: 'edit-baby', baby: currentBaby });
@@ -267,22 +267,19 @@ function AppContent() {
       return <ExportAlbumScreen onBack={goBack} />;
     } else if (currentView.type === 'manage-account') {
       return <ManageAccountScreen onBack={goBack} />;
-    } else if (currentView.type === 'whispers-settings') {
-      return <WhispersSettingsScreen onBack={goBack} />;
+    } else if (currentView.type === 'notifications-settings') {
+      return <NotificationsSettingsScreen onBack={goBack} />;
     } else if (currentView.type === 'help-and-support') {
       return <HelpAndSupportScreen onBack={goBack} />;
     }
     return null;
   };
 
-  const getCurrentTab = (): 'home' | 'moments' | 'whispers' | 'profile' => {
+  const getCurrentTab = (): string => {
     if (currentView.type === 'main') {
-      if (currentView.screen === 'chapters') {
-        return 'moments';
-      }
-      return currentView.screen === 'whispers' ? 'whispers' : currentView.screen;
+      return currentView.screen;
     } else if (currentView.type === 'chapter-detail') {
-      return 'moments';
+      return 'chapters';
     }
     return 'home';
   };
@@ -298,7 +295,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(env(safe-area-inset-bottom,0px)+96px)]">
+    <div className="min-h-screen bg-background">
       <AnimatePresence mode="wait">
         <motion.div
           key={viewStack.length}
