@@ -7,6 +7,7 @@ export interface FiltersState {
   types: string[];
   ageRange?: { min: number; max: number };
   people: string[];
+  familyMembers: string[];
   tags: string[];
   isFavorite: boolean;
 }
@@ -16,6 +17,7 @@ export function useFilters(moments: Moment[], birthDate?: string) {
     chapters: [],
     types: [],
     people: [],
+    familyMembers: [],
     tags: [],
     isFavorite: false,
   });
@@ -89,6 +91,15 @@ export function useFilters(moments: Moment[], birthDate?: string) {
     }));
   }, []);
 
+  const toggleFamilyMember = useCallback((memberId: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      familyMembers: prev.familyMembers.includes(memberId)
+        ? prev.familyMembers.filter((id) => id !== memberId)
+        : [...prev.familyMembers, memberId],
+    }));
+  }, []);
+
   const toggleTag = useCallback((tag: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -99,10 +110,10 @@ export function useFilters(moments: Moment[], birthDate?: string) {
   }, []);
 
   const setAgeRange = useCallback(
-    (ageRange: { min: number; max: number } | undefined) => {
+    (range: { min: number; max: number } | undefined) => {
       setFilters((prev) => ({
         ...prev,
-        ageRange,
+        ageRange: range,
       }));
     },
     []
@@ -120,21 +131,20 @@ export function useFilters(moments: Moment[], birthDate?: string) {
       chapters: [],
       types: [],
       people: [],
+      familyMembers: [],
       tags: [],
       isFavorite: false,
     });
   }, []);
 
-  const hasActiveFilters = useMemo(() => {
-    return (
-      filters.chapters.length > 0 ||
-      filters.types.length > 0 ||
-      filters.people.length > 0 ||
-      filters.tags.length > 0 ||
-      filters.ageRange !== undefined ||
-      filters.isFavorite
-    );
-  }, [filters]);
+  const hasActiveFilters =
+    filters.chapters.length > 0 ||
+    filters.types.length > 0 ||
+    filters.people.length > 0 ||
+    filters.familyMembers.length > 0 ||
+    filters.tags.length > 0 ||
+    filters.ageRange !== undefined ||
+    filters.isFavorite;
 
   return {
     filters,
@@ -143,6 +153,7 @@ export function useFilters(moments: Moment[], birthDate?: string) {
     toggleChapter,
     toggleType,
     togglePerson,
+    toggleFamilyMember,
     toggleTag,
     setAgeRange,
     toggleFavorite,

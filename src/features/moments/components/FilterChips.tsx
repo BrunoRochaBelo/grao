@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Chapter } from "@/lib/types";
+import { Chapter, FamilyMember } from "@/lib/types";
 import { FiltersState } from "../hooks/useFilters";
 
 interface FilterChipsProps {
@@ -12,10 +12,12 @@ interface FilterChipsProps {
   onToggleChapter: (chapterId: string) => void;
   onTogglePerson: (person: string) => void;
   onToggleTag: (tag: string) => void;
+  onToggleFamilyMember: (memberId: string) => void;
   onClearFilters: () => void;
   onToggleFavorite: () => void;
   availablePeople: string[];
   availableTags: string[];
+  familyMembers: FamilyMember[];
 }
 
 export function FilterChips({
@@ -25,10 +27,12 @@ export function FilterChips({
   onToggleChapter,
   onTogglePerson,
   onToggleTag,
+  onToggleFamilyMember,
   onClearFilters,
   onToggleFavorite,
   availablePeople,
   availableTags,
+  familyMembers,
 }: FilterChipsProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +66,7 @@ export function FilterChips({
               style={isActive ? { backgroundColor: chapter.color } : undefined}
             >
               <span>{chapter.icon}</span>
-              <span>{chapter.name}</span>
+              <span>{chapter.id === "4" ? "👪" : chapter.name}</span>
               {isActive && <X className="w-3 h-3 ml-1" />}
             </motion.button>
           );
@@ -83,6 +87,40 @@ export function FilterChips({
               }`}
             >
               👤 {person}
+              {isActive && <X className="w-3 h-3 ml-1" />}
+            </motion.button>
+          );
+        })}
+
+        {/* Membros da Família (Pessoas) */}
+        {familyMembers.map((member) => {
+          const isActive = filters.familyMembers.includes(member.id);
+          return (
+            <motion.button
+              key={`member-${member.id}`}
+              layout
+              onClick={() => onToggleFamilyMember(member.id)}
+              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                isActive
+                  ? "bg-purple-500 text-white"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {member.avatar ? (
+                <img
+                  src={member.avatar}
+                  alt={member.name}
+                  className="w-4 h-4 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-4 h-4 rounded-full bg-purple-300 text-xs font-bold flex items-center justify-center">
+                  {member.name[0].toUpperCase()}
+                </div>
+              )}
+              <div className="flex flex-col items-start leading-none">
+                <span className="font-semibold">{member.name}</span>
+                <span className="text-xs opacity-75">{member.relation}</span>
+              </div>
               {isActive && <X className="w-3 h-3 ml-1" />}
             </motion.button>
           );

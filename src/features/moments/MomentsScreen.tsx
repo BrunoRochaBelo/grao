@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useBabyData } from "@/lib/baby-data-context";
 import { Moment } from "@/lib/types";
@@ -26,6 +25,7 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     getMoments,
     getPlaceholdersForChapter,
     deleteMoment,
+    getFamilyMembers,
   } = useBabyData();
 
   const moments = getMoments();
@@ -36,8 +36,10 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     toggleChapter,
     togglePerson,
     toggleTag,
+    setAgeRange,
     clearFilters,
     toggleFavorite,
+    toggleFamilyMember,
     hasActiveFilters,
   } = useFilters(moments, currentBaby?.birthDate);
 
@@ -97,6 +99,38 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     [onEditMoment]
   );
 
+  // Wrapper para limpar filtros com toast
+  const handleClearFilters = useCallback(() => {
+    clearFilters();
+    toast.success("Voltando à linha completa do tempo ⏳");
+  }, [clearFilters]);
+
+  // Navegar entre momentos do mesmo grupo
+  const handleNavigateBetweenMoments = useCallback(
+    (currentMoment: Moment, direction: "previous" | "next") => {
+      // Encontrar o grupo que contém este momento
+      const currentGroup = timelineGroups.find((g) =>
+        g.moments.some((m) => m.id === currentMoment.id)
+      );
+
+      if (!currentGroup) return;
+
+      const momentIndex = currentGroup.moments.findIndex(
+        (m) => m.id === currentMoment.id
+      );
+
+      if (
+        direction === "next" &&
+        momentIndex < currentGroup.moments.length - 1
+      ) {
+        setFullScreenMoment(currentGroup.moments[momentIndex + 1]);
+      } else if (direction === "previous" && momentIndex > 0) {
+        setFullScreenMoment(currentGroup.moments[momentIndex - 1]);
+      }
+    },
+    [timelineGroups]
+  );
+
   if (!currentBaby) {
     return (
       <div className="flex items-center justify-center min-h-screen text-muted-foreground">
@@ -105,41 +139,21 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     );
   }
 
-  // Determina se mostra placeholders
-  const singleChapterFilter =
-    filters.chapters.length === 1 ? filters.chapters[0] : null;
-  const placeholders = singleChapterFilter
-    ? getPlaceholdersForChapter(singleChapterFilter)
-    : [];
-
   return (
     <div className="pb-24 max-w-2xl mx-auto">
-      {/* Header fixo */}
-      <div className="sticky top-0 z-20 bg-background border-b border-border">
-        {/* Top bar com voltar */}
-        <div className="px-4 pt-6 pb-4">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4 min-h-[44px]"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Voltar</span>
-          </button>
+      {/* Header com título */}
+      <div className="sticky top-0 z-30 bg-background px-4 pt-6 pb-4 border-b border-border">
+        <h1 className="text-2xl font-bold text-foreground">
+          História de {currentBaby.name}
+        </h1>
+        <p className="text-xs text-muted-foreground mt-1">
+          Desde {new Date(currentBaby.birthDate).toLocaleDateString("pt-BR")}{" "}
+          até hoje
+        </p>
+      </div>
 
-          {/* Título e subtitle */}
-          <div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              📖 História de {currentBaby.name}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Desde{" "}
-              {new Date(currentBaby.birthDate).toLocaleDateString("pt-BR")} até
-              hoje
-            </p>
-          </div>
-        </div>
-
-        {/* Filtros */}
+      {/* Filtros sticky */}
+      <div className="sticky top-[78px] z-20 bg-background">
         <FilterChips
           chapters={chapters}
           filters={filters}
@@ -147,10 +161,12 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
           onToggleChapter={toggleChapter}
           onTogglePerson={togglePerson}
           onToggleTag={toggleTag}
-          onClearFilters={clearFilters}
+          onToggleFamilyMember={toggleFamilyMember}
+          onClearFilters={handleClearFilters}
           onToggleFavorite={toggleFavorite}
           availablePeople={availableFilters.people}
           availableTags={availableFilters.tags}
+          familyMembers={getFamilyMembers()}
         />
       </div>
 
@@ -163,10 +179,13 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
                 <TimelineGroupHeader monthYear={group.monthYear} />
 
                 <div className="space-y-4">
-                  {group.moments.map((moment) => {
+                  {group.moments.map((moment, idx) => {
                     const chapter = chapters.find(
                       (c) => c.id === moment.chapterId
                     );
+                    const hasPrevious = idx > 0;
+                    const hasNext = idx < group.moments.length - 1;
+
                     return (
                       <TimelineCard
                         key={moment.id}
@@ -179,6 +198,17 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
                         onEdit={() => handleEdit(moment)}
                         onShare={() => handleShare(moment)}
                         onDelete={() => handleDelete(moment)}
+                        onNavigatePrevious={
+                          hasPrevious
+                            ? () =>
+                                handleNavigateBetweenMoments(moment, "previous")
+                            : undefined
+                        }
+                        onNavigateNext={
+                          hasNext
+                            ? () => handleNavigateBetweenMoments(moment, "next")
+                            : undefined
+                        }
                       />
                     );
                   })}
@@ -201,8 +231,8 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
             </motion.div>
           )}
 
-          {/* Placeholders quando filtrado por capítulo */}
-          {singleChapterFilter && placeholders.length > 0 && (
+          {/* Placeholders quando filtrado por um capítulo */}
+          {filters.chapters.length === 1 && timelineGroups.length > 0 && (
             <motion.div
               key="placeholders"
               initial={{ opacity: 0, y: 20 }}
@@ -211,26 +241,41 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
               transition={{ delay: 0.2 }}
               layout
             >
-              <div className="bg-muted/30 rounded-2xl p-6 mb-6">
-                <h3 className="font-semibold text-foreground mb-4">
-                  Momentos esperados
-                </h3>
-                <div className="space-y-3">
-                  {placeholders
-                    .filter((p) => !p.isCompleted)
-                    .map((placeholder) => (
-                      <EmptyPlaceholder
-                        key={placeholder.id}
-                        name={placeholder.name}
-                        templateType={placeholder.templateType}
-                        onTap={() => {
-                          // TODO: Abrir formulário para registrar este momento
-                          toast.info(`Registrar: ${placeholder.name}`);
-                        }}
-                      />
-                    ))}
-                </div>
-              </div>
+              {(() => {
+                const placeholders = getPlaceholdersForChapter(
+                  filters.chapters[0]
+                );
+                const uncompletedPlaceholders = placeholders.filter(
+                  (p) => !p.isCompleted
+                );
+
+                if (uncompletedPlaceholders.length === 0) return null;
+
+                return (
+                  <div className="space-y-4">
+                    <div className="pt-4">
+                      <h3 className="text-sm font-semibold text-muted-foreground px-4 mb-3">
+                        ✨ Momentos esperados
+                      </h3>
+                      <div className="space-y-3">
+                        {uncompletedPlaceholders.map((placeholder) => (
+                          <EmptyPlaceholder
+                            key={placeholder.id}
+                            name={placeholder.name}
+                            templateType={placeholder.templateType}
+                            onTap={() => {
+                              toast.info(`📝 Registrar: ${placeholder.name}`, {
+                                description:
+                                  "Abra o formulário para adicionar este momento",
+                              });
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </motion.div>
           )}
         </AnimatePresence>
