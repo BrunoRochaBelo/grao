@@ -122,9 +122,10 @@ export function FullScreenViewer({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3 }}
         onClick={onClose}
         className="fixed inset-0 bg-black/95 z-50 flex flex-col"
       >
@@ -159,7 +160,7 @@ export function FullScreenViewer({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
             style={{
               scale,
               maxWidth: "100%",

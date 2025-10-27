@@ -1,9 +1,14 @@
-import { useEffect, useRef } from "react";
-import { motion } from "motion/react";
-import { X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { X, ChevronDown } from "lucide-react";
 import { Chapter } from "@/lib/types";
 import { FiltersState } from "../hooks/useFilters";
+
+interface AgeRange {
+  label: string;
+  min: number;
+  max: number;
+}
 
 interface FilterChipsProps {
   chapters: Chapter[];
@@ -12,11 +17,15 @@ interface FilterChipsProps {
   onToggleChapter: (chapterId: string) => void;
   onTogglePerson: (person: string) => void;
   onToggleTag: (tag: string) => void;
+  onSetAgeRange: (range: AgeRange | undefined) => void;
   onClearFilters: () => void;
   onToggleFavorite: () => void;
   availablePeople: string[];
   availableTags: string[];
+  availableAgeRanges: AgeRange[];
 }
+
+type OpenDropdown = "chapters" | "period" | "people" | null;
 
 export function FilterChips({
   chapters,
@@ -25,121 +34,353 @@ export function FilterChips({
   onToggleChapter,
   onTogglePerson,
   onToggleTag,
+  onSetAgeRange,
   onClearFilters,
   onToggleFavorite,
   availablePeople,
   availableTags,
+  availableAgeRanges,
 }: FilterChipsProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Fechar dropdown ao clicar fora
   useEffect(() => {
-    // Auto-scroll para mostrar botão "Limpar filtros"
-    if (scrollContainerRef.current && hasActiveFilters) {
-      const container = scrollContainerRef.current;
-      container.scrollLeft = container.scrollWidth;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdown(null);
+      }
     }
-  }, [hasActiveFilters]);
+
+    if (openDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [openDropdown]);
+
+  // Contar filtros ativos de cada categoria
+  const activeChaptersCount = filters.chapters.length;
+  const activePeriodCount = filters.ageRange ? 1 : 0;
+  const activePeopleCount = filters.people.length;
 
   return (
-    <div className="px-4 py-3 border-b border-border overflow-x-auto">
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-2 overflow-x-auto scrollbar-hide pb-2"
-      >
-        {/* Capítulos */}
-        {chapters.map((chapter) => {
-          const isActive = filters.chapters.includes(chapter.id);
-          return (
-            <motion.button
-              key={chapter.id}
-              layout
-              onClick={() => onToggleChapter(chapter.id)}
-              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 ${
-                isActive
-                  ? "bg-primary text-white"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-              style={isActive ? { backgroundColor: chapter.color } : undefined}
-            >
-              <span>{chapter.icon}</span>
-              <span>{chapter.name}</span>
-              {isActive && <X className="w-3 h-3 ml-1" />}
-            </motion.button>
-          );
-        })}
-
-        {/* Pessoas */}
-        {availablePeople.map((person) => {
-          const isActive = filters.people.includes(person);
-          return (
-            <motion.button
-              key={`person-${person}`}
-              layout
-              onClick={() => onTogglePerson(person)}
-              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 ${
-                isActive
-                  ? "bg-blue-500 text-white"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              👤 {person}
-              {isActive && <X className="w-3 h-3 ml-1" />}
-            </motion.button>
-          );
-        })}
-
-        {/* Tags */}
-        {availableTags.map((tag) => {
-          const isActive = filters.tags.includes(tag);
-          return (
-            <motion.button
-              key={`tag-${tag}`}
-              layout
-              onClick={() => onToggleTag(tag)}
-              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 ${
-                isActive
-                  ? "bg-purple-500 text-white"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              #{tag}
-              {isActive && <X className="w-3 h-3 ml-1" />}
-            </motion.button>
-          );
-        })}
-
-        {/* Favoritos */}
-        {(availablePeople.length > 0 ||
-          availableTags.length > 0 ||
-          chapters.length > 0) && (
+    <div ref={containerRef} className="border-b border-border bg-background">
+      {/* Row 1: Botões de Categoria */}
+      <div className="px-4 py-3 flex items-center gap-2 flex-wrap">
+        {/* Botão: Capítulos */}
+        <div className="relative">
           <motion.button
             layout
-            onClick={onToggleFavorite}
-            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 ${
-              filters.isFavorite
-                ? "bg-amber-500 text-white"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            onClick={() =>
+              setOpenDropdown(openDropdown === "chapters" ? null : "chapters")
+            }
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+              openDropdown === "chapters" || activeChaptersCount > 0
+                ? "shadow-soft"
+                : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
             }`}
+            style={
+              openDropdown === "chapters" || activeChaptersCount > 0
+                ? {
+                    backgroundColor: "rgb(59, 130, 246, 0.1)",
+                    color: "rgb(37, 99, 235)",
+                    borderColor: "rgb(147, 197, 253)",
+                  }
+                : undefined
+            }
           >
-            ⭐ Favoritos
-            {filters.isFavorite && <X className="w-3 h-3 ml-1" />}
+            <span>📚 Capítulos</span>
+            {activeChaptersCount > 0 && (
+              <span className="text-xs font-bold bg-blue-200 text-blue-700 px-2 py-0.5 rounded-full">
+                {activeChaptersCount}
+              </span>
+            )}
+            <ChevronDown className="w-4 h-4" />
           </motion.button>
+
+          {/* Dropdown: Capítulos */}
+          <AnimatePresence>
+            {openDropdown === "chapters" && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15 }}
+                className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+              >
+                {chapters.map((chapter) => {
+                  const isActive = filters.chapters.includes(chapter.id);
+                  return (
+                    <button
+                      key={chapter.id}
+                      onClick={() => {
+                        onToggleChapter(chapter.id);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                        isActive
+                          ? "text-white"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                      }`}
+                      style={
+                        isActive
+                          ? { backgroundColor: chapter.color }
+                          : undefined
+                      }
+                    >
+                      {chapter.icon} {chapter.name}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Botão: Período */}
+        {availableAgeRanges.length > 0 && (
+          <div className="relative">
+            <motion.button
+              layout
+              onClick={() =>
+                setOpenDropdown(openDropdown === "period" ? null : "period")
+              }
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+                openDropdown === "period" || activePeriodCount > 0
+                  ? "shadow-soft"
+                  : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+              }`}
+              style={
+                openDropdown === "period" || activePeriodCount > 0
+                  ? {
+                      backgroundColor: "rgb(34, 197, 94, 0.1)",
+                      color: "rgb(22, 163, 74)",
+                      borderColor: "rgb(134, 239, 172)",
+                    }
+                  : undefined
+              }
+            >
+              <span>📅 Período</span>
+              {activePeriodCount > 0 && (
+                <span className="text-xs font-bold bg-green-200 text-green-700 px-2 py-0.5 rounded-full">
+                  {activePeriodCount}
+                </span>
+              )}
+              <ChevronDown className="w-4 h-4" />
+            </motion.button>
+
+            {/* Dropdown: Período */}
+            <AnimatePresence>
+              {openDropdown === "period" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+                >
+                  {availableAgeRanges.map((range) => {
+                    const isActive =
+                      filters.ageRange?.min === range.min &&
+                      filters.ageRange?.max === range.max;
+                    return (
+                      <button
+                        key={`age-${range.label}`}
+                        onClick={() => {
+                          onSetAgeRange(isActive ? undefined : range);
+                          setOpenDropdown(null);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                          isActive
+                            ? "bg-green-500 text-white"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        }`}
+                      >
+                        {range.label}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         )}
 
-        {/* Botão Limpar Filtros */}
-        {hasActiveFilters && (
+        {/* Botão: Pessoas */}
+        {availablePeople.length > 0 && (
+          <div className="relative">
+            <motion.button
+              layout
+              onClick={() =>
+                setOpenDropdown(openDropdown === "people" ? null : "people")
+              }
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+                openDropdown === "people" || activePeopleCount > 0
+                  ? "shadow-soft"
+                  : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+              }`}
+              style={
+                openDropdown === "people" || activePeopleCount > 0
+                  ? {
+                      backgroundColor: "rgb(168, 85, 247, 0.1)",
+                      color: "rgb(147, 51, 234)",
+                      borderColor: "rgb(221, 214, 254)",
+                    }
+                  : undefined
+              }
+            >
+              <span>👤 Pessoas</span>
+              {activePeopleCount > 0 && (
+                <span className="text-xs font-bold bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full">
+                  {activePeopleCount}
+                </span>
+              )}
+              <ChevronDown className="w-4 h-4" />
+            </motion.button>
+
+            {/* Dropdown: Pessoas */}
+            <AnimatePresence>
+              {openDropdown === "people" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+                >
+                  {availablePeople.map((person) => {
+                    const isActive = filters.people.includes(person);
+                    return (
+                      <button
+                        key={`person-${person}`}
+                        onClick={() => {
+                          onTogglePerson(person);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                          isActive
+                            ? "bg-purple-500 text-white"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                        }`}
+                      >
+                        👤 {person}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+
+      {/* Row 2: Filtros Ativos + Botão Limpar */}
+      {hasActiveFilters && (
+        <div className="border-t border-border/50 relative">
+          <div className="px-4 py-2 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+            {/* Container interno para scroll - os chips ficarão aqui */}
+            <div className="flex items-center gap-1.5 min-w-max">
+              {/* Filtros de Capítulos Ativos */}
+              {filters.chapters.map((chapterId) => {
+                const chapter = chapters.find((c) => c.id === chapterId);
+                if (!chapter) return null;
+                return (
+                  <motion.button
+                    key={`active-chapter-${chapterId}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => onToggleChapter(chapterId)}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                    style={{ backgroundColor: chapter.color }}
+                  >
+                    {chapter.icon} {chapter.name}
+                    <X className="w-3.5 h-3.5" />
+                  </motion.button>
+                );
+              })}
+
+              {/* Filtro de Período Ativo */}
+              {filters.ageRange && (
+                <motion.button
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={() => onSetAgeRange(undefined)}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-green-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                >
+                  📅 {filters.ageRange.min}–{filters.ageRange.max}m
+                  <X className="w-3.5 h-3.5" />
+                </motion.button>
+              )}
+
+              {/* Filtros de Pessoas Ativos */}
+              {filters.people.map((person) => (
+                <motion.button
+                  key={`active-person-${person}`}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={() => onTogglePerson(person)}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-purple-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                >
+                  👤 {person}
+                  <X className="w-3.5 h-3.5" />
+                </motion.button>
+              ))}
+
+              {/* Filtros de Tags Ativos */}
+              {filters.tags.map((tag) => (
+                <motion.button
+                  key={`active-tag-${tag}`}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={() => onToggleTag(tag)}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                >
+                  #{tag}
+                  <X className="w-3.5 h-3.5" />
+                </motion.button>
+              ))}
+
+              {/* Favoritos Ativo */}
+              {filters.favorites && (
+                <motion.button
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={onToggleFavorite}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-yellow-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                >
+                  ⭐ Favoritos
+                  <X className="w-3.5 h-3.5" />
+                </motion.button>
+              )}
+            </div>
+          </div>
+
+          {/* Botão Limpar Filtros - sticky no canto direito */}
           <motion.button
             layout
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={onClearFilters}
-            className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors flex items-center gap-1"
+            className="sticky right-4 px-3 py-1.5 rounded-full text-xs font-medium bg-red-500/15 text-red-600 hover:bg-red-500/25 transition-colors flex items-center gap-1 flex-shrink-0 ml-auto"
           >
-            ✕ Limpar
+            ✕ Limpar tudo
           </motion.button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

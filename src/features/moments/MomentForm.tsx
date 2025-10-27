@@ -161,7 +161,7 @@ export function MomentForm({
 
       toast.success(
         values.status === "published"
-          ? `${template.icon} ${template.name} registrado com sucesso!`
+          ? `${template.icon} Momento adicionado à história 🌸`
           : "Rascunho salvo com sucesso"
       );
 

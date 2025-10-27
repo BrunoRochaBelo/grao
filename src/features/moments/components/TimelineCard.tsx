@@ -1,6 +1,12 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, MapPin, Users } from "lucide-react";
+import {
+  ChevronDown,
+  MapPin,
+  Users,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Moment, Chapter, Baby } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,6 +26,8 @@ interface TimelineCardProps {
   onEdit?: () => void;
   onShare?: () => void;
   onDelete?: () => void;
+  onNavigatePrevious?: () => void;
+  onNavigateNext?: () => void;
 }
 
 export function TimelineCard({
@@ -32,9 +40,12 @@ export function TimelineCard({
   onEdit,
   onShare,
   onDelete,
+  onNavigatePrevious,
+  onNavigateNext,
 }: TimelineCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [tapCount, setTapCount] = useState(0);
+  const [swipeStart, setSwipeStart] = useState<number | null>(null);
   const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const longPressRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -76,6 +87,31 @@ export function TimelineCard({
     if (longPressRef.current) clearTimeout(longPressRef.current);
   };
 
+  // Swipe detection
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setSwipeStart(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (swipeStart === null) return;
+
+    const swipeEnd = e.changedTouches[0].clientX;
+    const diff = swipeStart - swipeEnd;
+
+    // Threshold: 50px para considerar swipe
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        // Swipe esquerda -> próximo
+        onNavigateNext?.();
+      } else {
+        // Swipe direita -> anterior
+        onNavigatePrevious?.();
+      }
+    }
+
+    setSwipeStart(null);
+  };
+
   const age = calculateAge(baby.birthDate, moment.date);
   const typeIcon = getMomentTypeIcon(moment.templateId, moment.chapterId);
   const dateFormatted = formatShortDate(moment.date);
@@ -91,10 +127,12 @@ export function TimelineCard({
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       onClick={handleTap}
       className="cursor-pointer group"
     >
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
         {/* Media Container */}
         <div className="relative aspect-video bg-muted overflow-hidden">
           {moment.media && moment.media.length > 0 ? (
@@ -131,6 +169,22 @@ export function TimelineCard({
                 {chapter.icon} {chapter.name}
               </Badge>
             </div>
+          )}
+
+          {/* Swipe Navigation Hints */}
+          {(onNavigatePrevious || onNavigateNext) && (
+            <>
+              {onNavigatePrevious && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ChevronLeft className="w-8 h-8 text-white drop-shadow-lg ml-2" />
+                </div>
+              )}
+              {onNavigateNext && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ChevronRight className="w-8 h-8 text-white drop-shadow-lg mr-2" />
+                </div>
+              )}
+            </>
           )}
         </div>
 
