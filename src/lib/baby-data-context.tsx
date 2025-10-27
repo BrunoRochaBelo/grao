@@ -6,11 +6,11 @@ import {
   useMemo,
   useReducer,
   type ReactNode,
-} from 'react';
+} from "react";
 import {
   mockBackendAdapter,
   bootstrapMockStorage,
-} from './adapters/mockBackend';
+} from "./adapters/mockBackend";
 import {
   Baby,
   Chapter,
@@ -21,15 +21,24 @@ import {
   SleepHumorEntry,
   SleepRecord,
   VaccineRecord,
-} from './types';
+} from "./types";
 import {
   calculateAge,
   getBabyAgeInDays,
   getAgeInMonths,
   getPlaceholdersForChapter as getPlaceholdersForChapterSource,
-} from './mockData';
+  babies as mockBabies,
+  chapters as mockChapters,
+  getCurrentBaby,
+  getMoments,
+  getGrowthMeasurements,
+  getVaccines,
+  getSleepHumorEntries,
+  getSleepRecords,
+  getFamilyMembers,
+} from "./mockData";
 
-type DataStatus = 'idle' | 'loading' | 'ready' | 'error';
+type DataStatus = "idle" | "loading" | "ready" | "error";
 
 interface BabyDataState {
   status: DataStatus;
@@ -46,7 +55,7 @@ interface BabyDataState {
 }
 
 const initialState: BabyDataState = {
-  status: 'idle',
+  status: "idle",
   error: undefined,
   babies: [],
   chapters: [],
@@ -60,48 +69,50 @@ const initialState: BabyDataState = {
 };
 
 type Action =
-  | { type: 'INIT_START' }
+  | { type: "INIT_START" }
   | {
-      type: 'INIT_SUCCESS';
-      payload: Omit<BabyDataState, 'status' | 'error'>;
+      type: "INIT_SUCCESS";
+      payload: Omit<BabyDataState, "status" | "error">;
     }
-  | { type: 'INIT_FAILURE'; error: string }
-  | { type: 'SET_CURRENT_BABY'; payload: { babyId: string; baby: Baby } }
-  | { type: 'UPSERT_MOMENT'; payload: Moment }
-  | { type: 'DELETE_MOMENT'; payload: string }
-  | { type: 'SET_MOMENTS'; payload: Moment[] }
-  | { type: 'ADD_GROWTH_MEASUREMENT'; payload: GrowthMeasurement }
-  | { type: 'ADD_VACCINE'; payload: VaccineRecord }
-  | { type: 'UPDATE_VACCINE'; payload: VaccineRecord }
-  | { type: 'ADD_SLEEP_HUMOR_ENTRY'; payload: SleepHumorEntry }
-  | { type: 'ADD_SLEEP_RECORD'; payload: SleepRecord }
-  | { type: 'ADD_FAMILY_MEMBER'; payload: FamilyMember };
+  | { type: "INIT_FAILURE"; error: string }
+  | { type: "SET_CURRENT_BABY"; payload: { babyId: string; baby: Baby } }
+  | { type: "UPSERT_MOMENT"; payload: Moment }
+  | { type: "DELETE_MOMENT"; payload: string }
+  | { type: "SET_MOMENTS"; payload: Moment[] }
+  | { type: "ADD_GROWTH_MEASUREMENT"; payload: GrowthMeasurement }
+  | { type: "ADD_VACCINE"; payload: VaccineRecord }
+  | { type: "UPDATE_VACCINE"; payload: VaccineRecord }
+  | { type: "ADD_SLEEP_HUMOR_ENTRY"; payload: SleepHumorEntry }
+  | { type: "ADD_SLEEP_RECORD"; payload: SleepRecord }
+  | { type: "ADD_FAMILY_MEMBER"; payload: FamilyMember };
 
 function reducer(state: BabyDataState, action: Action): BabyDataState {
   switch (action.type) {
-    case 'INIT_START':
-      return { ...state, status: 'loading', error: undefined };
-    case 'INIT_SUCCESS':
+    case "INIT_START":
+      return { ...state, status: "loading", error: undefined };
+    case "INIT_SUCCESS":
       return {
-        status: 'ready',
+        status: "ready",
         error: undefined,
         ...action.payload,
       };
-    case 'INIT_FAILURE':
-      return { ...state, status: 'error', error: action.error };
-    case 'SET_CURRENT_BABY': {
+    case "INIT_FAILURE":
+      return { ...state, status: "error", error: action.error };
+    case "SET_CURRENT_BABY": {
       const { babyId, baby } = action.payload;
       return {
         ...state,
         currentBaby: baby,
-        babies: state.babies.map(item => ({
+        babies: state.babies.map((item) => ({
           ...item,
           isActive: item.id === babyId,
         })),
       };
     }
-    case 'UPSERT_MOMENT': {
-      const existingIndex = state.moments.findIndex(m => m.id === action.payload.id);
+    case "UPSERT_MOMENT": {
+      const existingIndex = state.moments.findIndex(
+        (m) => m.id === action.payload.id
+      );
       if (existingIndex === -1) {
         return { ...state, moments: [...state.moments, action.payload] };
       }
@@ -109,41 +120,41 @@ function reducer(state: BabyDataState, action: Action): BabyDataState {
       nextMoments[existingIndex] = action.payload;
       return { ...state, moments: nextMoments };
     }
-    case 'SET_MOMENTS':
+    case "SET_MOMENTS":
       return { ...state, moments: action.payload };
-    case 'DELETE_MOMENT':
+    case "DELETE_MOMENT":
       return {
         ...state,
-        moments: state.moments.filter(moment => moment.id !== action.payload),
+        moments: state.moments.filter((moment) => moment.id !== action.payload),
       };
-    case 'ADD_GROWTH_MEASUREMENT':
+    case "ADD_GROWTH_MEASUREMENT":
       return {
         ...state,
         growthMeasurements: [...state.growthMeasurements, action.payload],
       };
-    case 'ADD_VACCINE':
+    case "ADD_VACCINE":
       return {
         ...state,
         vaccines: [...state.vaccines, action.payload],
       };
-    case 'UPDATE_VACCINE':
+    case "UPDATE_VACCINE":
       return {
         ...state,
-        vaccines: state.vaccines.map(vaccine =>
-          vaccine.id === action.payload.id ? action.payload : vaccine,
+        vaccines: state.vaccines.map((vaccine) =>
+          vaccine.id === action.payload.id ? action.payload : vaccine
         ),
       };
-    case 'ADD_SLEEP_HUMOR_ENTRY':
+    case "ADD_SLEEP_HUMOR_ENTRY":
       return {
         ...state,
         sleepHumorEntries: [...state.sleepHumorEntries, action.payload],
       };
-    case 'ADD_SLEEP_RECORD':
+    case "ADD_SLEEP_RECORD":
       return {
         ...state,
         sleepRecords: [...state.sleepRecords, action.payload],
       };
-    case 'ADD_FAMILY_MEMBER':
+    case "ADD_FAMILY_MEMBER":
       return {
         ...state,
         familyMembers: [...state.familyMembers, action.payload],
@@ -156,23 +167,30 @@ function reducer(state: BabyDataState, action: Action): BabyDataState {
 interface BabyDataContextValue extends BabyDataState {
   refreshMoments: () => Promise<void>;
   setCurrentBaby: (babyId: string) => Promise<Baby | null>;
-  addMoment: (moment: Omit<Moment, 'id'>) => Promise<Moment | null>;
-  updateMoment: (id: string, updates: Partial<Moment>) => Promise<Moment | null>;
+  addMoment: (moment: Omit<Moment, "id">) => Promise<Moment | null>;
+  updateMoment: (
+    id: string,
+    updates: Partial<Moment>
+  ) => Promise<Moment | null>;
   deleteMoment: (id: string) => Promise<boolean>;
   addGrowthMeasurement: (
-    measurement: Omit<GrowthMeasurement, 'id'>,
+    measurement: Omit<GrowthMeasurement, "id">
   ) => Promise<GrowthMeasurement | null>;
-  addVaccine: (vaccine: Omit<VaccineRecord, 'id'>) => Promise<VaccineRecord | null>;
+  addVaccine: (
+    vaccine: Omit<VaccineRecord, "id">
+  ) => Promise<VaccineRecord | null>;
   updateVaccineRecord: (
     id: string,
-    updates: Partial<VaccineRecord>,
+    updates: Partial<VaccineRecord>
   ) => Promise<VaccineRecord | null>;
   addSleepHumorEntry: (
-    entry: Omit<SleepHumorEntry, 'id'>,
+    entry: Omit<SleepHumorEntry, "id">
   ) => Promise<SleepHumorEntry | null>;
-  addSleepRecord: (record: Omit<SleepRecord, 'id'>) => Promise<SleepRecord | null>;
+  addSleepRecord: (
+    record: Omit<SleepRecord, "id">
+  ) => Promise<SleepRecord | null>;
   addFamilyMember: (
-    member: Omit<FamilyMember, 'id'>,
+    member: Omit<FamilyMember, "id">
   ) => Promise<FamilyMember | null>;
   getMoments: () => Moment[];
   getGrowthMeasurements: () => GrowthMeasurement[];
@@ -182,51 +200,38 @@ interface BabyDataContextValue extends BabyDataState {
   getFamilyMembers: () => FamilyMember[];
   getPlaceholdersForChapter: (
     chapterId: string,
-    babyAgeInDaysOverride?: number,
+    babyAgeInDaysOverride?: number
   ) => PlaceholderTemplate[];
   calculateAge: typeof calculateAge;
   getBabyAgeInDays: typeof getBabyAgeInDays;
   getAgeInMonths: typeof getAgeInMonths;
 }
 
-const BabyDataContext = createContext<BabyDataContextValue | undefined>(undefined);
+const BabyDataContext = createContext<BabyDataContextValue | undefined>(
+  undefined
+);
 
 export function BabyDataProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    let cancelled = false;
+    // Carregar dados mock de forma assíncrona mas imediata para dev
+    const loadData = () => {
+      dispatch({ type: "INIT_START" });
 
-    const initialize = async () => {
-      dispatch({ type: 'INIT_START' });
       try {
-        await bootstrapMockStorage();
-        const [
-          babies,
-          chapters,
-          currentBaby,
-          moments,
-          growthMeasurements,
-          vaccines,
-          sleepHumorEntries,
-          sleepRecords,
-          familyMembers,
-        ] = await Promise.all([
-          mockBackendAdapter.fetchBabies(),
-          mockBackendAdapter.fetchChapters(),
-          mockBackendAdapter.fetchCurrentBaby(),
-          mockBackendAdapter.fetchMoments(),
-          mockBackendAdapter.fetchGrowthMeasurements(),
-          mockBackendAdapter.fetchVaccines(),
-          mockBackendAdapter.fetchSleepHumorEntries(),
-          mockBackendAdapter.fetchSleepRecords(),
-          mockBackendAdapter.fetchFamilyMembers(),
-        ]);
-
-        if (cancelled) return;
+        const babies = mockBabies;
+        const chapters = mockChapters;
+        const currentBaby = getCurrentBaby();
+        const moments = getMoments();
+        const growthMeasurements = getGrowthMeasurements();
+        const vaccines = getVaccines();
+        const sleepHumorEntries = getSleepHumorEntries();
+        const sleepRecords = getSleepRecords();
+        const familyMembers = getFamilyMembers();
 
         dispatch({
-          type: 'INIT_SUCCESS',
+          type: "INIT_SUCCESS",
           payload: {
             babies,
             chapters,
@@ -240,139 +245,131 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
           },
         });
       } catch (error) {
-        if (cancelled) return;
         const message =
-          error instanceof Error ? error.message : 'Falha ao carregar dados iniciais';
-        dispatch({ type: 'INIT_FAILURE', error: message });
+          error instanceof Error
+            ? error.message
+            : "Falha ao carregar dados iniciais";
+        dispatch({ type: "INIT_FAILURE", error: message });
       }
     };
 
-    initialize();
-    return () => {
-      cancelled = true;
-    };
+    // Carregar imediatamente
+    loadData();
   }, []);
 
   const refreshMoments = useCallback(async () => {
     const moments = await mockBackendAdapter.fetchMoments();
-    dispatch({ type: 'SET_MOMENTS', payload: moments });
+    dispatch({ type: "SET_MOMENTS", payload: moments });
   }, []);
 
-  const setCurrentBaby = useCallback(
-    async (babyId: string) => {
-      const baby = await mockBackendAdapter.selectCurrentBaby(babyId);
-      if (!baby) return null;
-      dispatch({ type: 'SET_CURRENT_BABY', payload: { babyId, baby } });
-      return baby;
-    },
-    [],
-  );
+  const setCurrentBaby = useCallback(async (babyId: string) => {
+    const baby = await mockBackendAdapter.selectCurrentBaby(babyId);
+    if (!baby) return null;
+    dispatch({ type: "SET_CURRENT_BABY", payload: { babyId, baby } });
+    return baby;
+  }, []);
 
-  const addMoment = useCallback(
-    async (moment: Omit<Moment, 'id'>) => {
-      const created = await mockBackendAdapter.createMoment(moment);
-      if (!created) return null;
-      dispatch({ type: 'UPSERT_MOMENT', payload: created });
-      return created;
-    },
-    [],
-  );
+  const addMoment = useCallback(async (moment: Omit<Moment, "id">) => {
+    const created = await mockBackendAdapter.createMoment(moment);
+    if (!created) return null;
+    dispatch({ type: "UPSERT_MOMENT", payload: created });
+    return created;
+  }, []);
 
   const updateMoment = useCallback(
     async (id: string, updates: Partial<Moment>) => {
       const updated = await mockBackendAdapter.patchMoment(id, updates);
       if (!updated) return null;
-      dispatch({ type: 'UPSERT_MOMENT', payload: updated });
+      dispatch({ type: "UPSERT_MOMENT", payload: updated });
       return updated;
     },
-    [],
+    []
   );
 
   const deleteMoment = useCallback(async (id: string) => {
     const success = await mockBackendAdapter.removeMoment(id);
     if (success) {
-      dispatch({ type: 'DELETE_MOMENT', payload: id });
+      dispatch({ type: "DELETE_MOMENT", payload: id });
     }
     return success;
   }, []);
 
   const addGrowthMeasurement = useCallback(
-    async (measurement: Omit<GrowthMeasurement, 'id'>) => {
-      const created = await mockBackendAdapter.createGrowthMeasurement(measurement);
+    async (measurement: Omit<GrowthMeasurement, "id">) => {
+      const created = await mockBackendAdapter.createGrowthMeasurement(
+        measurement
+      );
       if (!created) return null;
-      dispatch({ type: 'ADD_GROWTH_MEASUREMENT', payload: created });
+      dispatch({ type: "ADD_GROWTH_MEASUREMENT", payload: created });
       return created;
     },
-    [],
+    []
   );
 
-  const addVaccine = useCallback(
-    async (vaccine: Omit<VaccineRecord, 'id'>) => {
-      const created = await mockBackendAdapter.createVaccine(vaccine);
-      if (!created) return null;
-      dispatch({ type: 'ADD_VACCINE', payload: created });
-      return created;
-    },
-    [],
-  );
+  const addVaccine = useCallback(async (vaccine: Omit<VaccineRecord, "id">) => {
+    const created = await mockBackendAdapter.createVaccine(vaccine);
+    if (!created) return null;
+    dispatch({ type: "ADD_VACCINE", payload: created });
+    return created;
+  }, []);
 
   const updateVaccineRecord = useCallback(
     async (id: string, updates: Partial<VaccineRecord>) => {
       const updated = await mockBackendAdapter.patchVaccine(id, updates);
       if (!updated) return null;
-      dispatch({ type: 'UPDATE_VACCINE', payload: updated });
+      dispatch({ type: "UPDATE_VACCINE", payload: updated });
       return updated;
     },
-    [],
+    []
   );
 
   const addSleepHumorEntry = useCallback(
-    async (entry: Omit<SleepHumorEntry, 'id'>) => {
+    async (entry: Omit<SleepHumorEntry, "id">) => {
       const created = await mockBackendAdapter.createSleepHumorEntry(entry);
       if (!created) return null;
-      dispatch({ type: 'ADD_SLEEP_HUMOR_ENTRY', payload: created });
+      dispatch({ type: "ADD_SLEEP_HUMOR_ENTRY", payload: created });
       return created;
     },
-    [],
+    []
   );
 
   const addSleepRecord = useCallback(
-    async (record: Omit<SleepRecord, 'id'>) => {
+    async (record: Omit<SleepRecord, "id">) => {
       const created = await mockBackendAdapter.createSleepRecord(record);
       if (!created) return null;
-      dispatch({ type: 'ADD_SLEEP_RECORD', payload: created });
+      dispatch({ type: "ADD_SLEEP_RECORD", payload: created });
       return created;
     },
-    [],
+    []
   );
 
   const addFamilyMember = useCallback(
-    async (member: Omit<FamilyMember, 'id'>) => {
+    async (member: Omit<FamilyMember, "id">) => {
       const created = await mockBackendAdapter.createFamilyMember(member);
       if (!created) return null;
-      dispatch({ type: 'ADD_FAMILY_MEMBER', payload: created });
+      dispatch({ type: "ADD_FAMILY_MEMBER", payload: created });
       return created;
     },
-    [],
+    []
   );
 
   const getMoments = useCallback(() => state.moments, [state.moments]);
   const getGrowthMeasurements = useCallback(
     () => state.growthMeasurements,
-    [state.growthMeasurements],
+    [state.growthMeasurements]
   );
   const getVaccines = useCallback(() => state.vaccines, [state.vaccines]);
   const getSleepHumorEntries = useCallback(
     () => state.sleepHumorEntries,
-    [state.sleepHumorEntries],
+    [state.sleepHumorEntries]
   );
   const getSleepRecords = useCallback(
     () => state.sleepRecords,
-    [state.sleepRecords],
+    [state.sleepRecords]
   );
   const getFamilyMembers = useCallback(
     () => state.familyMembers,
-    [state.familyMembers],
+    [state.familyMembers]
   );
 
   const getPlaceholdersForChapter = useCallback(
@@ -382,7 +379,7 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
         (state.currentBaby ? getBabyAgeInDays(state.currentBaby.birthDate) : 0);
       return getPlaceholdersForChapterSource(chapterId, babyAge);
     },
-    [state.currentBaby],
+    [state.currentBaby]
   );
 
   const value = useMemo<BabyDataContextValue>(
@@ -430,18 +427,22 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
       getSleepRecords,
       getFamilyMembers,
       getPlaceholdersForChapter,
-    ],
+    ]
   );
 
   return (
-    <BabyDataContext.Provider value={value}>{children}</BabyDataContext.Provider>
+    <BabyDataContext.Provider value={value}>
+      {children}
+    </BabyDataContext.Provider>
   );
 }
 
 export function useBabyData(): BabyDataContextValue {
   const context = useContext(BabyDataContext);
   if (!context) {
-    throw new Error('useBabyData deve ser utilizado dentro de BabyDataProvider');
+    throw new Error(
+      "useBabyData deve ser utilizado dentro de BabyDataProvider"
+    );
   }
   return context;
 }
