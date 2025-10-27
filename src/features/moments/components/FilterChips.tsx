@@ -111,7 +111,7 @@ export function FilterChips({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.15 }}
-                className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+                className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 max-h-60 overflow-y-auto whitespace-nowrap"
               >
                 {chapters.map((chapter) => {
                   const isActive = filters.chapters.includes(chapter.id);
@@ -121,7 +121,7 @@ export function FilterChips({
                       onClick={() => {
                         onToggleChapter(chapter.id);
                       }}
-                      className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                      className={`w-full text-left px-3 py-3 rounded-md text-sm font-medium transition-all block my-1 ${
                         isActive
                           ? "text-white"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
@@ -181,7 +181,7 @@ export function FilterChips({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 max-h-60 overflow-y-auto whitespace-nowrap"
                 >
                   {availableAgeRanges.map((range) => {
                     const isActive =
@@ -194,7 +194,7 @@ export function FilterChips({
                           onSetAgeRange(isActive ? undefined : range);
                           setOpenDropdown(null);
                         }}
-                        className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                        className={`w-full text-left px-3 py-3 rounded-md text-sm font-medium transition-all block my-1 ${
                           isActive
                             ? "bg-green-500 text-white"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
@@ -250,7 +250,7 @@ export function FilterChips({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-1 z-50 w-56 max-h-60 overflow-y-auto"
+                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 max-h-60 overflow-y-auto whitespace-nowrap"
                 >
                   {availablePeople.map((person) => {
                     const isActive = filters.people.includes(person);
@@ -260,7 +260,7 @@ export function FilterChips({
                         onClick={() => {
                           onTogglePerson(person);
                         }}
-                        className={`w-full text-left px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                        className={`w-full text-left px-3 py-3 rounded-md text-sm font-medium transition-all block my-1 ${
                           isActive
                             ? "bg-purple-500 text-white"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
