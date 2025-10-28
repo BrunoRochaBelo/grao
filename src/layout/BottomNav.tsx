@@ -49,60 +49,63 @@ export function BottomNav({
 
   return (
     <>
-      {/* Overlay do FAB */}
-      <AnimatePresence>
-        {isFabExpanded && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
-            onClick={() => setIsFabExpanded(false)}
-          />
-        )}
-      </AnimatePresence>
-
       {/* Opções do FAB */}
       <AnimatePresence>
         {isFabExpanded && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50"
-          >
-            <div className="bg-card border border-border rounded-2xl p-4 shadow-lg">
-              <div className="flex flex-col gap-3">
-                {fabOptions.map((option, index) => {
-                  const Icon = option.icon;
-                  return (
-                    <motion.button
-                      key={option.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      onClick={() => {
-                        setIsFabExpanded(false);
-                        // Corrige: "moment" abre o modal de template
-                        if (option.id === "moment") {
-                          onNewAction?.("moment");
-                        } else {
-                          onNewAction?.(option.id);
-                        }
-                      }}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-accent transition-colors"
-                    >
-                      <Icon className="w-5 h-5 text-primary" />
-                      <span className="text-sm font-medium">
-                        {option.label}
-                      </span>
-                    </motion.button>
-                  );
-                })}
+          <>
+            {/* Overlay clicável */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+              onClick={() => setIsFabExpanded(false)}
+              style={{ pointerEvents: "auto" }}
+            />
+            {/* Menu do FAB */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed z-50 left-1/2 -translate-x-1/2"
+              style={{
+                bottom: "calc(100px + 1rem)", // Altura da barra (80px) + FAB (-32px) + gap
+                pointerEvents: "auto",
+              }}
+            >
+              <div className="bg-card border border-border rounded-2xl p-4 shadow-lg">
+                <div className="flex flex-col gap-3">
+                  {fabOptions.map((option, index) => {
+                    const Icon = option.icon;
+                    return (
+                      <motion.button
+                        key={option.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        onClick={() => {
+                          setIsFabExpanded(false);
+                          // Corrige: "moment" abre o modal de template
+                          if (option.id === "moment") {
+                            onNewAction?.("moment");
+                          } else {
+                            onNewAction?.(option.id);
+                          }
+                        }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-accent transition-colors"
+                      >
+                        <Icon className="w-5 h-5 text-primary" />
+                        <span className="text-sm font-medium">
+                          {option.label}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
