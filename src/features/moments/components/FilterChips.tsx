@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ChevronDown } from "lucide-react";
 import { Chapter } from "@/lib/types";
-import { FiltersState } from "../hooks/useFilters";
+import { FiltersState, FilterPersonOption } from "../hooks/useFilters";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AgeRange {
   label: string;
@@ -20,7 +21,7 @@ interface FilterChipsProps {
   onSetAgeRange: (range: AgeRange | undefined) => void;
   onClearFilters: () => void;
   onToggleFavorite: () => void;
-  availablePeople: string[];
+  availablePeople: FilterPersonOption[];
   availableTags: string[];
   availableAgeRanges: AgeRange[];
 }
@@ -43,6 +44,14 @@ export function FilterChips({
 }: FilterChipsProps) {
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const peopleLookup = useMemo(() => {
+    const map = new Map<string, FilterPersonOption>();
+    availablePeople.forEach((person) => {
+      map.set(person.id, person);
+    });
+    return map;
+  }, [availablePeople]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -211,70 +220,119 @@ export function FilterChips({
         )}
 
         {/* Botão: Pessoas */}
-        {availablePeople.length > 0 && (
-          <div className="relative">
-            <motion.button
-              layout
-              onClick={() =>
-                setOpenDropdown(openDropdown === "people" ? null : "people")
-              }
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
-                openDropdown === "people" || activePeopleCount > 0
-                  ? "shadow-soft"
-                  : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
-              }`}
-              style={
-                openDropdown === "people" || activePeopleCount > 0
-                  ? {
-                      backgroundColor: "rgb(168, 85, 247, 0.1)",
-                      color: "rgb(147, 51, 234)",
-                      borderColor: "rgb(221, 214, 254)",
-                    }
-                  : undefined
-              }
-            >
-              <span>👤 Pessoas</span>
-              {activePeopleCount > 0 && (
-                <span className="text-xs font-bold bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full">
-                  {activePeopleCount}
-                </span>
-              )}
-              <ChevronDown className="w-4 h-4" />
-            </motion.button>
+        <div className="relative">
+          <motion.button
+            layout
+            onClick={() =>
+              setOpenDropdown(openDropdown === "people" ? null : "people")
+            }
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${
+              openDropdown === "people" || activePeopleCount > 0
+                ? "shadow-soft"
+                : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+            }`}
+            style={
+              openDropdown === "people" || activePeopleCount > 0
+                ? {
+                    backgroundColor: "rgb(168, 85, 247, 0.1)",
+                    color: "rgb(147, 51, 234)",
+                    borderColor: "rgb(221, 214, 254)",
+                  }
+                : undefined
+            }
+          >
+            <span>👤 Pessoas</span>
+            {activePeopleCount > 0 && (
+              <span className="text-xs font-bold bg-purple-200 text-purple-700 px-2 py-0.5 rounded-full">
+                {activePeopleCount}
+              </span>
+            )}
+            <ChevronDown className="w-4 h-4" />
+          </motion.button>
 
-            {/* Dropdown: Pessoas */}
-            <AnimatePresence>
-              {openDropdown === "people" && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 max-h-60 overflow-y-auto whitespace-nowrap"
-                >
-                  {availablePeople.map((person) => {
-                    const isActive = filters.people.includes(person);
+          {/* Dropdown: Pessoas */}
+          <AnimatePresence>
+            {openDropdown === "people" && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.15 }}
+                className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 max-h-60 overflow-y-auto min-w-[250px]"
+              >
+                {availablePeople.length === 0 ? (
+                  <div className="px-3 py-4 text-sm text-muted-foreground">
+                    Nenhum membro da família cadastrado
+                  </div>
+                ) : (
+                  availablePeople.map((person) => {
+                    const isActive = filters.people.includes(person.id);
+                    const relationLabel =
+                      person.relation ||
+                      (person.isSynthetic
+                        ? "Contato registrado no álbum"
+                        : "Parentesco não informado");
+
+                    const initials = person.name
+                      .split(" ")
+                      .map((part) => part.trim())
+                      .filter(Boolean)
+                      .map((part) => part[0]?.toUpperCase() ?? "")
+                      .join("")
+                      .slice(0, 2);
+
                     return (
                       <button
-                        key={`person-${person}`}
+                        key={`person-${person.id}`}
                         onClick={() => {
-                          onTogglePerson(person);
+                          onTogglePerson(person.id);
                         }}
-                        className={`w-full text-left px-3 py-3 rounded-md text-sm font-medium transition-all block my-1 ${
+                        className={`w-full text-left px-3 py-3 rounded-md text-sm transition-all block my-1 ${
                           isActive
-                            ? "bg-purple-500 text-white"
+                            ? "bg-purple-500 text-white shadow-sm"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                         }`}
                       >
-                        👤 {person}
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-12 border border-border/40">
+                            {person.avatar ? (
+                              <AvatarImage
+                                src={person.avatar}
+                                alt={person.name}
+                              />
+                            ) : (
+                              <AvatarFallback>
+                                {initials || "👤"}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div className="flex flex-col items-start leading-tight">
+                            <span
+                              className={`font-semibold ${
+                                isActive ? "text-white" : "text-foreground"
+                              }`}
+                            >
+                              {person.name}
+                            </span>
+                            <span
+                              className={`text-xs ${
+                                isActive
+                                  ? "text-white/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {relationLabel}
+                            </span>
+                          </div>
+                        </div>
                       </button>
                     );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                  })
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Row 2: Filtros Ativos + Botão Limpar */}
@@ -320,20 +378,24 @@ export function FilterChips({
               )}
 
               {/* Filtros de Pessoas Ativos */}
-              {filters.people.map((person) => (
-                <motion.button
-                  key={`active-person-${person}`}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  onClick={() => onTogglePerson(person)}
-                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-purple-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
-                >
-                  👤 {person}
-                  <X className="w-3.5 h-3.5" />
-                </motion.button>
-              ))}
+              {filters.people.map((personId) => {
+                const person = peopleLookup.get(personId);
+                const label = person?.name ?? personId;
+                return (
+                  <motion.button
+                    key={`active-person-${personId}`}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => onTogglePerson(personId)}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-purple-500 text-white shadow-sm flex items-center gap-2 flex-shrink-0 transition-all hover:opacity-80"
+                  >
+                    👤 {label}
+                    <X className="w-3.5 h-3.5" />
+                  </motion.button>
+                );
+              })}
 
               {/* Filtros de Tags Ativos */}
               {filters.tags.map((tag) => (

@@ -1,5 +1,14 @@
 import { useState, useMemo, useCallback } from "react";
-import { Moment } from "@/lib/types";
+import { FamilyMember, Moment } from "@/lib/types";
+
+export interface FilterPersonOption {
+  id: string;
+  name: string;
+  relation?: string;
+  avatar?: string;
+  /** Indica opções derivadas dos próprios momentos para manter compatibilidade */
+  isSynthetic?: boolean;
+}
 
 export interface AgeRange {
   label: string;
@@ -16,7 +25,7 @@ export interface FiltersState {
 }
 
 interface AvailableFilters {
-  people: string[];
+  people: FilterPersonOption[];
   tags: string[];
   types: string[];
   ageRanges: AgeRange[];
@@ -33,7 +42,11 @@ const DEFAULT_AGE_RANGES: AgeRange[] = [
  * Hook para gerenciar filtros da timeline de momentos
  * Retorna estado de filtros, momentos filtrados e ações para alterar filtros
  */
-export function useFilters(moments: Moment[], babyBirthDate?: string) {
+export function useFilters(
+  moments: Moment[],
+  babyBirthDate?: string,
+  familyMembers: FamilyMember[] = []
+) {
   const [filters, setFilters] = useState<FiltersState>({
     chapters: [],
     people: [],
@@ -41,16 +54,146 @@ export function useFilters(moments: Moment[], babyBirthDate?: string) {
     favorites: false,
   });
 
+  const normalizeLabel = useCallback((value: string) => {
+    return value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }, []);
+
+  const buildPersonOptions = useMemo<FilterPersonOption[]>(() => {
+    if (familyMembers.length > 0) {
+      return [...familyMembers]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((member) => ({
+          id: member.id,
+          name: member.name,
+          relation: member.relation,
+          avatar: member.avatar,
+        }));
+    }
+
+    const derivedPeople = new Set<string>();
+    moments.forEach((moment) => {
+      moment.people?.forEach((person) => {
+        derivedPeople.add(person);
+      });
+    });
+
+    return Array.from(derivedPeople)
+      .sort((a, b) => a.localeCompare(b))
+      .map((label) => ({
+        id: `moment-${normalizeLabel(label)}`,
+        name: label,
+        isSynthetic: true,
+      }));
+  }, [familyMembers, moments, normalizeLabel]);
+
+  const personMatchers = useMemo(() => {
+    const relationSynonyms = (
+      relation?: string,
+      option?: FilterPersonOption
+    ): string[] => {
+      if (!relation) return [];
+
+      const normalizedRelation = normalizeLabel(relation);
+      const base: string[] = [relation];
+
+      if (normalizedRelation.includes("mae")) {
+        base.push("Mamãe", "Mamae", "Mãe", "Mae");
+      }
+
+      if (normalizedRelation.includes("pai")) {
+        base.push("Papai", "Pai", "Paizinho");
+      }
+
+      if (normalizedRelation.includes("avo")) {
+        const isGrandmother = /avó/i.test(relation);
+        const isGrandfather = /avô/i.test(relation);
+        const isMaternal = normalizedRelation.includes("mater");
+        const isPaternal = normalizedRelation.includes("pater");
+
+        if (isGrandmother) {
+          base.push("Vovó", "Vovo");
+          if (isMaternal) {
+            base.push("Vovó Materna", "Vovo Materna");
+          }
+          if (isPaternal) {
+            base.push("Vovó Paterna", "Vovo Paterna");
+          }
+        }
+
+        if (isGrandfather) {
+          base.push("Vovô", "Vovo");
+          if (isMaternal) {
+            base.push("Vovô Materno", "Vovo Materno");
+          }
+          if (isPaternal) {
+            base.push("Vovô Paterno", "Vovo Paterno");
+          }
+        }
+
+        if (!isGrandmother && !isGrandfather) {
+          base.push("Vovô", "Vovó", "Vovo");
+        }
+      }
+
+      if (normalizedRelation.includes("tia")) {
+        base.push("Tia");
+      }
+
+      if (normalizedRelation.includes("tio")) {
+        base.push("Tio");
+      }
+
+      if (option?.name) {
+        base.push(option.name);
+      }
+
+      return base;
+    };
+
+    return buildPersonOptions.reduce(
+      (acc, option) => {
+        const tokens = new Set<string>();
+
+        tokens.add(normalizeLabel(option.name));
+
+        option.name
+          .split(" ")
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .forEach((part) => tokens.add(normalizeLabel(part)));
+
+        relationSynonyms(option.relation, option).forEach((value) => {
+          tokens.add(normalizeLabel(value));
+        });
+
+        acc.set(option.id, {
+          option,
+          tokens: Array.from(tokens),
+        });
+
+        return acc;
+      },
+      new Map<
+        string,
+        {
+          option: FilterPersonOption;
+          tokens: string[];
+        }
+      >()
+    );
+  }, [buildPersonOptions, normalizeLabel]);
+
   // Extrair filtros disponíveis dos momentos
   const availableFilters = useMemo((): AvailableFilters => {
-    const people = new Set<string>();
     const tags = new Set<string>();
     const types = new Set<string>();
 
     moments.forEach((moment) => {
-      if (moment.people) {
-        moment.people.forEach((p) => people.add(p));
-      }
       if (moment.tags) {
         moment.tags.forEach((t) => tags.add(t));
       }
@@ -58,12 +201,12 @@ export function useFilters(moments: Moment[], babyBirthDate?: string) {
     });
 
     return {
-      people: Array.from(people).sort(),
+      people: buildPersonOptions,
       tags: Array.from(tags).sort(),
       types: Array.from(types).sort(),
       ageRanges: DEFAULT_AGE_RANGES,
     };
-  }, [moments]);
+  }, [moments, buildPersonOptions]);
 
   // Calcular idade em dias a partir da data de nascimento
   const calculateAgeInDays = useCallback(
@@ -89,9 +232,27 @@ export function useFilters(moments: Moment[], babyBirthDate?: string) {
 
     // Filtro por pessoas
     if (filters.people.length > 0) {
-      result = result.filter((m) =>
-        m.people?.some((p) => filters.people.includes(p))
-      );
+      result = result.filter((moment) => {
+        if (!moment.people?.length) {
+          return false;
+        }
+
+        const normalizedMomentPeople = moment.people.map((label) =>
+          normalizeLabel(label)
+        );
+
+        return filters.people.some((personId) => {
+          const matcher = personMatchers.get(personId);
+
+          if (!matcher) {
+            return normalizedMomentPeople.includes(normalizeLabel(personId));
+          }
+
+          return normalizedMomentPeople.some((label) =>
+            matcher.tokens.includes(label)
+          );
+        });
+      });
     }
 
     // Filtro por tags
@@ -126,7 +287,7 @@ export function useFilters(moments: Moment[], babyBirthDate?: string) {
     return result.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [moments, filters, calculateAgeInDays]);
+  }, [moments, filters, calculateAgeInDays, normalizeLabel, personMatchers]);
 
   // Ações de filtro
   const toggleChapter = useCallback((chapterId: string) => {
@@ -138,12 +299,12 @@ export function useFilters(moments: Moment[], babyBirthDate?: string) {
     }));
   }, []);
 
-  const togglePerson = useCallback((person: string) => {
+  const togglePerson = useCallback((personId: string) => {
     setFilters((prev) => ({
       ...prev,
-      people: prev.people.includes(person)
-        ? prev.people.filter((p) => p !== person)
-        : [...prev.people, person],
+      people: prev.people.includes(personId)
+        ? prev.people.filter((p) => p !== personId)
+        : [...prev.people, personId],
     }));
   }, []);
 

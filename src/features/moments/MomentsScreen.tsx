@@ -25,9 +25,11 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     getMoments,
     getPlaceholdersForChapter,
     deleteMoment,
+    getFamilyMembers,
   } = useBabyData();
 
   const moments = getMoments();
+  const familyMembers = getFamilyMembers();
   const {
     filters,
     filteredMoments,
@@ -39,7 +41,7 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     clearFilters,
     toggleFavorite,
     hasActiveFilters,
-  } = useFilters(moments, currentBaby?.birthDate);
+  } = useFilters(moments, currentBaby?.birthDate, familyMembers);
 
   const timelineGroups = useTimelineGroups(filteredMoments);
 
