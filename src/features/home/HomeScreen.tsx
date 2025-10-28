@@ -236,7 +236,7 @@ export function HomeScreen({
     return phrases[Math.floor(Math.random() * phrases.length)];
   }, [currentBaby, sleepEntries, moments, weightChange, familyMembers]);
 
-  // Scroll listener otimizado com gesture smoothing e snap points
+  // Scroll listener otimizado com gesture smoothing e snap points - Touch optimized
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout | null = null;
     let lastScrollY = window.scrollY;
@@ -251,34 +251,45 @@ export function HomeScreen({
 
       // Calcular velocidade com suavização exponencial (EMA - Exponential Moving Average)
       const smoothingFactor = 0.3;
-      scrollVelocity = scrollVelocity * (1 - smoothingFactor) + (scrollDelta / timeDelta) * smoothingFactor;
+      scrollVelocity =
+        scrollVelocity * (1 - smoothingFactor) +
+        (scrollDelta / timeDelta) * smoothingFactor;
 
       lastScrollY = currentScrollY;
       lastTime = currentTime;
 
       if (scrollTimeout) clearTimeout(scrollTimeout);
 
-      // Snap points com threshold mais inteligente
-      const EXPAND_THRESHOLD = 40; // Threshold para expandir
-      const COMPACT_THRESHOLD = 120; // Threshold para compactar
+      // Snap points otimizados para touch
+      const CLOSE_THRESHOLD = 30; // Muito mais sensível para fechar
+      const REOPEN_THRESHOLD = 0; // Só abre quando scroll é zero
       const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para snap inercial
 
       scrollTimeout = setTimeout(() => {
         let shouldCompact = heroCompact;
 
-        // Lógica de snap com histerese
-        if (Math.abs(scrollVelocity) > VELOCITY_THRESHOLD) {
-          // Se há velocidade, usar snap inercial
-          if (scrollVelocity > 0) {
-            // Scroll para baixo - compactar
-            shouldCompact = currentScrollY > EXPAND_THRESHOLD;
-          } else {
-            // Scroll para cima - expandir
-            shouldCompact = currentScrollY > COMPACT_THRESHOLD;
-          }
+        // Lógica de snap com histerese - Otimizada para touch
+        if (currentScrollY === 0) {
+          // Se está no topo, sempre expandir
+          shouldCompact = false;
+        } else if (heroCompact) {
+          // Se já está compacto, só expande quando volta ao topo (scroll = 0)
+          shouldCompact = true;
         } else {
-          // Sem velocidade, usar threshold padrão
-          shouldCompact = currentScrollY > 80;
+          // Se está expandido, compacta com threshold muito sensível
+          if (Math.abs(scrollVelocity) > VELOCITY_THRESHOLD) {
+            // Com velocidade, usar snap inercial mais agressivo
+            if (scrollVelocity > 0) {
+              // Scroll para baixo - compactar rápido
+              shouldCompact = currentScrollY > CLOSE_THRESHOLD;
+            } else {
+              // Scroll para cima - expandir (mas só se for zero)
+              shouldCompact = currentScrollY > CLOSE_THRESHOLD;
+            }
+          } else {
+            // Sem velocidade, threshold padrão bem sensível
+            shouldCompact = currentScrollY > CLOSE_THRESHOLD;
+          }
         }
 
         if (shouldCompact !== heroCompact) {
@@ -358,8 +369,9 @@ export function HomeScreen({
           minHeight: heroCompact ? 80 : "auto",
         }}
         transition={{
-          duration: 0.4,
-          ease: [0.25, 0.46, 0.45, 0.94],
+          duration: 0.35,
+          ease: [0.16, 1, 0.3, 1], // Custom ease curve otimizado para smoothing
+          type: "tween",
         }}
       >
         <div className="flex flex-col p-6 pb-8 gap-4">
@@ -387,8 +399,9 @@ export function HomeScreen({
                   scale: heroCompact ? 1 : 1.08,
                 }}
                 transition={{
-                  duration: 0.4,
-                  ease: [0.25, 0.46, 0.45, 0.94],
+                  duration: 0.35,
+                  ease: [0.16, 1, 0.3, 1],
+                  type: "tween",
                 }}
                 style={{ transformOrigin: "center center" }}
               >
@@ -429,9 +442,10 @@ export function HomeScreen({
                     opacity: 1,
                   }}
                   transition={{
-                    duration: 0.4,
-                    delay: 0.15,
-                    ease: [0.25, 0.46, 0.45, 0.94],
+                    duration: 0.35,
+                    delay: 0.05,
+                    ease: [0.16, 1, 0.3, 1],
+                    type: "tween",
                   }}
                   className="font-bold text-white mb-1 leading-tight"
                 >
