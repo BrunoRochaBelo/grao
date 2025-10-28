@@ -51,7 +51,6 @@
 ### Ações do Formulário
 
 - ✅ **Salvar** - Publicar momento imediatamente
-- ✅ **Salvar Rascunho** - Guardar para completar depois
 - ✅ **Descartar** - Cancelar com confirmação se houver alterações
 
 ## 🔄 Funcionalidades Retroativas

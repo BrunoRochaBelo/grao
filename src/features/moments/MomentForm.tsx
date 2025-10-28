@@ -178,8 +178,11 @@ export function MomentForm({
 
   const submitForm = handleSubmit(onSubmit, onInvalid);
 
-  const handleSubmitStatus = (status: "published" | "draft") => () => {
-    setValue("status", status, { shouldDirty: true, shouldValidate: true });
+  const handlePublish = () => {
+    setValue("status", "published", {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
     void submitForm();
   };
 
@@ -519,16 +522,8 @@ export function MomentForm({
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     type="button"
-                    variant="outline"
                     disabled={isSubmitting}
-                    onClick={handleSubmitStatus("draft")}
-                  >
-                    Salvar como rascunho
-                  </Button>
-                  <Button
-                    type="button"
-                    disabled={isSubmitting}
-                    onClick={handleSubmitStatus("published")}
+                    onClick={handlePublish}
                   >
                     Publicar momento
                   </Button>
