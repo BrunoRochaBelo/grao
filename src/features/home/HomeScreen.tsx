@@ -236,18 +236,55 @@ export function HomeScreen({
     return phrases[Math.floor(Math.random() * phrases.length)];
   }, [currentBaby, sleepEntries, moments, weightChange, familyMembers]);
 
-  // Scroll listener otimizado para controlar hero compact
+  // Scroll listener otimizado com gesture smoothing e snap points
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout | null = null;
+    let lastScrollY = window.scrollY;
+    let scrollVelocity = 0;
+    let lastTime = Date.now();
 
     const handleScroll = () => {
+      const currentTime = Date.now();
+      const timeDelta = Math.max(currentTime - lastTime, 16); // Min 16ms (60fps)
+      const currentScrollY = window.scrollY;
+      const scrollDelta = currentScrollY - lastScrollY;
+
+      // Calcular velocidade com suavização exponencial (EMA - Exponential Moving Average)
+      const smoothingFactor = 0.3;
+      scrollVelocity = scrollVelocity * (1 - smoothingFactor) + (scrollDelta / timeDelta) * smoothingFactor;
+
+      lastScrollY = currentScrollY;
+      lastTime = currentTime;
+
       if (scrollTimeout) clearTimeout(scrollTimeout);
 
+      // Snap points com threshold mais inteligente
+      const EXPAND_THRESHOLD = 40; // Threshold para expandir
+      const COMPACT_THRESHOLD = 120; // Threshold para compactar
+      const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para snap inercial
+
       scrollTimeout = setTimeout(() => {
-        const scrollY = window.scrollY;
-        const shouldCompact = scrollY > 80; // Threshold otimizado
-        setHeroCompact(shouldCompact);
-      }, 16); // ~60fps
+        let shouldCompact = heroCompact;
+
+        // Lógica de snap com histerese
+        if (Math.abs(scrollVelocity) > VELOCITY_THRESHOLD) {
+          // Se há velocidade, usar snap inercial
+          if (scrollVelocity > 0) {
+            // Scroll para baixo - compactar
+            shouldCompact = currentScrollY > EXPAND_THRESHOLD;
+          } else {
+            // Scroll para cima - expandir
+            shouldCompact = currentScrollY > COMPACT_THRESHOLD;
+          }
+        } else {
+          // Sem velocidade, usar threshold padrão
+          shouldCompact = currentScrollY > 80;
+        }
+
+        if (shouldCompact !== heroCompact) {
+          setHeroCompact(shouldCompact);
+        }
+      }, 8); // Debounce agressivo (8ms)
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -255,7 +292,7 @@ export function HomeScreen({
       window.removeEventListener("scroll", handleScroll);
       if (scrollTimeout) clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [heroCompact]);
 
   const getInitials = (name: string) =>
     name
@@ -308,7 +345,7 @@ export function HomeScreen({
   }, [babyAgeInDays, moments]);
 
   return (
-    <div className="pb-24 px-4 max-w-2xl mx-auto">
+    <div className="pb-24 max-w-2xl mx-auto">
       {/* Hero Contextual - Sticky */}
       <motion.div
         className="sticky top-0 z-10 rounded-b-2xl overflow-hidden"
@@ -466,7 +503,7 @@ export function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-8"
+        className="mb-8 px-4"
         style={{ marginTop: "3rem" }}
       >
         <div className="flex items-center justify-between mb-6">
@@ -625,7 +662,7 @@ export function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mb-8"
+        className="mb-8 px-4"
         style={{ marginTop: "3rem" }}
       >
         <div className="flex items-center justify-between mb-6">
@@ -676,7 +713,7 @@ export function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mb-8"
+        className="mb-8 px-4"
         style={{ marginTop: "3rem" }}
       >
         <div className="flex items-center justify-between mb-6">
