@@ -517,8 +517,7 @@ export const HomeScreen = memo(function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-8 px-4"
-        style={{ marginTop: "3rem" }}
+        className="mb-8 px-4 mt-6"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
@@ -676,8 +675,7 @@ export const HomeScreen = memo(function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mb-8 px-4"
-        style={{ marginTop: "3rem" }}
+        className="mb-8 px-4 mt-6"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
@@ -730,8 +728,7 @@ export const HomeScreen = memo(function HomeScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mb-8 px-4"
-        style={{ marginTop: "3rem" }}
+        className="mb-8 px-4 mt-6"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
