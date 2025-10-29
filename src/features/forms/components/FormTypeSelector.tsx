@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Search, Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { FormTemplate } from "@/lib/forms/formTypes";
+import type { FormTemplate } from "@/types";
 
 interface TypeSelectorProps {
   templates: FormTemplate[];
@@ -198,3 +198,4 @@ export function FormTypeSelector({
     </motion.div>
   );
 }
+

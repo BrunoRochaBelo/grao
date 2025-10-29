@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Chapter } from '@/lib/types';
+import { useBabyData } from '@/context/baby-data-context';
+import type { Chapter } from '@/types';
 
 interface AddMomentSheetProps {
   isOpen: boolean;
@@ -108,3 +108,5 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
     </AnimatePresence>
   );
 }
+
+

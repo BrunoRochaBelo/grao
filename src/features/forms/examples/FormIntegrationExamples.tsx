@@ -147,7 +147,7 @@ export function SleepHumorFormNew({
  * ✅ EXEMPLO 4: Seletor de tipo de registro (primeiro passo)
  */
 import { FormTypeSelector } from "@/features/forms";
-import type { FormTemplate } from "@/lib/forms/formTypes";
+import type { FormTemplate } from "@/types";
 
 export function RecordTypeSelectorExample() {
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(
@@ -245,3 +245,4 @@ export function useFormHandler(templateId: string) {
 // const growth = useFormHandler('growth');
 // <button onClick={growth.open}>Novo</button>
 // {growth.isOpen && <UniversalFormLayout config={growth.template.formConfig} ... />}
+

@@ -27,7 +27,7 @@ import type {
   PlaceholderTemplate,
   GrowthMeasurement,
   SleepRecord,
-} from "@/lib/types";
+} from "@/types";
 import { Button } from "@/components/ui/button";
 import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 import { GrowthForm } from "../health/GrowthForm";
@@ -674,3 +674,4 @@ export function NotificationsScreen() {
     </>
   );
 }
+

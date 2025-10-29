@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
-import { useBabyData } from "@/lib/baby-data-context";
-import { Moment } from "@/lib/types";
+import { useBabyData } from "@/context/baby-data-context";
+import { Moment } from "@/types";
 import { Button } from "@/components/ui/button";
 import { FilterChips } from "./components/FilterChips";
 import { TimelineGroupHeader } from "./components/TimelineGroupHeader";
@@ -371,3 +371,5 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     </div>
   );
 }
+
+

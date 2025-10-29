@@ -1,8 +1,9 @@
 import { motion } from "motion/react";
+import { useMemo } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft } from "lucide-react";
-import { useBabyData } from "@/lib/baby-data-context";
-import type { Chapter } from "@/lib/types";
+import { useBabyData } from "@/context/baby-data-context";
+import type { Chapter } from "@/types";
 
 interface ChapterCardProps {
   chapter: Chapter;
@@ -11,17 +12,25 @@ interface ChapterCardProps {
 
 function ChapterCard({ chapter, onClick }: ChapterCardProps) {
   const { getPlaceholdersForChapter, getMoments } = useBabyData();
-  const placeholders = getPlaceholdersForChapter(chapter.id);
-  const moments = getMoments();
 
-  const completedCount = placeholders.filter((p) =>
-    moments.some((m) => m.templateId === p.id)
-  ).length;
-  const totalCount = placeholders.length;
+  // Memoizar cálculos para evitar re-computações
+  const { completedCount, totalCount, percentage, pending } = useMemo(() => {
+    const placeholders = getPlaceholdersForChapter(chapter.id);
+    const moments = getMoments();
 
-  const percentage =
-    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-  const pending = totalCount - completedCount;
+    const total = placeholders.length;
+    const completed = placeholders.filter((p) =>
+      moments.some((m) => m.templateId === p.id)
+    ).length;
+    const perc = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    return {
+      completedCount: completed,
+      totalCount: total,
+      percentage: perc,
+      pending: total - completed,
+    };
+  }, [chapter.id, getPlaceholdersForChapter, getMoments]);
 
   return (
     <motion.button
@@ -69,11 +78,50 @@ export function ChaptersScreen({
   onSelectChapter,
   onBack,
 }: ChaptersScreenProps) {
-  const { chapters, getMoments } = useBabyData();
-  const moments = getMoments();
-  const totalMoments = moments.length;
+  const { chapters = [], status, getMoments } = useBabyData();
 
-  console.log("ChaptersScreen rendered with chapters:", chapters);
+  // Memoizar cálculo do total de momentos
+  const totalMoments = useMemo(() => {
+    return getMoments().length;
+  }, [getMoments]);
+
+  // Mostrar loader apenas se ainda estiver carregando
+  if (status === "loading" || status === "idle") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando capítulos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar erro se houver
+  if (status === "error") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <p className="text-destructive mb-4">Erro ao carregar capítulos</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-primary"
+          >
+            Recarregar página
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Se capítulos estão vazios após carregamento
+  if (!Array.isArray(chapters) || chapters.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Nenhum capítulo disponível</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
@@ -94,27 +142,21 @@ export function ChaptersScreen({
         </p>
       </div>
 
-      {chapters.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Carregando capítulos...</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {chapters.map((chapter, index) => (
-            <motion.div
-              key={chapter.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <ChapterCard
-                chapter={chapter}
-                onClick={() => onSelectChapter(chapter)}
-              />
-            </motion.div>
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 gap-3">
+        {chapters.map((chapter, index) => (
+          <motion.div
+            key={chapter.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <ChapterCard
+              chapter={chapter}
+              onClick={() => onSelectChapter(chapter)}
+            />
+          </motion.div>
+        ))}
+      </div>
 
       {/* Summary */}
       <motion.div

@@ -8,7 +8,7 @@ import {
   getMoments,
   getPlaceholdersForChapter,
 } from "@/lib/mockData";
-import type { Chapter, PlaceholderTemplate } from "@/lib/types";
+import type { Chapter, PlaceholderTemplate } from "@/types";
 import { Progress } from "@/components/ui/progress";
 import { MomentTemplateCard } from "../chapters/MomentTemplateCard";
 
@@ -166,3 +166,4 @@ export function ConsultationsScreen({
     </div>
   );
 }
+

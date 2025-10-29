@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
 import { getMoments, chapters } from "@/lib/mockData";
-import type { Moment } from "@/lib/types";
+import type { Moment } from "@/types";
 import {
   Lock,
   Video,
@@ -366,3 +366,4 @@ export const GalleryScreen = memo(function GalleryScreen({
     </div>
   );
 });
+

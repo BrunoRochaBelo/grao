@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Plus, Users, Edit, Camera, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { useBabyData } from "@/lib/baby-data-context";
-import type { FamilyMember } from "@/lib/types";
+import { useBabyData } from "@/context/baby-data-context";
+import type { FamilyMember } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -348,3 +348,5 @@ export function FamilyTreeScreen({
     </div>
   );
 }
+
+

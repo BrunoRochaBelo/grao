@@ -3,7 +3,7 @@
  * Cada um define seu layout, campos e comportamentos
  */
 
-import type { FormTemplate } from "@/lib/forms/formTypes";
+import type { FormTemplate } from "@/types";
 
 /**
  * Formulário de Crescimento (Peso, Altura, etc)
@@ -532,3 +532,4 @@ export const FORM_TEMPLATES: Record<string, FormTemplate> = {
   "family-member": FORM_FAMILY_MEMBER,
   "free-note": FORM_FREE_NOTE,
 };
+

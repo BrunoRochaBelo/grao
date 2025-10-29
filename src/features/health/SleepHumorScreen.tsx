@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Plus, Moon, Smile } from "lucide-react";
 import { motion } from "motion/react";
 import { getSleepRecords } from "@/lib/mockData";
-import type { SleepRecord } from "@/lib/types";
+import type { SleepRecord } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   BarChart,
@@ -237,3 +237,4 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
     </div>
   );
 }
+

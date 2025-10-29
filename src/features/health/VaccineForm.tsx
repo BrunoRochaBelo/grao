@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addVaccine } from "@/lib/mockData";
-import type { VaccineRecord } from "@/lib/types";
+import type { VaccineRecord } from "@/types";
 import { toast } from "sonner";
 
 interface VaccineFormProps {
@@ -190,3 +190,4 @@ export function VaccineForm({ isOpen, onClose, onSave }: VaccineFormProps) {
     </AnimatePresence>
   );
 }
+

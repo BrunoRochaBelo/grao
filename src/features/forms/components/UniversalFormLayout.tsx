@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import type { FormFieldConfig, FormLayoutConfig } from "@/lib/forms/formTypes";
+import type { FormFieldConfig, FormLayoutConfig } from "@/types";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { useFormValidation } from "../hooks/useFormValidation";
 import {
@@ -338,3 +338,4 @@ export function UniversalFormLayout({
     </motion.div>
   );
 }
+

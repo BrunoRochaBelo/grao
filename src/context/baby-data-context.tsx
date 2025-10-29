@@ -10,7 +10,7 @@ import {
 import {
   mockBackendAdapter,
   bootstrapMockStorage,
-} from "./adapters/mockBackend";
+} from "../lib/adapters/mockBackend";
 import {
   Baby,
   Chapter,
@@ -21,7 +21,7 @@ import {
   SleepHumorEntry,
   SleepRecord,
   VaccineRecord,
-} from "./types";
+} from "@/types";
 import {
   calculateAge,
   getBabyAgeInDays,
@@ -36,7 +36,7 @@ import {
   getSleepHumorEntries,
   getSleepRecords,
   getFamilyMembers,
-} from "./mockData";
+} from "../lib/mockData";
 
 type DataStatus = "idle" | "loading" | "ready" | "error";
 

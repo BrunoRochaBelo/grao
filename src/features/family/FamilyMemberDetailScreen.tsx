@@ -1,7 +1,7 @@
 import { ArrowLeft, Calendar, MapPin, Users } from "lucide-react";
 import { motion } from "motion/react";
 import { getMoments, chapters } from "@/lib/mockData";
-import type { FamilyMember } from "@/lib/types";
+import type { FamilyMember } from "@/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -211,3 +211,4 @@ export function FamilyMemberDetailScreen({
     </div>
   );
 }
+

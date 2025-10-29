@@ -8,8 +8,8 @@ import {
   Edit,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useBabyData } from "@/lib/baby-data-context";
-import type { Moment } from "@/lib/types";
+import { useBabyData } from "@/context/baby-data-context";
+import type { Moment } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MediaCarousel } from "@/components/shared/MediaCarousel";
@@ -173,3 +173,5 @@ export function MomentDetailScreen({
     </div>
   );
 }
+
+

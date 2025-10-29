@@ -10,7 +10,7 @@ import {
   currentBaby,
   calculateAge,
 } from "@/lib/mockData";
-import type { GrowthMeasurement } from "@/lib/types";
+import type { GrowthMeasurement } from "@/types";
 import { toast } from "sonner";
 
 interface GrowthFormProps {
@@ -185,3 +185,4 @@ export function GrowthForm({ isOpen, onClose, onSave }: GrowthFormProps) {
     </AnimatePresence>
   );
 }
+

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Plus, TrendingUp } from "lucide-react";
 import { motion } from "motion/react";
 import { getGrowthMeasurements } from "@/lib/mockData";
-import type { GrowthMeasurement } from "@/lib/types";
+import type { GrowthMeasurement } from "@/types";
 import {
   LineChart,
   Line,
@@ -297,3 +297,4 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
     </div>
   );
 }
+

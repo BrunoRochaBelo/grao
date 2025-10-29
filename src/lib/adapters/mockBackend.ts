@@ -19,7 +19,7 @@ import {
   setCurrentBaby,
   updateMoment,
   updateVaccine,
-} from '../mockData';
+} from "../mockData";
 import {
   Baby,
   Chapter,
@@ -29,11 +29,12 @@ import {
   SleepHumorEntry,
   SleepRecord,
   VaccineRecord,
-} from '../types';
+} from "@/types";
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
-const delay = (ms = 80) => new Promise<void>(resolve => setTimeout(resolve, ms));
+const delay = (ms = 80) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 export async function bootstrapMockStorage(): Promise<void> {
   initializeMoments();
@@ -56,7 +57,7 @@ export async function fetchCurrentBaby(): Promise<Baby> {
 
 export async function selectCurrentBaby(babyId: string): Promise<Baby | null> {
   await delay();
-  const existing = mockBabies.find(baby => baby.id === babyId);
+  const existing = mockBabies.find((baby) => baby.id === babyId);
   if (!existing) {
     return null;
   }
@@ -69,14 +70,16 @@ export async function fetchMoments(): Promise<Moment[]> {
   return clone(getMoments());
 }
 
-export async function createMoment(moment: Omit<Moment, 'id'>): Promise<Moment> {
+export async function createMoment(
+  moment: Omit<Moment, "id">
+): Promise<Moment> {
   await delay();
   return clone(addMoment(moment));
 }
 
 export async function patchMoment(
   id: string,
-  updates: Partial<Moment>,
+  updates: Partial<Moment>
 ): Promise<Moment | null> {
   await delay();
   const updated = updateMoment(id, updates);
@@ -94,7 +97,7 @@ export async function fetchGrowthMeasurements(): Promise<GrowthMeasurement[]> {
 }
 
 export async function createGrowthMeasurement(
-  measurement: Omit<GrowthMeasurement, 'id'>,
+  measurement: Omit<GrowthMeasurement, "id">
 ): Promise<GrowthMeasurement> {
   await delay();
   return clone(addGrowthMeasurement(measurement));
@@ -106,7 +109,7 @@ export async function fetchVaccines(): Promise<VaccineRecord[]> {
 }
 
 export async function createVaccine(
-  vaccine: Omit<VaccineRecord, 'id'>,
+  vaccine: Omit<VaccineRecord, "id">
 ): Promise<VaccineRecord> {
   await delay();
   return clone(addVaccine(vaccine));
@@ -114,7 +117,7 @@ export async function createVaccine(
 
 export async function patchVaccine(
   id: string,
-  updates: Partial<VaccineRecord>,
+  updates: Partial<VaccineRecord>
 ): Promise<VaccineRecord | null> {
   await delay();
   const updated = updateVaccine(id, updates);
@@ -127,7 +130,7 @@ export async function fetchSleepHumorEntries(): Promise<SleepHumorEntry[]> {
 }
 
 export async function createSleepHumorEntry(
-  entry: Omit<SleepHumorEntry, 'id'>,
+  entry: Omit<SleepHumorEntry, "id">
 ): Promise<SleepHumorEntry> {
   await delay();
   return clone(addSleepHumorEntry(entry));
@@ -139,7 +142,7 @@ export async function fetchSleepRecords(): Promise<SleepRecord[]> {
 }
 
 export async function createSleepRecord(
-  record: Omit<SleepRecord, 'id'>,
+  record: Omit<SleepRecord, "id">
 ): Promise<SleepRecord> {
   await delay();
   return clone(addSleepRecord(record));
@@ -151,7 +154,7 @@ export async function fetchFamilyMembers(): Promise<FamilyMember[]> {
 }
 
 export async function createFamilyMember(
-  member: Omit<FamilyMember, 'id'>,
+  member: Omit<FamilyMember, "id">
 ): Promise<FamilyMember> {
   await delay();
   return clone(addFamilyMember(member));

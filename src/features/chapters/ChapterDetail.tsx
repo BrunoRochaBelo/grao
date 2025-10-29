@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Chapter, Moment, PlaceholderTemplate } from '@/lib/types';
+import { useBabyData } from '@/context/baby-data-context';
+import type { Chapter, Moment, PlaceholderTemplate } from '@/types';
 import { getHighlightStyle, HighlightTone } from '@/lib/highlights';
 import { MomentTemplateCard } from './MomentTemplateCard';
 
@@ -153,3 +153,5 @@ export function ChapterDetail({ chapter, onBack, onOpenTemplate }: ChapterDetail
     </div>
   );
 }
+
+

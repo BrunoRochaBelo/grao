@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { babies, setCurrentBaby, calculateAge } from "@/lib/mockData";
-import type { Baby } from "@/lib/types";
+import type { Baby } from "@/types";
 import {
   ChevronLeft,
   Plus,
@@ -180,3 +180,4 @@ export function ManageBabiesScreen({
     </div>
   );
 }
+

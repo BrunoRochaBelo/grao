@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { addSleepRecord } from "@/lib/mockData";
-import type { SleepRecord } from "@/lib/types";
+import type { SleepRecord } from "@/types";
 import { toast } from "sonner";
 
 interface SleepHumorFormProps {
@@ -280,3 +280,4 @@ export function SleepHumorForm({
     </AnimatePresence>
   );
 }
+

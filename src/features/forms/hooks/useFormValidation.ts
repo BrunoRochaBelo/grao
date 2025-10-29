@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { FormFieldConfig, ValidationState } from "@/lib/forms/formTypes";
+import type { FormFieldConfig, ValidationState } from "@/types";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -128,3 +128,4 @@ export function useFormValidation(fields: FormFieldConfig[]) {
     clearErrors,
   };
 }
+

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { AlertCircle, Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import type { FormFieldConfig } from "@/lib/forms/formTypes";
+import type { FormFieldConfig } from "@/types";
 
 interface FormFieldProps {
   config: FormFieldConfig;
@@ -349,3 +349,4 @@ export function FormTimeField({
     </div>
   );
 }
+

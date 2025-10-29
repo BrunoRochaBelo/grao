@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Moment, Chapter, Baby } from "@/lib/types";
+import { Moment, Chapter, Baby } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import {
   formatShortDate,
@@ -336,3 +336,4 @@ export function TimelineCard({
     </motion.div>
   );
 }
+

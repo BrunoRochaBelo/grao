@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { PlaceholderTemplate, Chapter } from "@/lib/types";
+import type { PlaceholderTemplate, Chapter } from "@/types";
 import { toast } from "sonner";
 import { getHighlightStyle } from "@/lib/highlights";
 import {
@@ -536,3 +536,4 @@ export function MomentForm({
     </AnimatePresence>
   );
 }
+

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Check } from "lucide-react";
-import { useBabyData } from "@/lib/baby-data-context";
+import { useBabyData } from "@/context/baby-data-context";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface BabySelectorModalProps {
@@ -153,3 +153,4 @@ export function BabySelectorModal({
     </AnimatePresence>
   );
 }
+

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Moment } from "@/lib/types";
+import { Moment } from "@/types";
 import { groupMomentsByMonth, TimelineGroup } from "../utils/timelineUtils";
 
 export function useTimelineGroups(moments: Moment[]): TimelineGroup[] {

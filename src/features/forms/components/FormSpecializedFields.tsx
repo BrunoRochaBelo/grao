@@ -4,7 +4,7 @@ import { X, ChevronDown, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { FormFieldConfig } from "@/lib/forms/formTypes";
+import type { FormFieldConfig } from "@/types";
 
 interface FormFieldProps {
   config: FormFieldConfig;
@@ -475,3 +475,4 @@ export function FormMultiSelectField({
     </div>
   );
 }
+

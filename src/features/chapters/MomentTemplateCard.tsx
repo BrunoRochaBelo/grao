@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Circle, Edit, Share2, Trash2 } from 'lucide-react';
-import type { Chapter, Moment, PlaceholderTemplate } from '@/lib/types';
+import type { Chapter, Moment, PlaceholderTemplate } from '@/types';
 import { MediaCarousel } from '@/components/shared/MediaCarousel';
 import { Badge } from '@/components/ui/badge';
 
@@ -199,3 +199,4 @@ export function MomentTemplateCard({
     </motion.div>
   );
 }
+

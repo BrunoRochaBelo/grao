@@ -37,7 +37,7 @@ export type {
   PrivacyLevel,
   PrivacyConfig,
   FormSubmitResponse,
-} from "@/lib/forms/formTypes";
+} from "@/types";
 
 // Templates de formulários
 export {
@@ -50,3 +50,4 @@ export {
   FORM_FREE_NOTE,
   FORM_TEMPLATES,
 } from "./templates/formTemplates";
+

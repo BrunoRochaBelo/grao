@@ -1,17 +1,17 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense, Component } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./layout/BottomNav";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { ThemeProvider } from "./lib/theme-context";
-import { BabyDataProvider, useBabyData } from "./lib/baby-data-context";
+import { ThemeProvider } from "@/context/theme-context";
+import { BabyDataProvider, useBabyData } from "@/context/baby-data-context";
 import {
   Baby,
   Chapter,
   FamilyMember,
   Moment,
   PlaceholderTemplate,
-} from "./lib/types";
+} from "@/types";
 import { SplashScreen } from "./features/onboarding/SplashScreen";
 import { AuthScreen } from "./features/onboarding/AuthScreen";
 import { BabySelectorModal } from "./features/baby/BabySelectorModal";
@@ -129,9 +129,67 @@ const FamilyMemberDetailScreen = lazy(() =>
 // Loading fallback component
 const ScreenLoader = () => (
   <div className="flex items-center justify-center h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    <div className="flex flex-col items-center gap-4">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <p className="text-sm text-muted-foreground">Carregando...</p>
+    </div>
   </div>
 );
+
+// Error Boundary para capturar erros
+class ErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("❌ ErrorBoundary caught error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <p className="text-destructive mb-4">Erro ao carregar a página</p>
+            <p className="text-muted-foreground text-sm mb-4">
+              {this.state.error?.message}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-primary hover:underline"
+            >
+              Recarregar página
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Pré-carregar chunks críticos para melhor performance
+const preloadChunks = () => {
+  if (typeof window === "undefined") return;
+
+  // Pré-load das telas principais após um pequeno delay
+  setTimeout(() => {
+    import("./features/home/HomeScreen");
+    import("./features/chapters/ChaptersScreen");
+    import("./features/gallery/GalleryScreen");
+    import("./features/moments/MomentsScreen");
+  }, 1000);
+};
 
 type Screen =
   | "home"
@@ -189,6 +247,11 @@ function AppContent() {
   } = useBabyData();
 
   const currentView = viewStack[viewStack.length - 1];
+
+  // Pré-carregar chunks críticos para melhor performance
+  useEffect(() => {
+    preloadChunks();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -567,7 +630,7 @@ function AppContent() {
           transition={{ duration: 0.2 }}
           className="min-h-screen"
         >
-          {renderCurrentView()}
+          <ErrorBoundary>{renderCurrentView()}</ErrorBoundary>
         </motion.div>
       </AnimatePresence>
 

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { FamilyMember, Moment } from "@/lib/types";
+import { FamilyMember, Moment } from "@/types";
 
 export interface FilterPersonOption {
   id: string;

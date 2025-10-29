@@ -1,6 +1,6 @@
 // Utilitários para organização e formatação da timeline de momentos
 
-import { Moment, Chapter, PlaceholderTemplate } from "@/lib/types";
+import { Moment, Chapter, PlaceholderTemplate } from "@/types";
 
 export interface TimelineGroup {
   monthYear: string;

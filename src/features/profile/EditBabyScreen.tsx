@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { babies } from "@/lib/mockData";
-import type { Baby } from "@/lib/types";
+import type { Baby } from "@/types";
 import { ChevronLeft, Camera } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -219,3 +219,4 @@ export function EditBabyScreen({ baby, onBack, onSave }: EditBabyScreenProps) {
     </div>
   );
 }
+

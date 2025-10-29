@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { useBabyData } from '@/lib/baby-data-context';
-import type { Moment } from '@/lib/types';
-import type { MomentStatus, PrivacyOption } from '../forms/momentFormConfig';
+import { useCallback, useMemo } from "react";
+import { useBabyData } from "@/context/baby-data-context";
+import type { Moment } from "@/types";
+import type { MomentStatus, PrivacyOption } from "../forms/momentFormConfig";
 
 export interface CreateMomentInput {
   chapterId: string;
@@ -11,7 +11,7 @@ export interface CreateMomentInput {
   time: string;
   location?: string;
   people?: string[];
-  media?: Moment['media'];
+  media?: Moment["media"];
   noteShort?: string;
   noteLong?: string;
   tags?: string[];
@@ -27,14 +27,14 @@ export function useMomentActions() {
 
   const getAgeLabel = useCallback(
     (date: string) => {
-      if (!currentBaby) return '';
+      if (!currentBaby) return "";
       return calculateAge(currentBaby.birthDate, date);
     },
-    [calculateAge, currentBaby],
+    [calculateAge, currentBaby]
   );
 
   const buildPayload = useCallback(
-    (input: CreateMomentInput): Omit<Moment, 'id'> => {
+    (input: CreateMomentInput): Omit<Moment, "id"> => {
       const momentDate = `${input.date}T${input.time}:00`;
       return {
         chapterId: input.chapterId,
@@ -43,16 +43,17 @@ export function useMomentActions() {
         date: momentDate,
         age: input.ageLabel ?? getAgeLabel(input.date),
         location: input.location?.trim() || undefined,
-        people: input.people && input.people.length > 0 ? input.people : undefined,
+        people:
+          input.people && input.people.length > 0 ? input.people : undefined,
         media: input.media ?? [],
         noteShort: input.noteShort?.trim() || undefined,
         noteLong: input.noteLong?.trim() || undefined,
         tags: input.tags && input.tags.length > 0 ? input.tags : undefined,
         privacy: input.privacy,
         status: input.status,
-      } satisfies Omit<Moment, 'id'>;
+      } satisfies Omit<Moment, "id">;
     },
-    [getAgeLabel],
+    [getAgeLabel]
   );
 
   const createMoment = useCallback(
@@ -60,7 +61,7 @@ export function useMomentActions() {
       const payload = buildPayload(input);
       return addMoment(payload);
     },
-    [addMoment, buildPayload],
+    [addMoment, buildPayload]
   );
 
   return useMemo(
@@ -70,6 +71,6 @@ export function useMomentActions() {
       getAgeLabel,
       createMoment,
     }),
-    [createMoment, currentBaby, getAgeLabel, isBabySelected],
+    [createMoment, currentBaby, getAgeLabel, isBabySelected]
   );
 }

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, memo } from "react";
-import { useBabyData } from "@/lib/baby-data-context";
-import type { Chapter, PlaceholderTemplate } from "@/lib/types";
+import { useBabyData } from "@/context/baby-data-context";
+import type { Chapter, PlaceholderTemplate } from "@/types";
 import {
   BookOpen,
   Calendar,

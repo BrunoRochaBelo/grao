@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ChevronDown } from "lucide-react";
-import { Chapter } from "@/lib/types";
+import { Chapter } from "@/types";
 import { FiltersState, FilterPersonOption } from "../hooks/useFilters";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -446,3 +446,4 @@ export function FilterChips({
     </div>
   );
 }
+

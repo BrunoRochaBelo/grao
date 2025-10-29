@@ -8,7 +8,7 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
-import { Moment, Chapter, Baby } from "@/lib/types";
+import { Moment, Chapter, Baby } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatShortDate, calculateAge } from "../utils/timelineUtils";
@@ -310,3 +310,4 @@ export function FullScreenViewer({
     </AnimatePresence>
   );
 }
+

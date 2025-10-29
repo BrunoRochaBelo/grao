@@ -8,7 +8,7 @@ import {
   getMoments,
   getPlaceholdersForChapter,
 } from "@/lib/mockData";
-import type { Chapter, PlaceholderTemplate } from "@/lib/types";
+import type { Chapter, PlaceholderTemplate } from "@/types";
 import { Progress } from "@/components/ui/progress";
 import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 import { MomentTemplateCard } from "../chapters/MomentTemplateCard";
@@ -167,3 +167,4 @@ export function VaccinesScreen({
     </div>
   );
 }
+

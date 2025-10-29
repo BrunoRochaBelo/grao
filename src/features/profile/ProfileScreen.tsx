@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 import {
   getCurrentBaby,
   calculateAge,
@@ -6,7 +6,7 @@ import {
   getMoments,
   getPlaceholdersForChapter,
   getBabyAgeInDays,
-} from '@/lib/mockData';
+} from "@/lib/mockData";
 import {
   Download,
   Settings,
@@ -19,13 +19,13 @@ import {
   RefreshCcw,
   UserPlus,
   Shuffle,
-} from 'lucide-react';
-import { motion } from 'motion/react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Switch } from '@/components/ui/switch';
-import { useTheme } from '@/lib/theme-context';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import { motion } from "motion/react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/context/theme-context";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileScreenProps {
   onNavigateToManageBabies: () => void;
@@ -48,7 +48,13 @@ interface ActionCardProps {
   showChevron?: boolean;
 }
 
-function ActionCard({ icon, title, subtitle, onClick, showChevron = true }: ActionCardProps) {
+function ActionCard({
+  icon,
+  title,
+  subtitle,
+  onClick,
+  showChevron = true,
+}: ActionCardProps) {
   return (
     <motion.button
       whileTap={{ scale: 0.97 }}
@@ -56,12 +62,18 @@ function ActionCard({ icon, title, subtitle, onClick, showChevron = true }: Acti
       onClick={onClick}
       className="bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left w-full flex items-center gap-3"
     >
-      <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0 text-primary">{icon}</div>
+      <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0 text-primary">
+        {icon}
+      </div>
       <div className="flex-1 min-w-0 text-left">
         <p className="text-foreground text-sm font-medium">{title}</p>
-        {subtitle && <p className="text-muted-foreground text-sm">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-muted-foreground text-sm">{subtitle}</p>
+        )}
       </div>
-      {showChevron && <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />}
+      {showChevron && (
+        <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+      )}
     </motion.button>
   );
 }
@@ -120,7 +132,7 @@ export function ProfileScreen({
   chapters.forEach((chapter) => {
     const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
     const completed = placeholders.filter((placeholder) =>
-      moments.some((moment) => moment.templateId === placeholder.id),
+      moments.some((moment) => moment.templateId === placeholder.id)
     ).length;
 
     totalCompleted += completed;
@@ -129,23 +141,30 @@ export function ProfileScreen({
 
   const completionPercentage =
     totalMoments > 0 ? Math.round((totalCompleted / totalMoments) * 100) : 0;
-  const totalMedia = moments.reduce((sum, moment) => sum + moment.media.length, 0);
+  const totalMedia = moments.reduce(
+    (sum, moment) => sum + moment.media.length,
+    0
+  );
 
-  const appVersion = 'v1.0.2 build 67';
+  const appVersion = "v1.0.2 build 67";
   const updateAvailable = true;
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((part) => part[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   return (
     <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
         <button
           type="button"
           onClick={onNavigateToManageBabies}
@@ -162,7 +181,9 @@ export function ProfileScreen({
             <Users className="w-4 h-4" />
           </div>
         </button>
-        <h1 className="text-foreground mb-1 text-xl font-semibold">{currentBaby.name}</h1>
+        <h1 className="text-foreground mb-1 text-xl font-semibold">
+          {currentBaby.name}
+        </h1>
         <p className="text-muted-foreground">{age}</p>
         <p className="text-muted-foreground text-sm">{currentBaby.city}</p>
         <div className="mt-4 flex items-center justify-center">
@@ -178,13 +199,21 @@ export function ProfileScreen({
         transition={{ delay: 0.1 }}
         className="grid grid-cols-3 gap-3 mb-8"
       >
-        <StatCard label="Momentos" value={moments.length} onClick={onNavigateToMoments} />
+        <StatCard
+          label="Momentos"
+          value={moments.length}
+          onClick={onNavigateToMoments}
+        />
         <StatCard
           label="Capitulos concluidos"
           value={`${completionPercentage}%`}
           onClick={onNavigateToChapters}
         />
-        <StatCard label="Midias" value={totalMedia} onClick={onNavigateToMedia} />
+        <StatCard
+          label="Midias"
+          value={totalMedia}
+          onClick={onNavigateToMedia}
+        />
       </motion.div>
 
       <motion.section
@@ -232,16 +261,24 @@ export function ProfileScreen({
         <div className="bg-card rounded-xl p-4 shadow-sm border border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg text-primary">
-              {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              {theme === "dark" ? (
+                <Moon className="w-5 h-5" />
+              ) : (
+                <Sun className="w-5 h-5" />
+              )}
             </div>
             <div>
               <p className="text-foreground text-sm font-medium">Tema escuro</p>
               <p className="text-muted-foreground text-sm">
-                {theme === 'dark' ? 'Ativado' : 'Desativado'}
+                {theme === "dark" ? "Ativado" : "Desativado"}
               </p>
             </div>
           </div>
-          <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} aria-label="Alternar tema" />
+          <Switch
+            checked={theme === "dark"}
+            onCheckedChange={toggleTheme}
+            aria-label="Alternar tema"
+          />
         </div>
       </motion.section>
 
@@ -293,7 +330,9 @@ export function ProfileScreen({
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-2 text-foreground">
             <span>Livro do Bebe {appVersion}</span>
-            {updateAvailable && <Badge variant="secondary">Atualizacao disponivel</Badge>}
+            {updateAvailable && (
+              <Badge variant="secondary">Atualizacao disponivel</Badge>
+            )}
           </div>
           <button
             type="button"
