@@ -366,4 +366,3 @@ export const GalleryScreen = memo(function GalleryScreen({
     </div>
   );
 });
-
