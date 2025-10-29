@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { getMoments, chapters } from "@/lib/mockData";
 import type { Moment } from "@/lib/types";
 import {
@@ -145,7 +145,9 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
   );
 }
 
-export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
+export const GalleryScreen = memo(function GalleryScreen({
+  onSelectMoment,
+}: GalleryScreenProps) {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
@@ -363,4 +365,4 @@ export function GalleryScreen({ onSelectMoment }: GalleryScreenProps) {
       </div>
     </div>
   );
-}
+});

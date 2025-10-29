@@ -1,28 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./layout/BottomNav";
-import { HomeScreen } from "./features/home/HomeScreen";
-import { GalleryScreen } from "./features/gallery/GalleryScreen";
-import { ChaptersScreen } from "./features/chapters/ChaptersScreen";
-import { ChapterDetail } from "./features/chapters/ChapterDetail";
-import { NotificationsScreen } from "./features/notifications/NotificationsScreen";
-import { ProfileScreen } from "./features/profile/ProfileScreen";
-import { ManageBabiesScreen } from "./features/profile/ManageBabiesScreen";
-import { EditBabyScreen } from "./features/profile/EditBabyScreen";
-import { ExportAlbumScreen } from "./features/profile/ExportAlbumScreen";
-import { ManageAccountScreen } from "./features/profile/ManageAccountScreen";
-import { NotificationsSettingsScreen } from "./features/profile/NotificationsSettingsScreen";
-import { HelpAndSupportScreen } from "./features/profile/HelpAndSupportScreen";
-import { AddMomentSheet } from "./features/chapters/AddMomentSheet";
-import { MomentForm } from "./features/moments/MomentForm";
-import { MomentDetailScreen } from "./features/moments/MomentDetailScreen";
-import { MomentsScreen } from "./features/moments/MomentsScreen";
-import { GrowthScreen } from "./features/health/GrowthScreen";
-import { VaccinesScreen } from "./features/health/VaccinesScreen";
-import { ConsultationsScreen } from "./features/health/ConsultationsScreen";
-import { SleepHumorScreen } from "./features/health/SleepHumorScreen";
-import { FamilyTreeScreen } from "./features/family/FamilyTreeScreen";
-import { FamilyMemberDetailScreen } from "./features/family/FamilyMemberDetailScreen";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import { ThemeProvider } from "./lib/theme-context";
@@ -37,6 +15,123 @@ import {
 import { SplashScreen } from "./features/onboarding/SplashScreen";
 import { AuthScreen } from "./features/onboarding/AuthScreen";
 import { BabySelectorModal } from "./features/baby/BabySelectorModal";
+
+// Lazy load todas as telas principais para melhor performance
+const HomeScreen = lazy(() =>
+  import("./features/home/HomeScreen").then((m) => ({ default: m.HomeScreen }))
+);
+const GalleryScreen = lazy(() =>
+  import("./features/gallery/GalleryScreen").then((m) => ({
+    default: m.GalleryScreen,
+  }))
+);
+const ChaptersScreen = lazy(() =>
+  import("./features/chapters/ChaptersScreen").then((m) => ({
+    default: m.ChaptersScreen,
+  }))
+);
+const ChapterDetail = lazy(() =>
+  import("./features/chapters/ChapterDetail").then((m) => ({
+    default: m.ChapterDetail,
+  }))
+);
+const NotificationsScreen = lazy(() =>
+  import("./features/notifications/NotificationsScreen").then((m) => ({
+    default: m.NotificationsScreen,
+  }))
+);
+const ProfileScreen = lazy(() =>
+  import("./features/profile/ProfileScreen").then((m) => ({
+    default: m.ProfileScreen,
+  }))
+);
+const ManageBabiesScreen = lazy(() =>
+  import("./features/profile/ManageBabiesScreen").then((m) => ({
+    default: m.ManageBabiesScreen,
+  }))
+);
+const EditBabyScreen = lazy(() =>
+  import("./features/profile/EditBabyScreen").then((m) => ({
+    default: m.EditBabyScreen,
+  }))
+);
+const ExportAlbumScreen = lazy(() =>
+  import("./features/profile/ExportAlbumScreen").then((m) => ({
+    default: m.ExportAlbumScreen,
+  }))
+);
+const ManageAccountScreen = lazy(() =>
+  import("./features/profile/ManageAccountScreen").then((m) => ({
+    default: m.ManageAccountScreen,
+  }))
+);
+const NotificationsSettingsScreen = lazy(() =>
+  import("./features/profile/NotificationsSettingsScreen").then((m) => ({
+    default: m.NotificationsSettingsScreen,
+  }))
+);
+const HelpAndSupportScreen = lazy(() =>
+  import("./features/profile/HelpAndSupportScreen").then((m) => ({
+    default: m.HelpAndSupportScreen,
+  }))
+);
+const AddMomentSheet = lazy(() =>
+  import("./features/chapters/AddMomentSheet").then((m) => ({
+    default: m.AddMomentSheet,
+  }))
+);
+const MomentForm = lazy(() =>
+  import("./features/moments/MomentForm").then((m) => ({
+    default: m.MomentForm,
+  }))
+);
+const MomentDetailScreen = lazy(() =>
+  import("./features/moments/MomentDetailScreen").then((m) => ({
+    default: m.MomentDetailScreen,
+  }))
+);
+const MomentsScreen = lazy(() =>
+  import("./features/moments/MomentsScreen").then((m) => ({
+    default: m.MomentsScreen,
+  }))
+);
+const GrowthScreen = lazy(() =>
+  import("./features/health/GrowthScreen").then((m) => ({
+    default: m.GrowthScreen,
+  }))
+);
+const VaccinesScreen = lazy(() =>
+  import("./features/health/VaccinesScreen").then((m) => ({
+    default: m.VaccinesScreen,
+  }))
+);
+const ConsultationsScreen = lazy(() =>
+  import("./features/health/ConsultationsScreen").then((m) => ({
+    default: m.ConsultationsScreen,
+  }))
+);
+const SleepHumorScreen = lazy(() =>
+  import("./features/health/SleepHumorScreen").then((m) => ({
+    default: m.SleepHumorScreen,
+  }))
+);
+const FamilyTreeScreen = lazy(() =>
+  import("./features/family/FamilyTreeScreen").then((m) => ({
+    default: m.FamilyTreeScreen,
+  }))
+);
+const FamilyMemberDetailScreen = lazy(() =>
+  import("./features/family/FamilyMemberDetailScreen").then((m) => ({
+    default: m.FamilyMemberDetailScreen,
+  }))
+);
+
+// Loading fallback component
+const ScreenLoader = () => (
+  <div className="flex items-center justify-center h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+);
 
 type Screen =
   | "home"
@@ -206,6 +301,16 @@ function AppContent() {
     }
   };
 
+  // Helper para envolver componentes lazy em Suspense
+  const renderWithSuspense = (
+    Component: React.LazyExoticComponent<any>,
+    props: any
+  ) => (
+    <Suspense fallback={<ScreenLoader />}>
+      <Component {...props} />
+    </Suspense>
+  );
+
   const renderCurrentView = () => {
     if (currentView.type === "splash") {
       return <SplashScreen onComplete={handleSplashComplete} />;
@@ -218,154 +323,118 @@ function AppContent() {
     if (currentView.type === "main") {
       switch (currentView.screen) {
         case "home":
-          return (
-            <HomeScreen
-              onNavigateToGrowth={() => navigateTo({ type: "growth" })}
-              onNavigateToVaccines={() => navigateTo({ type: "vaccines" })}
-              onNavigateToConsultations={() =>
-                navigateTo({ type: "consultations" })
-              }
-              onNavigateToSleepHumor={() => navigateTo({ type: "sleep-humor" })}
-              onNavigateToFamily={() => navigateTo({ type: "family-tree" })}
-              onNavigateToChapters={() =>
-                navigateTo({ type: "main", screen: "chapters" })
-              }
-              onNavigateToMoments={() => navigateToMain("gallery")}
-              onOpenTemplate={openChapterTemplate}
-              onOpenChapter={handleSelectChapter}
-            />
-          );
+          return renderWithSuspense(HomeScreen, {
+            onNavigateToGrowth: () => navigateTo({ type: "growth" }),
+            onNavigateToVaccines: () => navigateTo({ type: "vaccines" }),
+            onNavigateToConsultations: () =>
+              navigateTo({ type: "consultations" }),
+            onNavigateToSleepHumor: () => navigateTo({ type: "sleep-humor" }),
+            onNavigateToFamily: () => navigateTo({ type: "family-tree" }),
+            onNavigateToChapters: () =>
+              navigateTo({ type: "main", screen: "chapters" }),
+            onNavigateToMoments: () => navigateToMain("gallery"),
+            onOpenTemplate: openChapterTemplate,
+            onOpenChapter: handleSelectChapter,
+          });
         case "gallery":
-          return (
-            <GalleryScreen
-              onSelectMoment={(moment) =>
-                navigateTo({ type: "moment-detail", moment })
-              }
-            />
-          );
+          return renderWithSuspense(GalleryScreen, {
+            onSelectMoment: (moment: Moment) =>
+              navigateTo({ type: "moment-detail", moment }),
+          });
         case "moments":
-          return (
-            <MomentsScreen
-              onBack={goBack}
-              onEditMoment={(moment) =>
-                navigateTo({ type: "moment-detail", moment })
-              }
-            />
-          );
+          return renderWithSuspense(MomentsScreen, {
+            onBack: goBack,
+            onEditMoment: (moment: Moment) =>
+              navigateTo({ type: "moment-detail", moment }),
+          });
         case "chapters":
-          return (
-            <ChaptersScreen
-              onSelectChapter={handleSelectChapter}
-              onBack={isNavigatedToChapters() ? goBack : undefined}
-            />
-          );
+          return renderWithSuspense(ChaptersScreen, {
+            onSelectChapter: handleSelectChapter,
+            onBack: isNavigatedToChapters() ? goBack : undefined,
+          });
         case "notifications":
-          return <NotificationsScreen />;
+          return renderWithSuspense(NotificationsScreen, {});
         case "profile":
-          return (
-            <ProfileScreen
-              onNavigateToManageBabies={() =>
-                navigateTo({ type: "manage-babies" })
+          return renderWithSuspense(ProfileScreen, {
+            onNavigateToManageBabies: () =>
+              navigateTo({ type: "manage-babies" }),
+            onNavigateToExportAlbum: () => navigateTo({ type: "export-album" }),
+            onNavigateToManageAccount: () =>
+              navigateTo({ type: "manage-account" }),
+            onNavigateToNotificationsSettings: () =>
+              navigateTo({ type: "notifications-settings" }),
+            onNavigateToHelpAndSupport: () =>
+              navigateTo({ type: "help-and-support" }),
+            onNavigateToAddBaby: () => navigateTo({ type: "add-baby" }),
+            onNavigateToMoments: () => navigateToMain("gallery"),
+            onNavigateToChapters: () => navigateToMain("chapters"),
+            onNavigateToMedia: () => navigateToMain("gallery"),
+            onEditBaby: () => {
+              if (currentBaby) {
+                navigateTo({ type: "edit-baby", baby: currentBaby });
               }
-              onNavigateToExportAlbum={() =>
-                navigateTo({ type: "export-album" })
-              }
-              onNavigateToManageAccount={() =>
-                navigateTo({ type: "manage-account" })
-              }
-              onNavigateToNotificationsSettings={() =>
-                navigateTo({ type: "notifications-settings" })
-              }
-              onNavigateToHelpAndSupport={() =>
-                navigateTo({ type: "help-and-support" })
-              }
-              onNavigateToAddBaby={() => navigateTo({ type: "add-baby" })}
-              onNavigateToMoments={() => navigateToMain("gallery")}
-              onNavigateToChapters={() => navigateToMain("chapters")}
-              onNavigateToMedia={() => navigateToMain("gallery")}
-              onEditBaby={() => {
-                if (currentBaby) {
-                  navigateTo({ type: "edit-baby", baby: currentBaby });
-                }
-              }}
-            />
-          );
+            },
+          });
       }
     } else if (currentView.type === "chapter-detail") {
-      return (
-        <ChapterDetail
-          chapter={currentView.chapter}
-          onBack={goBack}
-          onOpenTemplate={(template) =>
-            handleOpenTemplate(template, currentView.chapter)
-          }
-        />
-      );
+      return renderWithSuspense(ChapterDetail, {
+        chapter: currentView.chapter,
+        onBack: goBack,
+        onOpenTemplate: (template: PlaceholderTemplate) =>
+          handleOpenTemplate(template, currentView.chapter),
+      });
     } else if (currentView.type === "growth") {
-      return <GrowthScreen onBack={goBack} />;
+      return renderWithSuspense(GrowthScreen, { onBack: goBack });
     } else if (currentView.type === "vaccines") {
-      return (
-        <VaccinesScreen
-          onBack={goBack}
-          onOpenTemplate={(template, chapter) =>
-            handleOpenTemplate(template, chapter)
-          }
-        />
-      );
+      return renderWithSuspense(VaccinesScreen, {
+        onBack: goBack,
+        onOpenTemplate: (template: PlaceholderTemplate, chapter: Chapter) =>
+          handleOpenTemplate(template, chapter),
+      });
     } else if (currentView.type === "consultations") {
-      return (
-        <ConsultationsScreen
-          onBack={goBack}
-          onOpenTemplate={(template, chapter) =>
-            handleOpenTemplate(template, chapter)
-          }
-        />
-      );
+      return renderWithSuspense(ConsultationsScreen, {
+        onBack: goBack,
+        onOpenTemplate: (template: PlaceholderTemplate, chapter: Chapter) =>
+          handleOpenTemplate(template, chapter),
+      });
     } else if (currentView.type === "sleep-humor") {
-      return <SleepHumorScreen onBack={goBack} />;
+      return renderWithSuspense(SleepHumorScreen, { onBack: goBack });
     } else if (currentView.type === "family-tree") {
-      return (
-        <FamilyTreeScreen
-          onBack={goBack}
-          onOpenTemplate={(chapterId, templateId) =>
-            openChapterTemplate(chapterId, templateId)
-          }
-          onSelectMember={(member) =>
-            navigateTo({ type: "family-member-detail", member })
-          }
-        />
-      );
+      return renderWithSuspense(FamilyTreeScreen, {
+        onBack: goBack,
+        onOpenTemplate: (chapterId: string, templateId: string) =>
+          openChapterTemplate(chapterId, templateId),
+        onSelectMember: (member: FamilyMember) =>
+          navigateTo({ type: "family-member-detail", member }),
+      });
     } else if (currentView.type === "family-member-detail") {
-      return (
-        <FamilyMemberDetailScreen
-          member={currentView.member}
-          onBack={goBack}
-          onSelectMoment={(momentId) => {
-            const moment = getMoments().find((m) => m.id === momentId);
-            if (moment) {
-              navigateTo({ type: "moment-detail", moment });
-            }
-          }}
-        />
-      );
+      return renderWithSuspense(FamilyMemberDetailScreen, {
+        member: currentView.member,
+        onBack: goBack,
+        onSelectMoment: (momentId: string) => {
+          const moment = getMoments().find((m) => m.id === momentId);
+          if (moment) {
+            navigateTo({ type: "moment-detail", moment });
+          }
+        },
+      });
     } else if (currentView.type === "moment-detail") {
-      return <MomentDetailScreen moment={currentView.moment} onBack={goBack} />;
+      return renderWithSuspense(MomentDetailScreen, {
+        moment: currentView.moment,
+        onBack: goBack,
+      });
     } else if (currentView.type === "manage-babies") {
-      return (
-        <ManageBabiesScreen
-          onBack={goBack}
-          onAddBaby={() => navigateTo({ type: "add-baby" })}
-          onEditBaby={(baby) => navigateTo({ type: "edit-baby", baby })}
-        />
-      );
+      return renderWithSuspense(ManageBabiesScreen, {
+        onBack: goBack,
+        onAddBaby: () => navigateTo({ type: "add-baby" }),
+        onEditBaby: (baby: Baby) => navigateTo({ type: "edit-baby", baby }),
+      });
     } else if (currentView.type === "edit-baby") {
-      return (
-        <EditBabyScreen
-          baby={currentView.baby}
-          onBack={goBack}
-          onSave={goBack}
-        />
-      );
+      return renderWithSuspense(EditBabyScreen, {
+        baby: currentView.baby,
+        onBack: goBack,
+        onSave: goBack,
+      });
     } else if (currentView.type === "add-baby") {
       const newBaby: Baby = {
         id: "",
@@ -374,15 +443,21 @@ function AppContent() {
         city: "",
         avatar: "",
       };
-      return <EditBabyScreen baby={newBaby} onBack={goBack} onSave={goBack} />;
+      return renderWithSuspense(EditBabyScreen, {
+        baby: newBaby,
+        onBack: goBack,
+        onSave: goBack,
+      });
     } else if (currentView.type === "export-album") {
-      return <ExportAlbumScreen onBack={goBack} />;
+      return renderWithSuspense(ExportAlbumScreen, { onBack: goBack });
     } else if (currentView.type === "manage-account") {
-      return <ManageAccountScreen onBack={goBack} />;
+      return renderWithSuspense(ManageAccountScreen, { onBack: goBack });
     } else if (currentView.type === "notifications-settings") {
-      return <NotificationsSettingsScreen onBack={goBack} />;
+      return renderWithSuspense(NotificationsSettingsScreen, {
+        onBack: goBack,
+      });
     } else if (currentView.type === "help-and-support") {
-      return <HelpAndSupportScreen onBack={goBack} />;
+      return renderWithSuspense(HelpAndSupportScreen, { onBack: goBack });
     }
     return null;
   };
@@ -543,13 +618,15 @@ function AppContent() {
       />
 
       {currentView.type === "moment-form" && (
-        <MomentForm
-          isOpen={true}
-          onClose={goBack}
-          template={currentView.template}
-          chapter={currentView.chapter}
-          onSave={handleMomentSaved}
-        />
+        <Suspense fallback={<ScreenLoader />}>
+          <MomentForm
+            isOpen={true}
+            onClose={goBack}
+            template={currentView.template}
+            chapter={currentView.chapter}
+            onSave={handleMomentSaved}
+          />
+        </Suspense>
       )}
 
       <Toaster />

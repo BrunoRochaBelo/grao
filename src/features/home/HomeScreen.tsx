@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, memo } from "react";
 import { useBabyData } from "@/lib/baby-data-context";
 import type { Chapter, PlaceholderTemplate } from "@/lib/types";
 import {
@@ -81,7 +81,7 @@ interface HomeScreenProps {
   onOpenChapter?: (chapter: Chapter) => void;
 }
 
-export function HomeScreen({
+export const HomeScreen = memo(function HomeScreen({
   onNavigateToGrowth,
   onNavigateToVaccines,
   onNavigateToSleepHumor,
@@ -683,11 +683,14 @@ export function HomeScreen({
           <h3 className="text-lg font-semibold text-foreground">
             📖 Capítulos
           </h3>
-          <Button variant="ghost" size="sm" onClick={onNavigateToChapters}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onNavigateToChapters?.()}
+          >
             Ver todos
           </Button>
-        </div>
-
+        </div>{" "}
         <div className="space-y-3">
           {chapterSummaries.map((summary, index) => (
             <motion.button
@@ -817,4 +820,4 @@ export function HomeScreen({
       />
     </div>
   );
-}
+});
