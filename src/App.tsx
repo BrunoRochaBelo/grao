@@ -1,10 +1,11 @@
-import { useEffect, useState, lazy, Suspense, Component } from "react";
+import { useEffect, useState, lazy, Suspense, Component, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./layout/BottomNav";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import { ThemeProvider } from "@/context/theme-context";
 import { BabyDataProvider, useBabyData } from "@/context/baby-data-context";
+import { NavigationProvider } from "@/context/navigation-context";
 import {
   Baby,
   Chapter,
@@ -328,6 +329,23 @@ function AppContent() {
     navigateTo({ type: "moment-form", template, chapter });
   };
 
+  const navigationActions = useMemo(
+    () => ({
+      goToGrowth: () => navigateTo({ type: "growth" }),
+      goToVaccines: () => navigateTo({ type: "vaccines" }),
+      goToConsultations: () => navigateTo({ type: "consultations" }),
+      goToSleepHumor: () => navigateTo({ type: "sleep-humor" }),
+      goToFamilyTree: () => navigateTo({ type: "family-tree" }),
+      goToChapters: () => navigateTo({ type: "main", screen: "chapters" }),
+      goToMomentsGallery: () => navigateToMain("gallery"),
+      openTemplate: openChapterTemplate,
+      openChapter: handleSelectChapter,
+      openMoment: (moment: Moment) =>
+        navigateTo({ type: "moment-detail", moment }),
+    }),
+    [navigateTo, navigateToMain, openChapterTemplate, handleSelectChapter]
+  );
+
   const handleMomentSaved = async () => {
     await refreshMoments();
     goBack();
@@ -387,17 +405,16 @@ function AppContent() {
       switch (currentView.screen) {
         case "home":
           return renderWithSuspense(HomeScreen, {
-            onNavigateToGrowth: () => navigateTo({ type: "growth" }),
-            onNavigateToVaccines: () => navigateTo({ type: "vaccines" }),
-            onNavigateToConsultations: () =>
-              navigateTo({ type: "consultations" }),
-            onNavigateToSleepHumor: () => navigateTo({ type: "sleep-humor" }),
-            onNavigateToFamily: () => navigateTo({ type: "family-tree" }),
-            onNavigateToChapters: () =>
-              navigateTo({ type: "main", screen: "chapters" }),
-            onNavigateToMoments: () => navigateToMain("gallery"),
-            onOpenTemplate: openChapterTemplate,
-            onOpenChapter: handleSelectChapter,
+            onNavigateToGrowth: navigationActions.goToGrowth,
+            onNavigateToVaccines: navigationActions.goToVaccines,
+            onNavigateToConsultations: navigationActions.goToConsultations,
+            onNavigateToSleepHumor: navigationActions.goToSleepHumor,
+            onNavigateToFamily: navigationActions.goToFamilyTree,
+            onNavigateToChapters: navigationActions.goToChapters,
+            onNavigateToMoments: navigationActions.goToMomentsGallery,
+            onOpenTemplate: navigationActions.openTemplate,
+            onOpenChapter: navigationActions.openChapter,
+            onOpenMoment: navigationActions.openMoment,
           });
         case "gallery":
           return renderWithSuspense(GalleryScreen, {
@@ -616,12 +633,13 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={
-            currentView.type === "main"
-              ? `main-${currentView.screen}`
+    <NavigationProvider value={navigationActions}>
+      <div className="min-h-screen bg-background">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={
+              currentView.type === "main"
+                ? `main-${currentView.screen}`
               : currentView.type
           }
           initial={{ opacity: 0, x: 20 }}
@@ -693,7 +711,8 @@ function AppContent() {
       )}
 
       <Toaster />
-    </div>
+      </div>
+    </NavigationProvider>
   );
 }
 

@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect, memo } from "react";
+import { useMemo, useState, useEffect, memo, useCallback } from "react";
 import { useBabyData } from "@/context/baby-data-context";
-import type { Chapter, PlaceholderTemplate } from "@/types";
+import { useNavigationActions } from "@/context/navigation-context";
+import type { Chapter, Moment, PlaceholderTemplate } from "@/types";
 import {
   BookOpen,
   Calendar,
@@ -79,6 +80,7 @@ interface HomeScreenProps {
   onNavigateToMoments?: () => void;
   onOpenTemplate?: (chapterId: string, templateId: string) => void;
   onOpenChapter?: (chapter: Chapter) => void;
+  onOpenMoment?: (moment: Moment) => void;
 }
 
 export const HomeScreen = memo(function HomeScreen({
@@ -91,9 +93,11 @@ export const HomeScreen = memo(function HomeScreen({
   onNavigateToMoments,
   onOpenTemplate,
   onOpenChapter,
+  onOpenMoment,
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [heroCompact, setHeroCompact] = useState(false);
+  const navigation = useNavigationActions();
   const {
     currentBaby,
     chapters,
@@ -160,6 +164,95 @@ export const HomeScreen = memo(function HomeScreen({
       : "0";
 
   const familyMembers = getFamilyMembers();
+
+  const handleNavigateToGrowth = useCallback(() => {
+    if (onNavigateToGrowth) {
+      onNavigateToGrowth();
+    } else {
+      navigation.goToGrowth?.();
+    }
+  }, [onNavigateToGrowth, navigation.goToGrowth]);
+
+  const handleNavigateToSleepHumor = useCallback(() => {
+    if (onNavigateToSleepHumor) {
+      onNavigateToSleepHumor();
+    } else {
+      navigation.goToSleepHumor?.();
+    }
+  }, [onNavigateToSleepHumor, navigation.goToSleepHumor]);
+
+  const handleNavigateToConsultations = useCallback(() => {
+    if (onNavigateToConsultations) {
+      onNavigateToConsultations();
+    } else {
+      navigation.goToConsultations?.();
+    }
+  }, [onNavigateToConsultations, navigation.goToConsultations]);
+
+  const handleNavigateToVaccines = useCallback(() => {
+    if (onNavigateToVaccines) {
+      onNavigateToVaccines();
+    } else {
+      navigation.goToVaccines?.();
+    }
+  }, [onNavigateToVaccines, navigation.goToVaccines]);
+
+  const handleNavigateToFamily = useCallback(() => {
+    if (onNavigateToFamily) {
+      onNavigateToFamily();
+    } else {
+      navigation.goToFamilyTree?.();
+    }
+  }, [onNavigateToFamily, navigation.goToFamilyTree]);
+
+  const handleNavigateToChapters = useCallback(() => {
+    if (onNavigateToChapters) {
+      onNavigateToChapters();
+    } else {
+      navigation.goToChapters?.();
+    }
+  }, [onNavigateToChapters, navigation.goToChapters]);
+
+  const handleNavigateToMoments = useCallback(() => {
+    if (onNavigateToMoments) {
+      onNavigateToMoments();
+    } else {
+      navigation.goToMomentsGallery?.();
+    }
+  }, [onNavigateToMoments, navigation.goToMomentsGallery]);
+
+  const handleOpenTemplate = useCallback(
+    (chapterId: string, templateId: string) => {
+      if (onOpenTemplate) {
+        onOpenTemplate(chapterId, templateId);
+      } else {
+        navigation.openTemplate?.(chapterId, templateId);
+      }
+    },
+    [onOpenTemplate, navigation.openTemplate]
+  );
+
+  const handleOpenChapter = useCallback(
+    (chapter: Chapter) => {
+      if (onOpenChapter) {
+        onOpenChapter(chapter);
+      } else {
+        navigation.openChapter?.(chapter);
+      }
+    },
+    [onOpenChapter, navigation.openChapter]
+  );
+
+  const handleOpenMoment = useCallback(
+    (moment: Moment) => {
+      if (onOpenMoment) {
+        onOpenMoment(moment);
+      } else {
+        navigation.openMoment?.(moment);
+      }
+    },
+    [onOpenMoment, navigation.openMoment]
+  );
 
   // Calcula participação de cada membro da família
   const familyParticipation = useMemo(() => {
@@ -516,6 +609,63 @@ export const HomeScreen = memo(function HomeScreen({
         </div>
       </motion.div>
 
+      {upcomingMilestones.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-8 px-4 mt-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">
+              📌 Próximos Marcos
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNavigateToChapters}
+            >
+              Ver todos
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {upcomingMilestones.map((item, index) => (
+              <motion.button
+                key={item.template.id}
+                type="button"
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.08, duration: 0.25 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() =>
+                  handleOpenTemplate(item.chapter.id, item.template.id)
+                }
+                className="w-full text-left bg-card hover:bg-muted transition-colors rounded-xl p-4 flex items-center gap-3 border border-border/60 shadow-sm"
+              >
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 bg-primary/10 text-primary">
+                  {item.template.icon || <BookOpen className="w-5 h-5" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h4 className="text-foreground truncate">
+                      {item.template.name}
+                    </h4>
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full whitespace-nowrap">
+                      {item.label}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground text-sm truncate">
+                    {item.chapter.name}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Jornada */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -541,7 +691,7 @@ export const HomeScreen = memo(function HomeScreen({
             }
             subtitle={`+${weightChange} kg este mês`}
             color="#A346E5"
-            onClick={onNavigateToGrowth}
+            onClick={handleNavigateToGrowth}
             showChart
             chartData={growthMeasurements.map((m) => ({
               age: m.age,
@@ -556,7 +706,7 @@ export const HomeScreen = memo(function HomeScreen({
             value={`${averageSleep}h média`}
             subtitle="Média semanal"
             color="#7946E5"
-            onClick={onNavigateToSleepHumor}
+            onClick={handleNavigateToSleepHumor}
             showChart={true}
             chartType="bar"
             chartData={sleepEntries.slice(-7).map((entry, index) => ({
@@ -589,7 +739,7 @@ export const HomeScreen = memo(function HomeScreen({
             value="2 pendentes"
             subtitle="Próxima em 5 dias"
             color="#4F46E5"
-            onClick={onNavigateToConsultations}
+            onClick={handleNavigateToConsultations}
           />
           <StatWidget
             title="Vacinas"
@@ -603,14 +753,14 @@ export const HomeScreen = memo(function HomeScreen({
                 : "Todas em dia!"
             }
             color="#467DE5"
-            onClick={onNavigateToVaccines}
+            onClick={handleNavigateToVaccines}
           />
         </div>
 
         {/* Card Árvore Familiar */}
         <motion.button
           whileTap={{ scale: 0.97 }}
-          onClick={onNavigateToFamily}
+          onClick={handleNavigateToFamily}
           className="w-full bg-gradient-to-br from-[#46B7E5] to-[#A346E5] rounded-2xl p-6 shadow-sm border border-[#46B7E5]/30 text-left relative overflow-hidden hover:shadow-md transition-shadow"
           style={{
             backgroundColor: "rgba(70, 183, 229, 0.08)",
@@ -688,7 +838,7 @@ export const HomeScreen = memo(function HomeScreen({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onNavigateToChapters?.()}
+            onClick={handleNavigateToChapters}
           >
             Ver todos
           </Button>
@@ -700,7 +850,7 @@ export const HomeScreen = memo(function HomeScreen({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1, duration: 0.3 }}
-              onClick={() => onOpenChapter?.(summary.chapter)}
+              onClick={() => handleOpenChapter(summary.chapter)}
               className="w-full text-left bg-card hover:bg-muted transition-colors rounded-xl p-3 flex items-start gap-3 border border-border/50 shadow-sm"
             >
               <div
@@ -739,7 +889,11 @@ export const HomeScreen = memo(function HomeScreen({
             💝 Últimos Momentos
           </h3>
           {moments.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={onNavigateToMoments}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNavigateToMoments}
+            >
               Ver todos
             </Button>
           )}
@@ -750,13 +904,15 @@ export const HomeScreen = memo(function HomeScreen({
             {moments.slice(0, 6).map((moment, index) => {
               const chapter = chapters.find((c) => c.id === moment.chapterId);
               return (
-                <motion.div
+                <motion.button
                   key={moment.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="break-inside-avoid bg-card rounded-2xl overflow-hidden shadow-sm border border-border"
+                  onClick={() => handleOpenMoment(moment)}
+                  type="button"
+                  className="break-inside-avoid bg-card rounded-2xl overflow-hidden shadow-sm border border-border text-left"
                 >
                   {moment.media && moment.media.length > 0 && (
                     <div className="aspect-square bg-muted">
@@ -780,13 +936,13 @@ export const HomeScreen = memo(function HomeScreen({
                       {moment.title}
                     </p>
                   </div>
-                </motion.div>
+                </motion.button>
               );
             })}
           </div>
         ) : (
           <motion.button
-            onClick={onNavigateToMoments}
+            onClick={handleNavigateToMoments}
             whileTap={{ scale: 0.97 }}
             className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-2xl p-8 shadow-sm border border-blue-200/50 dark:border-blue-800/50 text-left relative overflow-hidden"
           >

@@ -1,9 +1,12 @@
 import { motion } from "motion/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft } from "lucide-react";
 import { useBabyData } from "@/context/baby-data-context";
-import type { Chapter } from "@/types";
+import { SearchBar } from "@/components/search/SearchBar";
+import { SearchResults } from "@/components/search/SearchResults";
+import { searchChaptersAndMoments } from "@/lib/mockData";
+import type { Chapter, SearchResult, SearchFilters } from "@/types";
 
 interface ChapterCardProps {
   chapter: Chapter;
@@ -72,18 +75,68 @@ function ChapterCard({ chapter, onClick }: ChapterCardProps) {
 interface ChaptersScreenProps {
   onSelectChapter: (chapter: Chapter) => void;
   onBack?: () => void;
+  focusMomentId?: string;
 }
 
 export function ChaptersScreen({
   onSelectChapter,
   onBack,
+  focusMomentId,
 }: ChaptersScreenProps) {
   const { chapters = [], status, getMoments } = useBabyData();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 
   // Memoizar cálculo do total de momentos
   const totalMoments = useMemo(() => {
     return getMoments().length;
   }, [getMoments]);
+
+  // Handle search
+  const handleSearch = (query: string, filters: SearchFilters) => {
+    setSearchQuery(query);
+    setSearchFilters(filters);
+
+    // Always reset to normal view when query is empty
+    if (!query.trim()) {
+      setSearchResult(null);
+      return;
+    }
+
+    // Only perform search when there's an actual query
+    const results = searchChaptersAndMoments(query, filters);
+    setSearchResult(results);
+  };
+
+  // Handle opening moment (for deep linking)
+  const handleOpenMoment = (momentId: string) => {
+    // For now, just navigate to the chapter containing the moment
+    const moment = getMoments().find((m) => m.id === momentId);
+    if (moment) {
+      const chapter = chapters.find((c) => c.id === moment.chapterId);
+      if (chapter) {
+        onSelectChapter(chapter);
+      }
+    }
+  };
+
+  // Handle opening template
+  const handleOpenTemplate = (chapterId: string, templateId: string) => {
+    const chapter = chapters.find((c) => c.id === chapterId);
+    if (chapter) {
+      onSelectChapter(chapter);
+      // Could add focus parameter here for deep linking
+    }
+  };
+
+  // Handle opening chapter
+  const handleOpenChapter = (chapterId: string) => {
+    const chapter = chapters.find((c) => c.id === chapterId);
+    if (chapter) {
+      onSelectChapter(chapter);
+    }
+  };
 
   // Mostrar loader apenas se ainda estiver carregando
   if (status === "loading" || status === "idle") {
@@ -123,6 +176,8 @@ export function ChaptersScreen({
     );
   }
 
+  const isSearchMode = searchResult !== null;
+
   return (
     <div className="pb-24 px-4 pt-6 max-w-2xl mx-auto">
       {onBack && (
@@ -142,38 +197,68 @@ export function ChaptersScreen({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        {chapters.map((chapter, index) => (
-          <motion.div
-            key={chapter.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-          >
-            <ChapterCard
-              chapter={chapter}
-              onClick={() => onSelectChapter(chapter)}
-            />
-          </motion.div>
-        ))}
+      {/* Search Bar */}
+      <div className="mb-6">
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Encontre capítulos ou momentos"
+          initialQuery={searchQuery}
+          initialFilters={searchFilters}
+        />
       </div>
 
-      {/* Summary */}
+      {/* Content: Search Results or Normal Chapters Grid */}
       <motion.div
+        key={isSearchMode ? "search" : "chapters"}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mt-6 bg-primary/5 rounded-2xl p-4 border border-primary/20"
+        transition={{ duration: 0.3 }}
       >
-        <p className="text-center text-muted-foreground">
-          {totalMoments > 0
-            ? `${totalMoments} ${
-                totalMoments === 1
-                  ? "momento registrado"
-                  : "momentos registrados"
-              }. Continue preenchendo para completar o álbum da Aurora! 💛`
-            : "Comece a registrar os momentos especiais da Aurora! 💛"}
-        </p>
+        {isSearchMode ? (
+          <SearchResults
+            results={searchResult}
+            onOpenMoment={handleOpenMoment}
+            onOpenChapter={handleOpenChapter}
+            onOpenTemplate={handleOpenTemplate}
+          />
+        ) : (
+          <>
+            {/* Normal Chapters Grid */}
+            <div className="grid grid-cols-1 gap-3 mb-6">
+              {chapters.map((chapter, index) => (
+                <motion.div
+                  key={chapter.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <ChapterCard
+                    chapter={chapter}
+                    onClick={() => onSelectChapter(chapter)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Summary */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-primary/5 rounded-2xl p-4 border border-primary/20"
+            >
+              <p className="text-center text-muted-foreground">
+                {totalMoments > 0
+                  ? `${totalMoments} ${
+                      totalMoments === 1
+                        ? "momento registrado"
+                        : "momentos registrados"
+                    }. Continue preenchendo para completar o álbum da Aurora! 💛`
+                  : "Comece a registrar os momentos especiais da Aurora! 💛"}
+              </p>
+            </motion.div>
+          </>
+        )}
       </motion.div>
     </div>
   );

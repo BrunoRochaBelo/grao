@@ -223,3 +223,50 @@ export interface FormSubmitResponse {
   draftId?: string;
   redirectTo?: string;
 }
+
+// ==================== Search Types ====================
+
+export type SearchFilter = "pending" | "series" | "recent";
+
+export interface SearchFilters {
+  pending?: boolean;
+  series?: boolean;
+  recent?: boolean;
+}
+
+export interface SearchMomentResult {
+  id: string;
+  title: string;
+  status: "published" | "draft";
+  date: string;
+  age: string;
+  kind: "published" | "suggested";
+  type: string;
+  templateId?: string;
+  seriesId?: string;
+  highlightedTitle?: string;
+  chapterId: string;
+}
+
+export interface SearchChapterResult {
+  chapterId: string;
+  chapterName: string;
+  chapterIcon: string;
+  chapterColor: string;
+  resultsCount: number;
+  moments: SearchMomentResult[];
+  hasSeries?: boolean;
+  lastUpdatedAt?: string;
+}
+
+export interface SearchResult {
+  query: string;
+  filters: SearchFilters;
+  results: SearchChapterResult[];
+  totalResults: number;
+  hasMore?: boolean;
+}
+
+export interface SynonymMap {
+  [key: string]: string[];
+}

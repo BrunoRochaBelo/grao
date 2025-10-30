@@ -2175,3 +2175,176 @@ export function getChapterSeries(chapterId: string) {
     .map((template) => getSeriesInfo(template.id, chapterId))
     .filter(Boolean);
 }
+
+// ==================== Search Functions ====================
+
+import {
+  expandWithSynonyms,
+  matchesSearchTerms,
+  highlightText,
+  normalizeText,
+} from "../utils/searchSynonyms";
+import type {
+  SearchResult,
+  SearchChapterResult,
+  SearchMomentResult,
+  SearchFilters,
+} from "../types";
+
+/**
+ * Search chapters and moments with unified query
+ */
+export function searchChaptersAndMoments(
+  query: string,
+  filters: SearchFilters = {}
+): SearchResult {
+  const searchTerms = expandWithSynonyms(query);
+  const results: SearchChapterResult[] = [];
+  const allChapters = chapters;
+  const allMoments = getMoments();
+
+  // Search through chapters
+  allChapters.forEach((chapter) => {
+    const chapterMoments: SearchMomentResult[] = [];
+    const placeholders = getPlaceholdersForChapter(chapter.id, 0);
+
+    // Check if chapter matches
+    const chapterMatches = matchesSearchTerms(
+      `${chapter.name} ${chapter.description}`,
+      searchTerms
+    );
+
+    // Search moments in this chapter
+    allMoments
+      .filter((moment) => moment.chapterId === chapter.id)
+      .forEach((moment) => {
+        const momentText = [
+          moment.title,
+          moment.noteShort || "",
+          moment.noteLong || "",
+          moment.location || "",
+          moment.tags?.join(" ") || "",
+          moment.people?.join(" ") || "",
+        ].join(" ");
+
+        if (matchesSearchTerms(momentText, searchTerms)) {
+          const template = placeholders.find((p) => p.id === moment.templateId);
+          const isSuggested = !moment.id; // If no ID, it's a suggested template
+
+          chapterMoments.push({
+            id: moment.id,
+            title: moment.title,
+            status: moment.status,
+            date: moment.date,
+            age: moment.age,
+            kind: isSuggested ? "suggested" : "published",
+            type: template?.templateType || "outro",
+            templateId: moment.templateId,
+            seriesId: moment.seriesId,
+            highlightedTitle: highlightText(moment.title, searchTerms),
+            chapterId: chapter.id,
+          });
+        }
+      });
+
+    // Search suggested templates (placeholders without moments)
+    placeholders.forEach((placeholder) => {
+      const hasMoment = allMoments.some(
+        (m) => m.templateId === placeholder.id && m.chapterId === chapter.id
+      );
+
+      if (!hasMoment) {
+        const templateText = `${placeholder.name} ${placeholder.description}`;
+
+        if (matchesSearchTerms(templateText, searchTerms)) {
+          chapterMoments.push({
+            id: `suggested-${placeholder.id}`,
+            title: placeholder.name,
+            status: "draft", // Suggested are always pending
+            date: "", // No date yet
+            age: "", // No age yet
+            kind: "suggested",
+            type: placeholder.templateType,
+            templateId: placeholder.id,
+            highlightedTitle: highlightText(placeholder.name, searchTerms),
+            chapterId: chapter.id,
+          });
+        }
+      }
+    });
+
+    // Apply filters
+    let filteredMoments = chapterMoments;
+
+    if (filters.pending) {
+      filteredMoments = filteredMoments.filter(
+        (m) => m.status === "draft" || m.kind === "suggested"
+      );
+    }
+
+    if (filters.series) {
+      filteredMoments = filteredMoments.filter((m) => m.seriesId);
+    }
+
+    if (filters.recent) {
+      // Sort by date (most recent first), put suggested at end
+      filteredMoments.sort((a, b) => {
+        if (a.kind === "suggested" && b.kind !== "suggested") return 1;
+        if (b.kind === "suggested" && a.kind !== "suggested") return -1;
+
+        if (a.date && b.date) {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+        return 0;
+      });
+    }
+
+    // Only include chapter if it has matches or chapter itself matches
+    if (chapterMatches || filteredMoments.length > 0) {
+      const chapterSeries = getChapterSeries(chapter.id);
+      const hasSeries = chapterSeries.length > 0;
+
+      results.push({
+        chapterId: chapter.id,
+        chapterName: chapter.name,
+        chapterIcon: chapter.icon,
+        chapterColor: chapter.color,
+        resultsCount: filteredMoments.length,
+        moments: filteredMoments,
+        hasSeries,
+        lastUpdatedAt:
+          chapterSeries.length > 0
+            ? chapterSeries[0]?.moments?.[0]?.date
+            : undefined,
+      });
+    }
+  });
+
+  // Sort results by relevance (chapters with more matches first)
+  results.sort((a, b) => b.resultsCount - a.resultsCount);
+
+  // If recent filter, sort chapters by last update
+  if (filters.recent) {
+    results.sort((a, b) => {
+      if (a.lastUpdatedAt && b.lastUpdatedAt) {
+        return (
+          new Date(b.lastUpdatedAt).getTime() -
+          new Date(a.lastUpdatedAt).getTime()
+        );
+      }
+      if (a.lastUpdatedAt) return -1;
+      if (b.lastUpdatedAt) return 1;
+      return 0;
+    });
+  }
+
+  const totalResults = results.reduce((sum, r) => sum + r.resultsCount, 0);
+
+  return {
+    query,
+    filters,
+    results,
+    totalResults,
+    hasMore: false, // For now, no pagination
+  };
+}
