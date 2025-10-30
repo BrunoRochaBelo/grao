@@ -443,18 +443,18 @@ export const FORM_FAMILY_MEMBER: FormTemplate = {
 };
 
 /**
- * Formulário de Nota Livre
+ * Formulário de Momento em Branco
  */
 export const FORM_FREE_NOTE: FormTemplate = {
   id: "free-note",
-  name: "Nota Livre",
+  name: "Momento em Branco",
   icon: "📝",
   category: "momento",
   successMessage: "Momento capturado ✨",
   returnRoute: "moments",
   formConfig: {
     id: "form-free-note",
-    title: "Nova Nota Livre",
+    title: "Novo Momento em Branco",
     icon: "📝",
     description: "Registre qualquer coisa importante",
     contextualColor: "#6366F1",
@@ -532,4 +532,3 @@ export const FORM_TEMPLATES: Record<string, FormTemplate> = {
   "family-member": FORM_FAMILY_MEMBER,
   "free-note": FORM_FREE_NOTE,
 };
-

@@ -1,7 +1,7 @@
-import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useBabyData } from '@/context/baby-data-context';
-import type { Chapter } from '@/types';
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { useBabyData } from "@/context/baby-data-context";
+import type { Chapter } from "@/types";
 
 interface AddMomentSheetProps {
   isOpen: boolean;
@@ -9,14 +9,18 @@ interface AddMomentSheetProps {
   onSelectChapter: (chapter: Chapter) => void;
 }
 
-export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSheetProps) {
+export function AddMomentSheet({
+  isOpen,
+  onClose,
+  onSelectChapter,
+}: AddMomentSheetProps) {
   const { chapters, getPlaceholdersForChapter, getMoments } = useBabyData();
   const moments = getMoments();
-  
-  const chaptersWithCounts = chapters.map(chapter => {
+
+  const chaptersWithCounts = chapters.map((chapter) => {
     const placeholders = getPlaceholdersForChapter(chapter.id);
-    const completedCount = placeholders.filter(p => 
-      moments.some(m => m.templateId === p.id)
+    const completedCount = placeholders.filter((p) =>
+      moments.some((m) => m.templateId === p.id)
     ).length;
     return {
       ...chapter,
@@ -40,10 +44,10 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
 
           {/* Sheet */}
           <motion.div
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-50 max-h-[85vh] overflow-hidden flex flex-col"
           >
             {/* Header */}
@@ -63,9 +67,11 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
               <div className="max-w-2xl mx-auto">
                 <div className="mb-4">
                   <button className="w-full bg-card rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left">
-                    <h3 className="text-foreground mb-1">📝 Nota Livre</h3>
+                    <h3 className="text-foreground mb-1">
+                      📝 Momento em Branco
+                    </h3>
                     <p className="text-muted-foreground text-sm">
-                      Registre um momento especial sem template
+                      Registre um momento especial em branco
                     </p>
                   </button>
                 </div>
@@ -92,9 +98,12 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
                         {chapter.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-foreground mb-0.5">{chapter.name}</h3>
+                        <h3 className="text-foreground mb-0.5">
+                          {chapter.name}
+                        </h3>
                         <p className="text-muted-foreground text-sm">
-                          {chapter.completedCount} de {chapter.totalCount} preenchidos
+                          {chapter.completedCount} de {chapter.totalCount}{" "}
+                          preenchidos
                         </p>
                       </div>
                     </motion.button>
@@ -108,5 +117,3 @@ export function AddMomentSheet({ isOpen, onClose, onSelectChapter }: AddMomentSh
     </AnimatePresence>
   );
 }
-
-

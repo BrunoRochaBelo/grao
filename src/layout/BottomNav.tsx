@@ -33,8 +33,8 @@ export function BottomNav({
   ];
 
   const fabOptions = [
-    { id: "note", label: "Nota Livre", icon: FileText },
-    { id: "moment", label: "Momento com Template", icon: Camera },
+    { id: "note", label: "Momento em Branco", icon: FileText },
+    { id: "moment", label: "Momento Sugerido", icon: Camera },
     { id: "letter", label: "Carta ou Cápsula", icon: Heart },
   ];
 

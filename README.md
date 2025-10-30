@@ -45,16 +45,16 @@ O **Livro do Bebê** é um álbum digital interativo que reúne memórias, marco
 
 ### 🧭 Telas principais
 
-| Tela | Destaques |
-| --- | --- |
-| **Home** | Seleção de bebê, cards de progresso (crescimento, vacinas, sono, família) e atalhos para capítulos e marcos próximos. |
-| **Galeria** | Feed agrupado por mês, filtros por capítulo/período/mídia e cards com notas, tags e indicadores de privacidade/vídeo. |
-| **Capítulos** | Lista de capítulos com progresso por placeholder, acesso ao detalhe e abertura do formulário de novo momento. |
-| **Detalhes do capítulo** | Placeholders filtrados por status (todos/preenchidos/pendentes) e acesso direto ao formulário. |
+| Tela                      | Destaques                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home**                  | Seleção de bebê, cards de progresso (crescimento, vacinas, sono, família) e atalhos para capítulos e marcos próximos.                     |
+| **Galeria**               | Feed agrupado por mês, filtros por capítulo/período/mídia e cards com notas, tags e indicadores de privacidade/vídeo.                     |
+| **Capítulos**             | Lista de capítulos com progresso por placeholder, acesso ao detalhe e abertura do formulário de novo momento.                             |
+| **Detalhes do capítulo**  | Placeholders filtrados por status (todos/preenchidos/pendentes) e acesso direto ao formulário.                                            |
 | **Formulário de momento** | Upload de mídia (placeholder), campos obrigatórios, cálculo automático de idade, tags, privacidade e ações (salvar, rascunho, descartar). |
-| **Saúde** | Telas de Crescimento, Vacinas e Sono & Humor com gráficos, estatísticas e cadastros adicionais. |
-| **Família** | Árvore genealógica, cartões de parentes e detalhe com momentos relacionados. |
-| **Perfil & Notificações** | Preferências, estatísticas gerais, toasts e lista de alertas simulados. |
+| **Saúde**                 | Telas de Crescimento, Vacinas e Sono & Humor com gráficos, estatísticas e cadastros adicionais.                                           |
+| **Família**               | Árvore genealógica, cartões de parentes e detalhe com momentos relacionados.                                                              |
+| **Perfil & Notificações** | Preferências, estatísticas gerais, toasts e lista de alertas simulados.                                                                   |
 
 > 📄 Consulte `src/FEATURES.md` para a lista completa e detalhada de funcionalidades já implementadas e ideias futuras.
 
@@ -66,14 +66,14 @@ O **Livro do Bebê** é um álbum digital interativo que reúne memórias, marco
 
 ### 🛠️ Stack técnica
 
-| Camada | Tecnologias |
-| --- | --- |
-| Build & Dev | Vite 6 com plugin React SWC |
-| Framework | React 18 + TypeScript |
-| UI | Radix UI / shadcn components, Motion para animações, Sonner para toasts |
-| Gráficos | Recharts |
-| Estado & Dados | Hooks locais + utilitários em `lib/mockData.ts` com persistência `localStorage` |
-| Estilos | CSS utilitário com tokens próprios em `src/styles/globals.css` e classes utilitárias geradas em `src/index.css` |
+| Camada         | Tecnologias                                                                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------- |
+| Build & Dev    | Vite 6 com plugin React SWC                                                                                     |
+| Framework      | React 18 + TypeScript                                                                                           |
+| UI             | Radix UI / shadcn components, Motion para animações, Sonner para toasts                                         |
+| Gráficos       | Recharts                                                                                                        |
+| Estado & Dados | Hooks locais + utilitários em `lib/mockData.ts` com persistência `localStorage`                                 |
+| Estilos        | CSS utilitário com tokens próprios em `src/styles/globals.css` e classes utilitárias geradas em `src/index.css` |
 
 ### ▶️ Como rodar o frontend
 
@@ -130,7 +130,7 @@ src/
 
 ### 🌟 Visão Geral
 
-- **Tudo é um Momento:** cada lembrança, foto, vacina, ou nota livre é um registro unificado.
+- **Tudo é um Momento:** cada lembrança, foto, vacina, ou momento em branco é um registro unificado.
 - **Capítulos:** agrupam momentos por tema (Nascimento, Saúde, Família, Mêsversários etc).
 - **Galeria:** exibe a linha do tempo visual de todas as mídias.
 - **Séries:** controlam eventos recorrentes (ex.: Mêsversário, Consultas).
@@ -258,7 +258,7 @@ Organiza momentos por tema e estrutura narrativa.
 | Campo       | Tipo                                                       | Descrição                          |
 | ----------- | ---------------------------------------------------------- | ---------------------------------- |
 | `id`        | UUID                                                       | Identificador                      |
-| `nome`      | String                                                     | Nome do capítulo                  |
+| `nome`      | String                                                     | Nome do capítulo                   |
 | `descricao` | String                                                     | Texto curto                        |
 | `icone`     | String                                                     | Ícone ilustrativo                  |
 | `viewer`    | Enum(`grid`, `timeline`, `checklist`, `series`, `gallery`) | Visual padrão                      |
@@ -286,27 +286,27 @@ Mídias (fotos e vídeos) associadas a momentos.
 
 Registros individuais — o coração do app.
 
-| Campo             | Tipo                                                                                      | Descrição                        |
-| ----------------- | ----------------------------------------------------------------------------------------- | -------------------------------- |
-| `id`              | UUID                                                                                      | Identificador                    |
-| `crianca_id`      | UUID (FK)                                                                                 | Criança associada                |
-| `capitulo_id`     | UUID (FK)                                                                                 | Capítulo pertencente             |
-| `serie_id`        | UUID (FK opcional)                                                                        | Série associada                  |
-| `tipo`            | Enum(`nota`, `foto`, `video`, `vacina`, `consulta`, `marco`, `carta`, `visita`, `custom`) | Tipo                             |
+| Campo             | Tipo                                                                                      | Descrição                             |
+| ----------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| `id`              | UUID                                                                                      | Identificador                         |
+| `crianca_id`      | UUID (FK)                                                                                 | Criança associada                     |
+| `capitulo_id`     | UUID (FK)                                                                                 | Capítulo pertencente                  |
+| `serie_id`        | UUID (FK opcional)                                                                        | Série associada                       |
+| `tipo`            | Enum(`nota`, `foto`, `video`, `vacina`, `consulta`, `marco`, `carta`, `visita`, `custom`) | Tipo                                  |
 | `subtipo`         | String                                                                                    | Ex.: “Primeiro Banho”, “Pentavalente” |
-| `titulo`          | String                                                                                    | Nome do momento                  |
-| `texto_curto`     | String                                                                                    | Resumo                           |
-| `texto_longo`     | Text                                                                                      | Detalhes                         |
-| `data_evento`     | DateTime                                                                                  | Data real do evento              |
-| `idade_calculada` | String                                                                                    | Ex.: “7m 4d”                     |
-| `local`           | String                                                                                    | Local                            |
-| `pessoas`         | JSONB                                                                                     | Lista de pessoas envolvidas      |
-| `privacidade`     | Enum(`privado`, `pessoas`, `link`)                                                        | Escopo de visibilidade           |
-| `tags`            | Array[String]                                                                             | Etiquetas livres                 |
-| `status`          | Enum(`rascunho`, `publicado`)                                                             | Estado atual                     |
-| `midias`          | Rel.                                                                                      | Lista de mídias                  |
-| `criado_em`       | DateTime                                                                                  | Registro                         |
-| `atualizado_em`   | DateTime                                                                                  | Última atualização               |
+| `titulo`          | String                                                                                    | Nome do momento                       |
+| `texto_curto`     | String                                                                                    | Resumo                                |
+| `texto_longo`     | Text                                                                                      | Detalhes                              |
+| `data_evento`     | DateTime                                                                                  | Data real do evento                   |
+| `idade_calculada` | String                                                                                    | Ex.: “7m 4d”                          |
+| `local`           | String                                                                                    | Local                                 |
+| `pessoas`         | JSONB                                                                                     | Lista de pessoas envolvidas           |
+| `privacidade`     | Enum(`privado`, `pessoas`, `link`)                                                        | Escopo de visibilidade                |
+| `tags`            | Array[String]                                                                             | Etiquetas livres                      |
+| `status`          | Enum(`rascunho`, `publicado`)                                                             | Estado atual                          |
+| `midias`          | Rel.                                                                                      | Lista de mídias                       |
+| `criado_em`       | DateTime                                                                                  | Registro                              |
+| `atualizado_em`   | DateTime                                                                                  | Última atualização                    |
 
 #### 🔁 Tabela `series`
 
@@ -327,18 +327,18 @@ Controla eventos recorrentes (ex.: Mêsversário, Consulta, Cartas).
 
 Gerencia o sistema de lembretes inteligentes.
 
-| Campo           | Tipo                                                                      | Descrição                      |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------ |
-| `id`            | UUID                                                                      | Identificador                  |
-| `usuario_id`    | UUID                                                                      | Usuário dono                   |
-| `crianca_id`    | UUID                                                                      | Criança relacionada            |
-| `tipo`          | Enum(`mesversario`, `vacina`, `marco`, `retroativo`, `digest`, `sistema`) | Tipo de evento                 |
-| `titulo`        | String                                                                    | Ex.: “Vacina de 6 meses”       |
-| `mensagem`      | Text                                                                      | Texto do alerta                |
-| `estado`        | Enum(`pendente`, `enviado`, `lido`, `resolvido`)                          | Status                         |
-| `data_agendada` | DateTime                                                                  | Envio previsto                 |
+| Campo           | Tipo                                                                      | Descrição                                             |
+| --------------- | ------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `id`            | UUID                                                                      | Identificador                                         |
+| `usuario_id`    | UUID                                                                      | Usuário dono                                          |
+| `crianca_id`    | UUID                                                                      | Criança relacionada                                   |
+| `tipo`          | Enum(`mesversario`, `vacina`, `marco`, `retroativo`, `digest`, `sistema`) | Tipo de evento                                        |
+| `titulo`        | String                                                                    | Ex.: “Vacina de 6 meses”                              |
+| `mensagem`      | Text                                                                      | Texto do alerta                                       |
+| `estado`        | Enum(`pendente`, `enviado`, `lido`, `resolvido`)                          | Status                                                |
+| `data_agendada` | DateTime                                                                  | Envio previsto                                        |
 | `acao`          | JSONB                                                                     | Contexto de ação (link p/ formulário, capítulo, etc.) |
-| `criado_em`     | DateTime                                                                  | Registro                       |
+| `criado_em`     | DateTime                                                                  | Registro                                              |
 
 #### 🧠 Tabela `preferencias_notificacao`
 
@@ -467,7 +467,7 @@ class TipoNotificacao(str, Enum):
 | ---------------------------- | --------------------------- | --------- |
 | `POST /v1/auth/login`        | Login com JWT               |           |
 | `GET /v1/capitulos`          | Lista de capítulos          |           |
-| `GET /v1/momentos`          | Lista de momentos filtrados |           |
+| `GET /v1/momentos`           | Lista de momentos filtrados |           |
 | `POST /v1/momentos`          | Cria um novo momento        |           |
 | `PUT /v1/momentos/{id}`      | Atualiza um momento         |           |
 | `DELETE /v1/momentos/{id}`   | Exclui um momento           |           |
