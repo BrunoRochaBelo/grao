@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Edit, Share2, Trash2 } from 'lucide-react';
-import type { Chapter, Moment, PlaceholderTemplate } from '@/types';
-import { MediaCarousel } from '@/components/shared/MediaCarousel';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { CheckCircle2, Circle, Edit, Plus, Share2, Trash2 } from "lucide-react";
+import type { Chapter, Moment, PlaceholderTemplate } from "@/types";
+import { MediaCarousel } from "@/components/shared/MediaCarousel";
+import { Badge } from "@/components/ui/badge";
+import { getSeriesInfo } from "@/lib/mockData";
 
 export interface MomentTemplateCardProps {
   template: PlaceholderTemplate & { thumbnail?: string };
@@ -20,6 +21,10 @@ export function MomentTemplateCard({
 }: MomentTemplateCardProps) {
   const [expanded, setExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
+
+  const seriesInfo = template.allowMultiple
+    ? getSeriesInfo(template.id, chapter.id)
+    : null;
 
   if (!template.isCompleted || !moment) {
     return (
@@ -38,10 +43,22 @@ export function MomentTemplateCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-foreground">{template.name}</h3>
+            {seriesInfo && (
+              <Badge variant="secondary" className="text-xs">
+                {seriesInfo.completed} registros
+              </Badge>
+            )}
             <Circle className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           </div>
-          <p className="text-muted-foreground text-sm">{template.description}</p>
-          <p className="text-primary text-sm mt-1">Tocar para registrar</p>
+          <p className="text-muted-foreground text-sm">
+            {template.description}
+          </p>
+          <p className="text-primary text-sm mt-1 flex items-center gap-1">
+            {seriesInfo ? <Plus className="w-4 h-4" /> : null}
+            {seriesInfo
+              ? `Adicionar ${template.name.toLowerCase()}`
+              : "Tocar para registrar"}
+          </p>
         </div>
       </motion.button>
     );
@@ -50,28 +67,31 @@ export function MomentTemplateCard({
   const hasMedia = moment.media && moment.media.length > 0;
 
   useEffect(() => {
-    if (!expanded || !cardRef.current || typeof window === 'undefined') {
+    if (!expanded || !cardRef.current || typeof window === "undefined") {
       return;
     }
 
     const ensureCardInView = () => {
       if (!cardRef.current) return;
 
-      const headerElement = document.querySelector<HTMLElement>('[data-chapter-header]');
-      const headerOffset = (headerElement?.getBoundingClientRect().height ?? 96) + 16;
+      const headerElement = document.querySelector<HTMLElement>(
+        "[data-chapter-header]"
+      );
+      const headerOffset =
+        (headerElement?.getBoundingClientRect().height ?? 96) + 16;
       const rect = cardRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const scrollY = window.scrollY;
 
       if (rect.top < headerOffset) {
         const targetTop = Math.max(rect.top + scrollY - headerOffset, 0);
-        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+        window.scrollTo({ top: targetTop, behavior: "smooth" });
         return;
       }
 
       if (rect.bottom > viewportHeight) {
         const targetBottom = rect.bottom + scrollY - viewportHeight + 16;
-        window.scrollTo({ top: Math.max(targetBottom, 0), behavior: 'smooth' });
+        window.scrollTo({ top: Math.max(targetBottom, 0), behavior: "smooth" });
       }
     };
 
@@ -115,7 +135,7 @@ export function MomentTemplateCard({
             <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
           </div>
           <p className="text-muted-foreground text-sm">
-            {moment.age} • {new Date(moment.date).toLocaleDateString('pt-BR')}
+            {moment.age} • {new Date(moment.date).toLocaleDateString("pt-BR")}
           </p>
         </div>
       </button>
@@ -124,7 +144,7 @@ export function MomentTemplateCard({
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
@@ -139,12 +159,14 @@ export function MomentTemplateCard({
 
             <div className="p-4 space-y-3">
               {moment.location && (
-                <p className="text-muted-foreground text-sm">Local: {moment.location}</p>
+                <p className="text-muted-foreground text-sm">
+                  Local: {moment.location}
+                </p>
               )}
 
               {moment.people && moment.people.length > 0 && (
                 <p className="text-muted-foreground text-sm">
-                  Pessoas: {moment.people.join(', ')}
+                  Pessoas: {moment.people.join(", ")}
                 </p>
               )}
 
@@ -199,4 +221,3 @@ export function MomentTemplateCard({
     </motion.div>
   );
 }
-

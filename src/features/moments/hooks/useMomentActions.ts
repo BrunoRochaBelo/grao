@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useBabyData } from "@/context/baby-data-context";
+import { generateSeriesId, getPlaceholdersForChapter } from "@/lib/mockData";
 import type { Moment } from "@/types";
 import type { MomentStatus, PrivacyOption } from "../forms/momentFormConfig";
 
@@ -36,9 +37,21 @@ export function useMomentActions() {
   const buildPayload = useCallback(
     (input: CreateMomentInput): Omit<Moment, "id"> => {
       const momentDate = `${input.date}T${input.time}:00`;
+
+      // Check if template allows multiple entries (series)
+      let seriesId: string | undefined;
+      if (input.templateId) {
+        const placeholders = getPlaceholdersForChapter(input.chapterId, 0); // Age doesn't matter for allowMultiple check
+        const template = placeholders.find((p) => p.id === input.templateId);
+        if (template?.allowMultiple) {
+          seriesId = generateSeriesId(input.templateId, input.chapterId);
+        }
+      }
+
       return {
         chapterId: input.chapterId,
         templateId: input.templateId,
+        seriesId,
         title: input.title.trim(),
         date: momentDate,
         age: input.ageLabel ?? getAgeLabel(input.date),

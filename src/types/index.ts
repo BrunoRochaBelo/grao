@@ -86,7 +86,9 @@ export interface PlaceholderTemplate {
     | "carta"
     | "nota"
     | "evento"
-    | "arte";
+    | "arte"
+    | "triagem"
+    | "registro";
   ageRangeStart: number;
   ageRangeEnd?: number;
   isCompleted: boolean;
@@ -98,6 +100,7 @@ export interface Moment {
   id: string;
   chapterId: string;
   templateId?: string;
+  seriesId?: string;
   title: string;
   date: string;
   age: string;
