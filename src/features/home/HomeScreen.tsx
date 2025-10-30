@@ -270,7 +270,7 @@ export const HomeScreen = memo(function HomeScreen({
 
         // Lógica de snap com histerese - Otimizada para touch
         if (currentScrollY === 0) {
-          // Se está no topo, sempre expandir
+          // Se está no topo, sempre expande
           shouldCompact = false;
         } else if (heroCompact) {
           // Se já está compacto, só expande quando volta ao topo (scroll = 0)
@@ -374,7 +374,11 @@ export const HomeScreen = memo(function HomeScreen({
           type: "tween",
         }}
       >
-        <div className="flex flex-col p-6 pb-8 gap-4">
+        <div
+          className={`flex flex-col ${
+            heroCompact ? "px-6 py-2" : "p-6 pb-8"
+          } gap-4`}
+        >
           {/* Button do avatar e info */}
           <motion.button
             animate={
