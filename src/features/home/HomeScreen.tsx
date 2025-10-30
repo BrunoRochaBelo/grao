@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect, memo, useCallback } from "react";
+import { useMemo, useState, useEffect, memo, useCallback, useRef } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { useBabyData } from "@/context/baby-data-context";
 import { useNavigationActions } from "@/context/navigation-context";
 import type { Chapter, Moment, PlaceholderTemplate } from "@/types";
@@ -17,7 +18,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BabySelectorModal } from "../baby/BabySelectorModal";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { ContextMenu } from "@/features/moments/components/ContextMenu";
+import {
+  getMomentTypeIcon,
+  getTextPreview,
+} from "@/features/moments/utils/timelineUtils";
+import { toast } from "sonner";
 
 interface StatWidgetProps {
   title: string;
@@ -70,6 +78,103 @@ function StatWidget({
   );
 }
 
+interface RecentMomentCardProps {
+  moment: Moment;
+  chapter?: Chapter;
+  icon: string;
+  caption: string;
+  dateLabel: string;
+  delay: number;
+  media: string[];
+  onOpen: () => void;
+  onLongPressStart: (
+    event: ReactPointerEvent<HTMLButtonElement>,
+    moment: Moment
+  ) => void;
+  onLongPressEnd: (event?: ReactPointerEvent<HTMLButtonElement>) => void;
+}
+
+function RecentMomentCard({
+  moment,
+  chapter,
+  icon,
+  caption,
+  dateLabel,
+  delay,
+  media,
+  onOpen,
+  onLongPressStart,
+  onLongPressEnd,
+}: RecentMomentCardProps) {
+  const mediaCount = media.length;
+  const cover = media[0];
+
+  return (
+    <motion.button
+      type="button"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{
+        delay: delay * 0.06,
+        duration: 0.35,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      whileHover={{
+        y: -6,
+        boxShadow: "0 18px 32px rgba(15, 23, 42, 0.18)",
+      }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onOpen}
+      onPointerDown={(event) => onLongPressStart(event, moment)}
+      onPointerUp={(event) => onLongPressEnd(event)}
+      onPointerLeave={(event) => onLongPressEnd(event)}
+      onPointerCancel={(event) => onLongPressEnd(event)}
+      className="group relative break-inside-avoid rounded-3xl overflow-hidden border border-border/70 bg-card/95 text-left transition-all duration-300 backdrop-blur-sm"
+      aria-label={`Abrir momento ${moment.title}`}
+    >
+      <div className="relative aspect-[4/5] overflow-hidden">
+        {cover ? (
+          <img
+            src={cover}
+            alt={moment.title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5 text-4xl">
+            {icon}
+          </div>
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-95" />
+        <div className="absolute top-3 left-3 flex items-center gap-2">
+          <span className="text-lg drop-shadow">{icon}</span>
+          <Badge
+            variant="secondary"
+            className="bg-black/40 text-white hover:bg-black/50 backdrop-blur-sm"
+          >
+            {chapter?.name ?? "Capítulo"}
+          </Badge>
+        </div>
+        <div className="absolute bottom-3 left-3 flex items-center gap-2 text-xs font-medium text-white/90 drop-shadow">
+          <span>{dateLabel}</span>
+          {mediaCount > 1 && (
+            <span className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[11px] uppercase tracking-wide">
+              +{mediaCount - 1}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-3">
+        <p className="text-sm leading-tight text-foreground line-clamp-1">
+          {caption}
+        </p>
+        <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1" />
+      </div>
+    </motion.button>
+  );
+}
+
 interface HomeScreenProps {
   onNavigateToGrowth?: () => void;
   onNavigateToVaccines?: () => void;
@@ -98,6 +203,13 @@ export const HomeScreen = memo(function HomeScreen({
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [heroCompact, setHeroCompact] = useState(false);
   const navigation = useNavigationActions();
+  const [contextMenu, setContextMenu] = useState<{
+    moment: Moment;
+    x: number;
+    y: number;
+  } | null>(null);
+  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const suppressClickRef = useRef(false);
   const {
     currentBaby,
     chapters,
@@ -164,6 +276,27 @@ export const HomeScreen = memo(function HomeScreen({
       : "0";
 
   const familyMembers = getFamilyMembers();
+
+  useEffect(() => {
+    if (!contextMenu) return;
+
+    const handleDismiss = () => setContextMenu(null);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setContextMenu(null);
+      }
+    };
+
+    window.addEventListener("scroll", handleDismiss, { passive: true });
+    window.addEventListener("resize", handleDismiss);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("scroll", handleDismiss);
+      window.removeEventListener("resize", handleDismiss);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [contextMenu]);
 
   const handleNavigateToGrowth = useCallback(() => {
     if (onNavigateToGrowth) {
@@ -254,7 +387,79 @@ export const HomeScreen = memo(function HomeScreen({
     [onOpenMoment, navigation.openMoment]
   );
 
-  // Calcula participação de cada membro da família
+  const handleMomentPressStart = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>, moment: Moment) => {
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+      }
+      suppressClickRef.current = false;
+
+      const { clientX, clientY } = event;
+      const x = clientX || window.innerWidth / 2;
+      const y = clientY || window.innerHeight / 2;
+
+      longPressTimeoutRef.current = window.setTimeout(() => {
+        suppressClickRef.current = true;
+        setContextMenu({ moment, x, y });
+        try {
+          navigator.vibrate?.(12);
+        } catch {
+          // vibration not supported
+        }
+      }, 450);
+    },
+    []
+  );
+
+  const handleMomentPressEnd = useCallback(
+    (event?: ReactPointerEvent<HTMLButtonElement>) => {
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+
+      if (suppressClickRef.current) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        setTimeout(() => {
+          suppressClickRef.current = false;
+        }, 0);
+      }
+    },
+    []
+  );
+
+  const handleEditMoment = useCallback(
+    (moment: Moment) => {
+      navigation.openMoment?.(moment);
+      toast.info("Modo de edição chegará em breve.");
+    },
+    [navigation]
+  );
+
+  const handleShareMoment = useCallback((moment: Moment) => {
+    const shareData = {
+      title: moment.title,
+      text: moment.noteShort ?? moment.noteLong ?? "",
+      url: moment.media?.[0],
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator.share(shareData).catch(() => {
+        toast.info("Compartilhamento cancelado.");
+      });
+    } else {
+      toast.info("Compartilhe salvando a mídia e enviando para quem ama.");
+    }
+  }, []);
+
+  const handleDeleteMoment = useCallback((moment: Moment) => {
+    toast.warning(`Exclusão de "${moment.title}" chegará em breve.`);
+  }, []);
+
+  // Calcula participa├º├úo de cada membro da fam├¡lia
   const familyParticipation = useMemo(() => {
     if (familyMembers.length === 0) return [];
 
@@ -263,7 +468,7 @@ export const HomeScreen = memo(function HomeScreen({
       memberParticipation[member.id] = 0;
     });
 
-    // Contar menções em momentos
+    // Contar men├º├Áes em momentos
     moments.forEach((moment) => {
       if (moment.people) {
         moment.people.forEach((personId) => {
@@ -291,17 +496,38 @@ export const HomeScreen = memo(function HomeScreen({
       .sort((a, b) => b.mentions - a.mentions);
   }, [familyMembers, moments]);
 
-  // Gradiente dinâmico baseado no horário
+  const chaptersById = useMemo(() => {
+    const map = new Map<string, Chapter>();
+    chapters.forEach((chapter) => {
+      map.set(chapter.id, chapter);
+    });
+    return map;
+  }, [chapters]);
+
+  const templateIconMap = useMemo(() => {
+    const map = new Map<string, string>();
+    chapters.forEach((chapter) => {
+      const placeholders = getPlaceholdersForChapter(chapter.id, babyAgeInDays);
+      placeholders.forEach((placeholder) => {
+        map.set(placeholder.id, placeholder.icon ?? "");
+      });
+    });
+    return map;
+  }, [chapters, getPlaceholdersForChapter, babyAgeInDays]);
+
+  const latestMoments = useMemo(() => moments.slice(0, 6), [moments]);
+
+  // Gradiente din├ómico baseado no hor├írio
   const timeGradient = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12) {
-      // Manhã: pêssego suave
+      // Manh├ú: p├¬ssego suave
       return "linear-gradient(135deg, #FFE5C2 0%, #FFF5E6 100%)";
     } else if (hour >= 12 && hour < 18) {
-      // Tarde: azul-céu
+      // Tarde: azul-c├®u
       return "linear-gradient(135deg, #CDE7FF 0%, #EAF7FF 100%)";
     } else {
-      // Noite: lilás/índigo
+      // Noite: lil├ís/├¡ndigo
       return "linear-gradient(135deg, #D6CCFF 0%, #AFA2FF 100%)";
     }
   }, []);
@@ -321,10 +547,10 @@ export const HomeScreen = memo(function HomeScreen({
     }).length;
 
     const phrases = [
-      `${currentBaby?.name} sorriu ${smiles} vezes hoje 🌸 — e ainda nem chegou o pôr do sol.`,
-      `Semana mágica com ${recentMoments} novos momentos ✨`,
-      `Crescendo forte: +${weightChange}kg este mês 📈`,
-      `Família crescendo junto: ${familyMembers.length} corações conectados 💕`,
+      `${currentBaby?.name} sorriu ${smiles} vezes hoje ­ƒî© ÔÇö e ainda nem chegou o p├┤r do sol.`,
+      `Semana m├ígica com ${recentMoments} novos momentos Ô£¿`,
+      `Crescendo forte: +${weightChange}kg este m├¬s ­ƒôê`,
+      `Fam├¡lia crescendo junto: ${familyMembers.length} cora├º├Áes conectados ­ƒÆò`,
     ];
     return phrases[Math.floor(Math.random() * phrases.length)];
   }, [currentBaby, sleepEntries, moments, weightChange, familyMembers]);
@@ -342,7 +568,7 @@ export const HomeScreen = memo(function HomeScreen({
       const currentScrollY = window.scrollY;
       const scrollDelta = currentScrollY - lastScrollY;
 
-      // Calcular velocidade com suavização exponencial (EMA - Exponential Moving Average)
+      // Calcular velocidade com suaviza├º├úo exponencial (EMA - Exponential Moving Average)
       const smoothingFactor = 0.3;
       scrollVelocity =
         scrollVelocity * (1 - smoothingFactor) +
@@ -354,33 +580,33 @@ export const HomeScreen = memo(function HomeScreen({
       if (scrollTimeout) clearTimeout(scrollTimeout);
 
       // Snap points otimizados para touch
-      const CLOSE_THRESHOLD = 30; // Muito mais sensível para fechar
-      const REOPEN_THRESHOLD = 0; // Só abre quando scroll é zero
-      const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para snap inercial
+      const CLOSE_THRESHOLD = 30; // Muito mais sens├¡vel para fechar
+      const REOPEN_THRESHOLD = 0; // S├│ abre quando scroll ├® zero
+      const VELOCITY_THRESHOLD = 0.5; // Velocidade m├¡nima para snap inercial
 
       scrollTimeout = setTimeout(() => {
         let shouldCompact = heroCompact;
 
-        // Lógica de snap com histerese - Otimizada para touch
+        // L├│gica de snap com histerese - Otimizada para touch
         if (currentScrollY === 0) {
-          // Se está no topo, sempre expande
+          // Se est├í no topo, sempre expande
           shouldCompact = false;
         } else if (heroCompact) {
-          // Se já está compacto, só expande quando volta ao topo (scroll = 0)
+          // Se j├í est├í compacto, s├│ expande quando volta ao topo (scroll = 0)
           shouldCompact = true;
         } else {
-          // Se está expandido, compacta com threshold muito sensível
+          // Se est├í expandido, compacta com threshold muito sens├¡vel
           if (Math.abs(scrollVelocity) > VELOCITY_THRESHOLD) {
             // Com velocidade, usar snap inercial mais agressivo
             if (scrollVelocity > 0) {
-              // Scroll para baixo - compactar rápido
+              // Scroll para baixo - compactar r├ípido
               shouldCompact = currentScrollY > CLOSE_THRESHOLD;
             } else {
-              // Scroll para cima - expandir (mas só se for zero)
+              // Scroll para cima - expandir (mas s├│ se for zero)
               shouldCompact = currentScrollY > CLOSE_THRESHOLD;
             }
           } else {
-            // Sem velocidade, threshold padrão bem sensível
+            // Sem velocidade, threshold padr├úo bem sens├¡vel
             shouldCompact = currentScrollY > CLOSE_THRESHOLD;
           }
         }
@@ -443,7 +669,7 @@ export const HomeScreen = memo(function HomeScreen({
         ...item,
         label:
           item.daysUntil === 0
-            ? "Disponível agora"
+            ? "Dispon├¡vel agora"
             : `em ${item.daysUntil} ${item.daysUntil === 1 ? "dia" : "dias"}`,
       }));
   }, [babyAgeInDays, moments]);
@@ -489,7 +715,7 @@ export const HomeScreen = memo(function HomeScreen({
             onClick={() => setShowBabySelector(true)}
             className="flex items-stretch gap-4 w-full justify-start"
           >
-            {/* Avatar wrapper com espaço fixo */}
+            {/* Avatar wrapper com espa├ºo fixo */}
             <div className="flex-shrink-0 flex items-center">
               <motion.div
                 animate={{
@@ -509,7 +735,7 @@ export const HomeScreen = memo(function HomeScreen({
                 >
                   <AvatarImage
                     src={currentBaby?.avatar}
-                    alt={currentBaby?.name ?? "Bebê"}
+                    alt={currentBaby?.name ?? "Beb├¬"}
                   />
                   <AvatarFallback className="bg-white/20 text-white text-lg">
                     {currentBaby ? getInitials(currentBaby.name) : "?"}
@@ -546,7 +772,7 @@ export const HomeScreen = memo(function HomeScreen({
                   }}
                   className="font-bold text-white mb-1 leading-tight"
                 >
-                  {currentBaby?.name ?? "Bebê atual"}
+                  {currentBaby?.name ?? "Beb├¬ atual"}
                 </motion.h1>
 
                 <motion.div
@@ -584,7 +810,7 @@ export const HomeScreen = memo(function HomeScreen({
                 }}
                 className="text-base font-bold text-white flex items-center"
               >
-                {currentBaby?.name ?? "Bebê atual"}
+                {currentBaby?.name ?? "Beb├¬ atual"}
               </motion.h1>
             )}
           </motion.button>
@@ -618,7 +844,7 @@ export const HomeScreen = memo(function HomeScreen({
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-foreground">
-              📌 Próximos Marcos
+              ­ƒôî Pr├│ximos Marcos
             </h3>
             <Button
               variant="ghost"
@@ -675,7 +901,7 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            🌱 Crescendo Juntos
+            ­ƒî▒ Crescendo Juntos
           </h3>
         </div>
 
@@ -686,10 +912,10 @@ export const HomeScreen = memo(function HomeScreen({
             icon={<TrendingUp className="w-5 h-5 text-primary" />}
             value={
               latestGrowth
-                ? `${latestGrowth.weight} kg · ${latestGrowth.height} cm`
-                : "Sem medições"
+                ? `${latestGrowth.weight} kg ┬À ${latestGrowth.height} cm`
+                : "Sem medi├º├Áes"
             }
-            subtitle={`+${weightChange} kg este mês`}
+            subtitle={`+${weightChange} kg este m├¬s`}
             color="#A346E5"
             onClick={handleNavigateToGrowth}
             showChart
@@ -703,8 +929,8 @@ export const HomeScreen = memo(function HomeScreen({
           <StatWidget
             title="Sono & Humor"
             icon={<Moon className="w-5 h-5 text-primary" />}
-            value={`${averageSleep}h média`}
-            subtitle="Média semanal"
+            value={`${averageSleep}h m├®dia`}
+            subtitle="M├®dia semanal"
             color="#7946E5"
             onClick={handleNavigateToSleepHumor}
             showChart={true}
@@ -719,17 +945,17 @@ export const HomeScreen = memo(function HomeScreen({
             emojiLine={sleepEntries.slice(-7).map((entry) => {
               switch (entry.mood) {
                 case "happy":
-                  return "😄";
+                  return "­ƒÿä";
                 case "calm":
-                  return "😌";
+                  return "­ƒÿî";
                 case "fussy":
-                  return "🥱";
+                  return "­ƒÑ▒";
                 case "crying":
-                  return "😢";
+                  return "­ƒÿó";
                 case "sleepy":
-                  return "😴";
+                  return "­ƒÿ┤";
                 default:
-                  return "😐";
+                  return "­ƒÿÉ";
               }
             })}
           />
@@ -737,7 +963,7 @@ export const HomeScreen = memo(function HomeScreen({
             title="Consultas"
             icon={<Calendar className="w-5 h-5 text-primary" />}
             value="2 pendentes"
-            subtitle="Próxima em 5 dias"
+            subtitle="Pr├│xima em 5 dias"
             color="#4F46E5"
             onClick={handleNavigateToConsultations}
           />
@@ -757,7 +983,7 @@ export const HomeScreen = memo(function HomeScreen({
           />
         </div>
 
-        {/* Card Árvore Familiar */}
+        {/* Card ├ürvore Familiar */}
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={handleNavigateToFamily}
@@ -772,11 +998,11 @@ export const HomeScreen = memo(function HomeScreen({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-foreground font-semibold">
-                    Sua Árvore Familiar
+                    Sua ├ürvore Familiar
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Veja quem está conectado e o nível de participação na
-                    história de {currentBaby?.name}.
+                    Veja quem est├í conectado e o n├¡vel de participa├º├úo na
+                    hist├│ria de {currentBaby?.name}.
                   </p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
@@ -806,17 +1032,17 @@ export const HomeScreen = memo(function HomeScreen({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-foreground font-semibold mb-1">
-                    Comece a Árvore Familiar
+                    Comece a ├ürvore Familiar
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Convide pais, avós e familiares para acompanhar a jornada de{" "}
-                    {currentBaby?.name} 💚
+                    Convide pais, av├│s e familiares para acompanhar a jornada
+                    de {currentBaby?.name} ­ƒÆÜ
                   </p>
                 </div>
               </div>
               <div className="flex items-center justify-end pt-2">
                 <span className="text-pink-600 dark:text-pink-400 text-sm font-medium">
-                  Adicionar membros →
+                  Adicionar membros ÔåÆ
                 </span>
               </div>
             </div>
@@ -824,7 +1050,7 @@ export const HomeScreen = memo(function HomeScreen({
         </motion.button>
       </motion.div>
 
-      {/* Capítulos */}
+      {/* Cap├¡tulos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -833,13 +1059,9 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            📖 Capítulos
+            ­ƒôû Cap├¡tulos
           </h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNavigateToChapters}
-          >
+          <Button variant="ghost" size="sm" onClick={handleNavigateToChapters}>
             Ver todos
           </Button>
         </div>{" "}
@@ -877,7 +1099,7 @@ export const HomeScreen = memo(function HomeScreen({
         </div>
       </motion.div>
 
-      {/* Últimos Momentos */}
+      {/* ├Ültimos Momentos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -886,60 +1108,73 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            💝 Últimos Momentos
+            ­ƒÆØ ├Ültimos Momentos
           </h3>
-          {moments.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNavigateToMoments}
-            >
+          {latestMoments.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={handleNavigateToMoments}>
               Ver todos
             </Button>
           )}
         </div>
 
-        {moments.length > 0 ? (
-          <div className="columns-2 gap-4 space-y-4">
-            {moments.slice(0, 6).map((moment, index) => {
-              const chapter = chapters.find((c) => c.id === moment.chapterId);
-              return (
-                <motion.button
-                  key={moment.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleOpenMoment(moment)}
-                  type="button"
-                  className="break-inside-avoid bg-card rounded-2xl overflow-hidden shadow-sm border border-border text-left"
-                >
-                  {moment.media && moment.media.length > 0 && (
-                    <div className="aspect-square bg-muted">
-                      <img
-                        src={moment.media[0]}
-                        alt={moment.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(moment.date).toLocaleDateString("pt-BR")}
-                      </span>
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {chapter?.name || "Capítulo"}
-                      </span>
-                    </div>
-                    <p className="text-foreground text-sm line-clamp-2">
-                      {moment.title}
-                    </p>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
+        {latestMoments.length > 0 ? (
+          <>
+            <div className="mb-4 space-y-1">
+              <p className="text-sm text-muted-foreground">
+                🌸 Últimos dias repletos de sorrisos.
+              </p>
+              <p className="text-xs text-muted-foreground/80">
+                Toque para reviver.
+              </p>
+            </div>
+            <div className="columns-2 gap-4 space-y-4">
+              {latestMoments.map((moment, index) => {
+                const chapter = chaptersById.get(moment.chapterId);
+                const templateEmoji =
+                  (moment.templateId &&
+                    templateIconMap.get(moment.templateId)) ||
+                  getMomentTypeIcon(moment.templateId, moment.chapterId);
+                const dateLabel = new Date(moment.date).toLocaleDateString(
+                  "pt-BR",
+                  {
+                    day: "2-digit",
+                    month: "2-digit",
+                  }
+                );
+                const captionSource =
+                  moment.noteShort?.trim() ||
+                  moment.noteLong?.trim() ||
+                  moment.title;
+                const caption = getTextPreview(captionSource, 70);
+
+                return (
+                  <RecentMomentCard
+                    key={moment.id}
+                    moment={moment}
+                    chapter={chapter}
+                    icon={templateEmoji}
+                    caption={caption}
+                    dateLabel={dateLabel}
+                    delay={index}
+                    media={moment.media}
+                    onOpen={() => handleOpenMoment(moment)}
+                    onLongPressStart={handleMomentPressStart}
+                    onLongPressEnd={handleMomentPressEnd}
+                  />
+                );
+              })}
+            </div>
+            <div className="mt-6">
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full rounded-2xl bg-gradient-to-r from-primary/15 via-primary/5 to-transparent text-primary shadow-sm hover:from-primary/25 hover:via-primary/10"
+                onClick={handleNavigateToMoments}
+              >
+                Ver todos os Momentos
+              </Button>
+            </div>
+          </>
         ) : (
           <motion.button
             onClick={handleNavigateToMoments}
@@ -949,20 +1184,20 @@ export const HomeScreen = memo(function HomeScreen({
             <div className="space-y-4">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/30 mb-4">
-                  <span className="text-3xl">📸</span>
+                  <span className="text-3xl">­ƒô©</span>
                 </div>
                 <h3 className="text-foreground font-semibold text-lg mb-2">
-                  Crie o Primeiro Momento
+                  Crie o primeiro momento
                 </h3>
                 <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                  Capture as primeiras fotos, vídeos e histórias de{" "}
-                  {currentBaby?.name}. Cada momento é único e merece ser
-                  recordado 💙
+                  Capture as primeiras fotos, v├¡deos e hist├│rias de{" "}
+                  {currentBaby?.name}. Cada momento ├® ├║nico e merece ser
+                  recordado ­ƒÆÖ
                 </p>
               </div>
               <div className="flex items-center justify-center pt-2">
                 <span className="text-blue-600 dark:text-blue-400 text-sm font-medium">
-                  Começar agora →
+                  Come├ºar agora ÔåÆ
                 </span>
               </div>
             </div>
@@ -975,6 +1210,37 @@ export const HomeScreen = memo(function HomeScreen({
         onClose={() => setShowBabySelector(false)}
         onBabyChange={() => undefined}
       />
+
+      <AnimatePresence>
+        {contextMenu && (
+          <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onClose={() => setContextMenu(null)}
+            actions={[
+              {
+                id: "edit",
+                label: "Editar",
+                icon: "✏️",
+                onClick: () => handleEditMoment(contextMenu.moment),
+              },
+              {
+                id: "share",
+                label: "Compartilhar",
+                icon: "📤",
+                onClick: () => handleShareMoment(contextMenu.moment),
+              },
+              {
+                id: "delete",
+                label: "Excluir",
+                icon: "🗑️",
+                color: "text-red-600",
+                onClick: () => handleDeleteMoment(contextMenu.moment),
+              },
+            ]}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 });
