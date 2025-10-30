@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Bell,
   BellOff,
@@ -63,6 +63,28 @@ export function NotificationsScreen() {
   );
   const [activeFilter, setActiveFilter] = useState<NotificationFilter>("all");
   const [mutedThemes, setMutedThemes] = useState(false);
+  const [showGrowthForm, setShowGrowthForm] = useState(false);
+  const [showSleepForm, setShowSleepForm] = useState(false);
+  const [activeMomentContext, setActiveMomentContext] = useState<{
+    template: PlaceholderTemplate;
+    chapter: Chapter;
+  } | null>(null);
+  const [activeNotification, setActiveNotification] =
+    useState<Notification | null>(null);
+  const [showSubtitle, setShowSubtitle] = useState(true);
+
+  // Controle de scroll para esconder subtítulo quando filtros ficam visíveis
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Esconder subtítulo quando scroll passa de 40px (quando filtros ficam visíveis)
+      setShowSubtitle(scrollY < 40);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const filterOptions: {
     id: NotificationFilter;
     label: string;
@@ -73,14 +95,6 @@ export function NotificationsScreen() {
     { id: "reminder", label: "Lembretes", tone: "lavender" },
     { id: "milestone", label: "Marcos", tone: "babyBlue" },
   ];
-  const [showGrowthForm, setShowGrowthForm] = useState(false);
-  const [showSleepForm, setShowSleepForm] = useState(false);
-  const [activeMomentContext, setActiveMomentContext] = useState<{
-    template: PlaceholderTemplate;
-    chapter: Chapter;
-  } | null>(null);
-  const [activeNotification, setActiveNotification] =
-    useState<Notification | null>(null);
 
   function getNotifications(): Notification[] {
     const vaccines = getVaccines();
@@ -467,9 +481,11 @@ export function NotificationsScreen() {
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-          <p className="text-muted-foreground text-sm mb-3">
-            {notification.subtitle}
-          </p>
+          {showSubtitle && (
+            <p className="text-muted-foreground text-sm mb-3">
+              {notification.subtitle}
+            </p>
+          )}
 
           {/* Action Button */}
           <Button
@@ -493,21 +509,38 @@ export function NotificationsScreen() {
   return (
     <>
       <div className="pb-24 max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="px-4 pt-6 pb-4 space-y-4">
-          <div>
-            <h1 className="text-foreground text-xl">Notificações</h1>
-            <p className="text-muted-foreground">
-              Lembretes e sugestões para o Livro do Bebê
-            </p>
+        {/* Sticky Header Container */}
+        <div className="sticky top-0 z-30 bg-background border-b border-border/50">
+          {/* Header Sticky com animação de altura */}
+          <div className={`px-4 pt-6 pb-4 ${showSubtitle ? "" : "pb-2"}`}>
+            <h1 className="text-2xl font-bold text-foreground">Sussurros</h1>
+            {showSubtitle && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Lembretes e sugestões
+              </p>
+            )}
           </div>
-          <div className="flex flex-wrap gap-2">
+        </div>
+
+        {/* Sticky Filter Bar */}
+        <div
+          className="sticky z-20 bg-background border-b border-border/50 px-4 py-3"
+          style={{ top: "73px" }}
+        >
+          {/* Filter Chips */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="flex flex-wrap gap-2 mb-3"
+          >
             {filterOptions.map((option) => {
               const isActive = activeFilter === option.id;
               return (
-                <button
+                <motion.button
                   key={option.id}
                   onClick={() => setActiveFilter(option.id)}
+                  whileTap={{ scale: 0.95 }}
                   className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
                     isActive
                       ? "shadow-soft"
@@ -516,11 +549,18 @@ export function NotificationsScreen() {
                   style={isActive ? getHighlightStyle(option.tone) : undefined}
                 >
                   {option.label}
-                </button>
+                </motion.button>
               );
             })}
-          </div>
-          <div className="flex flex-wrap gap-2">
+          </motion.div>
+
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="flex flex-wrap gap-2"
+          >
             <Button
               variant={mutedThemes ? "default" : "outline"}
               size="sm"
@@ -548,11 +588,11 @@ export function NotificationsScreen() {
             >
               Limpar todas
             </Button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Content */}
-        <div className="px-4">
+        <div className="px-4 py-4">
           {filteredNotifications.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
@@ -620,36 +660,36 @@ export function NotificationsScreen() {
               )}
             </>
           )}
-        </div>
 
-        {/* Quick Actions */}
-        {notifications.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="px-4 mt-6"
-          >
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-primary/10 rounded-xl">
-                  <Bell className="w-5 h-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-foreground mb-1">
-                    Configure suas notificações
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-3">
-                    Personalize lembretes e alertas no perfil
-                  </p>
-                  <Button variant="outline" size="sm" className="rounded-xl">
-                    Ir para Configurações
-                  </Button>
+          {/* Quick Actions */}
+          {notifications.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-6"
+            >
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-primary/10 rounded-xl">
+                    <Bell className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-foreground mb-1">
+                      Configure suas notificações
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-3">
+                      Personalize lembretes e alertas no perfil
+                    </p>
+                    <Button variant="outline" size="sm" className="rounded-xl">
+                      Ir para Configurações
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </div>
       </div>
 
       <GrowthForm
@@ -674,4 +714,3 @@ export function NotificationsScreen() {
     </>
   );
 }
-
