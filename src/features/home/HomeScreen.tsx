@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect, memo, useCallback, useRef } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { useBabyData } from "@/context/baby-data-context";
-import { useNavigationActions } from "@/context/navigation-context";
 import type { Chapter, Moment, PlaceholderTemplate } from "@/types";
 import {
   BookOpen,
@@ -18,13 +17,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BabySelectorModal } from "../baby/BabySelectorModal";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { RecentMoments } from "@/features/home/RecentMoments";
 import { ContextMenu } from "@/features/moments/components/ContextMenu";
-import {
-  getMomentTypeIcon,
-  getTextPreview,
-} from "@/features/moments/utils/timelineUtils";
+
 import { toast } from "sonner";
 
 interface StatWidgetProps {
@@ -78,103 +73,6 @@ function StatWidget({
   );
 }
 
-interface RecentMomentCardProps {
-  moment: Moment;
-  chapter?: Chapter;
-  icon: string;
-  caption: string;
-  dateLabel: string;
-  delay: number;
-  media: string[];
-  onOpen: () => void;
-  onLongPressStart: (
-    event: ReactPointerEvent<HTMLButtonElement>,
-    moment: Moment
-  ) => void;
-  onLongPressEnd: (event?: ReactPointerEvent<HTMLButtonElement>) => void;
-}
-
-function RecentMomentCard({
-  moment,
-  chapter,
-  icon,
-  caption,
-  dateLabel,
-  delay,
-  media,
-  onOpen,
-  onLongPressStart,
-  onLongPressEnd,
-}: RecentMomentCardProps) {
-  const mediaCount = media.length;
-  const cover = media[0];
-
-  return (
-    <motion.button
-      type="button"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{
-        delay: delay * 0.06,
-        duration: 0.35,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      whileHover={{
-        y: -6,
-        boxShadow: "0 18px 32px rgba(15, 23, 42, 0.18)",
-      }}
-      whileTap={{ scale: 0.97 }}
-      onClick={onOpen}
-      onPointerDown={(event) => onLongPressStart(event, moment)}
-      onPointerUp={(event) => onLongPressEnd(event)}
-      onPointerLeave={(event) => onLongPressEnd(event)}
-      onPointerCancel={(event) => onLongPressEnd(event)}
-      className="group relative break-inside-avoid rounded-3xl overflow-hidden border border-border/70 bg-card/95 text-left transition-all duration-300 backdrop-blur-sm"
-      aria-label={`Abrir momento ${moment.title}`}
-    >
-      <div className="relative aspect-[4/5] overflow-hidden">
-        {cover ? (
-          <img
-            src={cover}
-            alt={moment.title}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5 text-4xl">
-            {icon}
-          </div>
-        )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-95" />
-        <div className="absolute top-3 left-3 flex items-center gap-2">
-          <span className="text-lg drop-shadow">{icon}</span>
-          <Badge
-            variant="secondary"
-            className="bg-black/40 text-white hover:bg-black/50 backdrop-blur-sm"
-          >
-            {chapter?.name ?? "Capítulo"}
-          </Badge>
-        </div>
-        <div className="absolute bottom-3 left-3 flex items-center gap-2 text-xs font-medium text-white/90 drop-shadow">
-          <span>{dateLabel}</span>
-          {mediaCount > 1 && (
-            <span className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[11px] uppercase tracking-wide">
-              +{mediaCount - 1}
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-3">
-        <p className="text-sm leading-tight text-foreground line-clamp-1">
-          {caption}
-        </p>
-        <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1" />
-      </div>
-    </motion.button>
-  );
-}
-
 interface HomeScreenProps {
   onNavigateToGrowth?: () => void;
   onNavigateToVaccines?: () => void;
@@ -202,13 +100,12 @@ export const HomeScreen = memo(function HomeScreen({
 }: HomeScreenProps) {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const [heroCompact, setHeroCompact] = useState(false);
-  const navigation = useNavigationActions();
   const [contextMenu, setContextMenu] = useState<{
     moment: Moment;
     x: number;
     y: number;
   } | null>(null);
-  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimeoutRef = useRef<number | null>(null);
   const suppressClickRef = useRef(false);
   const {
     currentBaby,
@@ -299,92 +196,52 @@ export const HomeScreen = memo(function HomeScreen({
   }, [contextMenu]);
 
   const handleNavigateToGrowth = useCallback(() => {
-    if (onNavigateToGrowth) {
-      onNavigateToGrowth();
-    } else {
-      navigation.goToGrowth?.();
-    }
-  }, [onNavigateToGrowth, navigation.goToGrowth]);
+    onNavigateToGrowth?.();
+  }, [onNavigateToGrowth]);
 
   const handleNavigateToSleepHumor = useCallback(() => {
-    if (onNavigateToSleepHumor) {
-      onNavigateToSleepHumor();
-    } else {
-      navigation.goToSleepHumor?.();
-    }
-  }, [onNavigateToSleepHumor, navigation.goToSleepHumor]);
+    onNavigateToSleepHumor?.();
+  }, [onNavigateToSleepHumor]);
 
   const handleNavigateToConsultations = useCallback(() => {
-    if (onNavigateToConsultations) {
-      onNavigateToConsultations();
-    } else {
-      navigation.goToConsultations?.();
-    }
-  }, [onNavigateToConsultations, navigation.goToConsultations]);
+    onNavigateToConsultations?.();
+  }, [onNavigateToConsultations]);
 
   const handleNavigateToVaccines = useCallback(() => {
-    if (onNavigateToVaccines) {
-      onNavigateToVaccines();
-    } else {
-      navigation.goToVaccines?.();
-    }
-  }, [onNavigateToVaccines, navigation.goToVaccines]);
+    onNavigateToVaccines?.();
+  }, [onNavigateToVaccines]);
 
   const handleNavigateToFamily = useCallback(() => {
-    if (onNavigateToFamily) {
-      onNavigateToFamily();
-    } else {
-      navigation.goToFamilyTree?.();
-    }
-  }, [onNavigateToFamily, navigation.goToFamilyTree]);
+    onNavigateToFamily?.();
+  }, [onNavigateToFamily]);
 
   const handleNavigateToChapters = useCallback(() => {
-    if (onNavigateToChapters) {
-      onNavigateToChapters();
-    } else {
-      navigation.goToChapters?.();
-    }
-  }, [onNavigateToChapters, navigation.goToChapters]);
+    onNavigateToChapters?.();
+  }, [onNavigateToChapters]);
 
   const handleNavigateToMoments = useCallback(() => {
-    if (onNavigateToMoments) {
-      onNavigateToMoments();
-    } else {
-      navigation.goToMomentsGallery?.();
-    }
-  }, [onNavigateToMoments, navigation.goToMomentsGallery]);
+    onNavigateToMoments?.();
+  }, [onNavigateToMoments]);
 
   const handleOpenTemplate = useCallback(
     (chapterId: string, templateId: string) => {
-      if (onOpenTemplate) {
-        onOpenTemplate(chapterId, templateId);
-      } else {
-        navigation.openTemplate?.(chapterId, templateId);
-      }
+      onOpenTemplate?.(chapterId, templateId);
     },
-    [onOpenTemplate, navigation.openTemplate]
+    [onOpenTemplate]
   );
 
   const handleOpenChapter = useCallback(
     (chapter: Chapter) => {
-      if (onOpenChapter) {
-        onOpenChapter(chapter);
-      } else {
-        navigation.openChapter?.(chapter);
-      }
+      onOpenChapter?.(chapter);
     },
-    [onOpenChapter, navigation.openChapter]
+    [onOpenChapter]
   );
 
   const handleOpenMoment = useCallback(
     (moment: Moment) => {
-      if (onOpenMoment) {
-        onOpenMoment(moment);
-      } else {
-        navigation.openMoment?.(moment);
-      }
+      onOpenMoment?.(moment);
     },
-    [onOpenMoment, navigation.openMoment]
+    [onOpenMoment]
   );
 
   const handleMomentPressStart = useCallback(
@@ -433,10 +290,10 @@ export const HomeScreen = memo(function HomeScreen({
 
   const handleEditMoment = useCallback(
     (moment: Moment) => {
-      navigation.openMoment?.(moment);
+      onOpenMoment?.(moment);
       toast.info("Modo de edição chegará em breve.");
     },
-    [navigation]
+    [onOpenMoment]
   );
 
   const handleShareMoment = useCallback((moment: Moment) => {
@@ -459,7 +316,7 @@ export const HomeScreen = memo(function HomeScreen({
     toast.warning(`Exclusão de "${moment.title}" chegará em breve.`);
   }, []);
 
-  // Calcula participa├º├úo de cada membro da fam├¡lia
+  // Calcula participação de cada membro da família
   const familyParticipation = useMemo(() => {
     if (familyMembers.length === 0) return [];
 
@@ -468,7 +325,7 @@ export const HomeScreen = memo(function HomeScreen({
       memberParticipation[member.id] = 0;
     });
 
-    // Contar men├º├Áes em momentos
+    // Contar menções em momentos
     moments.forEach((moment) => {
       if (moment.people) {
         moment.people.forEach((personId) => {
@@ -517,17 +374,17 @@ export const HomeScreen = memo(function HomeScreen({
 
   const latestMoments = useMemo(() => moments.slice(0, 6), [moments]);
 
-  // Gradiente din├ómico baseado no hor├írio
+  // Gradiente dinâmico baseado no horário
   const timeGradient = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 12) {
-      // Manh├ú: p├¬ssego suave
+      // Manhã: pêssego suave
       return "linear-gradient(135deg, #FFE5C2 0%, #FFF5E6 100%)";
     } else if (hour >= 12 && hour < 18) {
-      // Tarde: azul-c├®u
+      // Tarde: azul-céu
       return "linear-gradient(135deg, #CDE7FF 0%, #EAF7FF 100%)";
     } else {
-      // Noite: lil├ís/├¡ndigo
+      // Noite: lilás/índigo
       return "linear-gradient(135deg, #D6CCFF 0%, #AFA2FF 100%)";
     }
   }, []);
@@ -547,10 +404,10 @@ export const HomeScreen = memo(function HomeScreen({
     }).length;
 
     const phrases = [
-      `${currentBaby?.name} sorriu ${smiles} vezes hoje ­ƒî© ÔÇö e ainda nem chegou o p├┤r do sol.`,
-      `Semana m├ígica com ${recentMoments} novos momentos Ô£¿`,
-      `Crescendo forte: +${weightChange}kg este m├¬s ­ƒôê`,
-      `Fam├¡lia crescendo junto: ${familyMembers.length} cora├º├Áes conectados ­ƒÆò`,
+      `${currentBaby?.name} sorriu ${smiles} vezes hoje 😊 — e ainda nem chegou o pôr do sol.`,
+      `Semana mágica com ${recentMoments} novos momentos ✨`,
+      `Crescendo forte: +${weightChange}kg este mês 💪`,
+      `Família crescendo junto: ${familyMembers.length} corações conectados 💖`,
     ];
     return phrases[Math.floor(Math.random() * phrases.length)];
   }, [currentBaby, sleepEntries, moments, weightChange, familyMembers]);
@@ -568,7 +425,7 @@ export const HomeScreen = memo(function HomeScreen({
       const currentScrollY = window.scrollY;
       const scrollDelta = currentScrollY - lastScrollY;
 
-      // Calcular velocidade com suaviza├º├úo exponencial (EMA - Exponential Moving Average)
+      // Calcular velocidade com suavização exponencial (EMA - Exponential Moving Average)
       const smoothingFactor = 0.3;
       scrollVelocity =
         scrollVelocity * (1 - smoothingFactor) +
@@ -580,33 +437,33 @@ export const HomeScreen = memo(function HomeScreen({
       if (scrollTimeout) clearTimeout(scrollTimeout);
 
       // Snap points otimizados para touch
-      const CLOSE_THRESHOLD = 30; // Muito mais sens├¡vel para fechar
-      const REOPEN_THRESHOLD = 0; // S├│ abre quando scroll ├® zero
-      const VELOCITY_THRESHOLD = 0.5; // Velocidade m├¡nima para snap inercial
+      const CLOSE_THRESHOLD = 30; // Muito mais sensível para fechar
+      const REOPEN_THRESHOLD = 0; // Só abre quando scroll é zero
+      const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para snap inercial
 
       scrollTimeout = setTimeout(() => {
         let shouldCompact = heroCompact;
 
-        // L├│gica de snap com histerese - Otimizada para touch
+        // Lógica de snap com histerese - Otimizada para touch
         if (currentScrollY === 0) {
-          // Se est├í no topo, sempre expande
+          // Se está no topo, sempre expande
           shouldCompact = false;
         } else if (heroCompact) {
-          // Se j├í est├í compacto, s├│ expande quando volta ao topo (scroll = 0)
+          // Se já está compacto, só expande quando volta ao topo (scroll = 0)
           shouldCompact = true;
         } else {
-          // Se est├í expandido, compacta com threshold muito sens├¡vel
+          // Se está expandido, compacta com threshold muito sensível
           if (Math.abs(scrollVelocity) > VELOCITY_THRESHOLD) {
             // Com velocidade, usar snap inercial mais agressivo
             if (scrollVelocity > 0) {
-              // Scroll para baixo - compactar r├ípido
+              // Scroll para baixo - compactar rápido
               shouldCompact = currentScrollY > CLOSE_THRESHOLD;
             } else {
-              // Scroll para cima - expandir (mas s├│ se for zero)
+              // Scroll para cima - expandir (mas só se for zero)
               shouldCompact = currentScrollY > CLOSE_THRESHOLD;
             }
           } else {
-            // Sem velocidade, threshold padr├úo bem sens├¡vel
+            // Sem velocidade, threshold padrão bem sensível
             shouldCompact = currentScrollY > CLOSE_THRESHOLD;
           }
         }
@@ -669,7 +526,7 @@ export const HomeScreen = memo(function HomeScreen({
         ...item,
         label:
           item.daysUntil === 0
-            ? "Dispon├¡vel agora"
+            ? "Disponível agora"
             : `em ${item.daysUntil} ${item.daysUntil === 1 ? "dia" : "dias"}`,
       }));
   }, [babyAgeInDays, moments]);
@@ -715,7 +572,7 @@ export const HomeScreen = memo(function HomeScreen({
             onClick={() => setShowBabySelector(true)}
             className="flex items-stretch gap-4 w-full justify-start"
           >
-            {/* Avatar wrapper com espa├ºo fixo */}
+            {/* Avatar wrapper com espaço fixo */}
             <div className="flex-shrink-0 flex items-center">
               <motion.div
                 animate={{
@@ -735,7 +592,7 @@ export const HomeScreen = memo(function HomeScreen({
                 >
                   <AvatarImage
                     src={currentBaby?.avatar}
-                    alt={currentBaby?.name ?? "Beb├¬"}
+                    alt={currentBaby?.name ?? "Bebê"}
                   />
                   <AvatarFallback className="bg-white/20 text-white text-lg">
                     {currentBaby ? getInitials(currentBaby.name) : "?"}
@@ -772,7 +629,7 @@ export const HomeScreen = memo(function HomeScreen({
                   }}
                   className="font-bold text-white mb-1 leading-tight"
                 >
-                  {currentBaby?.name ?? "Beb├¬ atual"}
+                  {currentBaby?.name ?? "Bebê atual"}
                 </motion.h1>
 
                 <motion.div
@@ -810,7 +667,7 @@ export const HomeScreen = memo(function HomeScreen({
                 }}
                 className="text-base font-bold text-white flex items-center"
               >
-                {currentBaby?.name ?? "Beb├¬ atual"}
+                {currentBaby?.name ?? "Bebê atual"}
               </motion.h1>
             )}
           </motion.button>
@@ -844,7 +701,7 @@ export const HomeScreen = memo(function HomeScreen({
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-foreground">
-              ­ƒôî Pr├│ximos Marcos
+              🎯 Próximos Marcos
             </h3>
             <Button
               variant="ghost"
@@ -901,7 +758,7 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            ­ƒî▒ Crescendo Juntos
+            📊 Crescendo Juntos
           </h3>
         </div>
 
@@ -912,10 +769,10 @@ export const HomeScreen = memo(function HomeScreen({
             icon={<TrendingUp className="w-5 h-5 text-primary" />}
             value={
               latestGrowth
-                ? `${latestGrowth.weight} kg ┬À ${latestGrowth.height} cm`
-                : "Sem medi├º├Áes"
+                ? `${latestGrowth.weight} kg / ${latestGrowth.height} cm`
+                : "Sem medições"
             }
-            subtitle={`+${weightChange} kg este m├¬s`}
+            subtitle={`+${weightChange} kg este mês`}
             color="#A346E5"
             onClick={handleNavigateToGrowth}
             showChart
@@ -929,8 +786,8 @@ export const HomeScreen = memo(function HomeScreen({
           <StatWidget
             title="Sono & Humor"
             icon={<Moon className="w-5 h-5 text-primary" />}
-            value={`${averageSleep}h m├®dia`}
-            subtitle="M├®dia semanal"
+            value={`${averageSleep}h média`}
+            subtitle="Média semanal"
             color="#7946E5"
             onClick={handleNavigateToSleepHumor}
             showChart={true}
@@ -945,17 +802,17 @@ export const HomeScreen = memo(function HomeScreen({
             emojiLine={sleepEntries.slice(-7).map((entry) => {
               switch (entry.mood) {
                 case "happy":
-                  return "­ƒÿä";
+                  return "😄";
                 case "calm":
-                  return "­ƒÿî";
+                  return "😌";
                 case "fussy":
-                  return "­ƒÑ▒";
+                  return "😟";
                 case "crying":
-                  return "­ƒÿó";
+                  return "😭";
                 case "sleepy":
-                  return "­ƒÿ┤";
+                  return "😴";
                 default:
-                  return "­ƒÿÉ";
+                  return "😐";
               }
             })}
           />
@@ -963,7 +820,7 @@ export const HomeScreen = memo(function HomeScreen({
             title="Consultas"
             icon={<Calendar className="w-5 h-5 text-primary" />}
             value="2 pendentes"
-            subtitle="Pr├│xima em 5 dias"
+            subtitle="Próxima em 5 dias"
             color="#4F46E5"
             onClick={handleNavigateToConsultations}
           />
@@ -983,7 +840,7 @@ export const HomeScreen = memo(function HomeScreen({
           />
         </div>
 
-        {/* Card ├ürvore Familiar */}
+        {/* Card Árvore Familiar */}
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={handleNavigateToFamily}
@@ -998,11 +855,11 @@ export const HomeScreen = memo(function HomeScreen({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-foreground font-semibold">
-                    Sua ├ürvore Familiar
+                    Sua Árvore Familiar
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Veja quem est├í conectado e o n├¡vel de participa├º├úo na
-                    hist├│ria de {currentBaby?.name}.
+                    Veja quem está conectado e o nível de participação na
+                    história de {currentBaby?.name}.
                   </p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
@@ -1032,17 +889,17 @@ export const HomeScreen = memo(function HomeScreen({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-foreground font-semibold mb-1">
-                    Comece a ├ürvore Familiar
+                    Comece a Árvore Familiar
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    Convide pais, av├│s e familiares para acompanhar a jornada
-                    de {currentBaby?.name} ­ƒÆÜ
+                    Convide pais, avós e familiares para acompanhar a jornada de{" "}
+                    {currentBaby?.name} 👨‍👩‍👧‍👦
                   </p>
                 </div>
               </div>
               <div className="flex items-center justify-end pt-2">
                 <span className="text-pink-600 dark:text-pink-400 text-sm font-medium">
-                  Adicionar membros ÔåÆ
+                  Adicionar membros →
                 </span>
               </div>
             </div>
@@ -1050,7 +907,7 @@ export const HomeScreen = memo(function HomeScreen({
         </motion.button>
       </motion.div>
 
-      {/* Cap├¡tulos */}
+      {/* Capítulos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1059,12 +916,12 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            ­ƒôû Cap├¡tulos
+            📚 Capítulos
           </h3>
           <Button variant="ghost" size="sm" onClick={handleNavigateToChapters}>
             Ver todos
           </Button>
-        </div>{" "}
+        </div>
         <div className="space-y-3">
           {chapterSummaries.map((summary, index) => (
             <motion.button
@@ -1099,7 +956,7 @@ export const HomeScreen = memo(function HomeScreen({
         </div>
       </motion.div>
 
-      {/* ├Ültimos Momentos */}
+      {/* Últimos Momentos */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1108,101 +965,21 @@ export const HomeScreen = memo(function HomeScreen({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">
-            ­ƒÆØ ├Ültimos Momentos
+            💝 Últimos Momentos
           </h3>
-          {latestMoments.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={handleNavigateToMoments}>
-              Ver todos
-            </Button>
-          )}
+          <Button variant="ghost" size="sm" onClick={handleNavigateToMoments}>
+            Ver todos
+          </Button>
         </div>
-
-        {latestMoments.length > 0 ? (
-          <>
-            <div className="mb-4 space-y-1">
-              <p className="text-sm text-muted-foreground">
-                🌸 Últimos dias repletos de sorrisos.
-              </p>
-              <p className="text-xs text-muted-foreground/80">
-                Toque para reviver.
-              </p>
-            </div>
-            <div className="columns-2 gap-4 space-y-4">
-              {latestMoments.map((moment, index) => {
-                const chapter = chaptersById.get(moment.chapterId);
-                const templateEmoji =
-                  (moment.templateId &&
-                    templateIconMap.get(moment.templateId)) ||
-                  getMomentTypeIcon(moment.templateId, moment.chapterId);
-                const dateLabel = new Date(moment.date).toLocaleDateString(
-                  "pt-BR",
-                  {
-                    day: "2-digit",
-                    month: "2-digit",
-                  }
-                );
-                const captionSource =
-                  moment.noteShort?.trim() ||
-                  moment.noteLong?.trim() ||
-                  moment.title;
-                const caption = getTextPreview(captionSource, 70);
-
-                return (
-                  <RecentMomentCard
-                    key={moment.id}
-                    moment={moment}
-                    chapter={chapter}
-                    icon={templateEmoji}
-                    caption={caption}
-                    dateLabel={dateLabel}
-                    delay={index}
-                    media={moment.media}
-                    onOpen={() => handleOpenMoment(moment)}
-                    onLongPressStart={handleMomentPressStart}
-                    onLongPressEnd={handleMomentPressEnd}
-                  />
-                );
-              })}
-            </div>
-            <div className="mt-6">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full rounded-2xl bg-gradient-to-r from-primary/15 via-primary/5 to-transparent text-primary shadow-sm hover:from-primary/25 hover:via-primary/10"
-                onClick={handleNavigateToMoments}
-              >
-                Ver todos os Momentos
-              </Button>
-            </div>
-          </>
-        ) : (
-          <motion.button
-            onClick={handleNavigateToMoments}
-            whileTap={{ scale: 0.97 }}
-            className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-2xl p-8 shadow-sm border border-blue-200/50 dark:border-blue-800/50 text-left relative overflow-hidden"
-          >
-            <div className="space-y-4">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/30 mb-4">
-                  <span className="text-3xl">­ƒô©</span>
-                </div>
-                <h3 className="text-foreground font-semibold text-lg mb-2">
-                  Crie o primeiro momento
-                </h3>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                  Capture as primeiras fotos, v├¡deos e hist├│rias de{" "}
-                  {currentBaby?.name}. Cada momento ├® ├║nico e merece ser
-                  recordado ­ƒÆÖ
-                </p>
-              </div>
-              <div className="flex items-center justify-center pt-2">
-                <span className="text-blue-600 dark:text-blue-400 text-sm font-medium">
-                  Come├ºar agora ÔåÆ
-                </span>
-              </div>
-            </div>
-          </motion.button>
-        )}
+        <RecentMoments
+          moments={latestMoments}
+          chaptersById={chaptersById}
+          templateIconMap={templateIconMap}
+          onOpenMoment={handleOpenMoment}
+          onLongPressStart={handleMomentPressStart}
+          onLongPressEnd={handleMomentPressEnd}
+          onNavigateToMoments={handleNavigateToMoments}
+        />
       </motion.div>
 
       <BabySelectorModal

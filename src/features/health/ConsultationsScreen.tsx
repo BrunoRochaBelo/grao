@@ -10,6 +10,7 @@ import {
 } from "@/lib/mockData";
 import type { Chapter, PlaceholderTemplate } from "@/types";
 import { Progress } from "@/components/ui/progress";
+import { getHighlightStyle, HighlightTone } from "@/lib/highlights";
 import { MomentTemplateCard } from "../chapters/MomentTemplateCard";
 
 interface ConsultationsScreenProps {
@@ -23,7 +24,8 @@ export function ConsultationsScreen({
   onBack,
   onOpenTemplate,
 }: ConsultationsScreenProps) {
-  const chapter = useMemo(() => chapters.find((item) => item.id === "3"), []); // Saúde & Crescimento
+  // Carrega dados do capítulo "Saúde & Crescimento"
+  const chapter = useMemo(() => chapters.find((item) => item.id === "3"), []);
 
   const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
   const moments = getMoments();
@@ -48,122 +50,121 @@ export function ConsultationsScreen({
           moment,
         };
       });
-  }, [chapter, babyAgeInDays, moments]);
-
-  const [filter, setFilter] = useState<ConsultationFilter>("all");
-
-  const filteredTemplates = useMemo(() => {
-    return consultationTemplates.filter((template) => {
-      if (filter === "all") return true;
-      if (filter === "completed") return template.isCompleted;
-      if (filter === "pending") return !template.isCompleted;
-      return true;
-    });
-  }, [consultationTemplates, filter]);
-
-  const completedCount = consultationTemplates.filter(
-    (t) => t.isCompleted
-  ).length;
-  const totalCount = consultationTemplates.length;
+  }, [babyAgeInDays, chapter, moments]);
 
   if (!chapter) {
     return null;
   }
 
+  const completedCount = consultationTemplates.filter(
+    (template) => template.isCompleted
+  ).length;
+  const totalCount = consultationTemplates.length;
+  const pendingCount = totalCount - completedCount;
+  const percentage =
+    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const [filter, setFilter] = useState<ConsultationFilter>("all");
+
+  const filteredTemplates = consultationTemplates.filter((template) => {
+    if (filter === "completed") {
+      return template.isCompleted;
+    }
+    if (filter === "pending") {
+      return !template.isCompleted;
+    }
+    return true;
+  });
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="px-4 py-4 flex items-center gap-4">
-          <button
-            onClick={onBack}
-            className="p-2 -m-2 hover:bg-muted rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold">Consultas Médicas</h1>
-            <p className="text-sm text-muted-foreground">
-              {completedCount} de {totalCount} realizadas
-            </p>
+    <div className="pb-24 max-w-2xl mx-auto">
+      <div className="sticky top-0 bg-background z-10 px-4 pt-6 pb-4 border-b border-border">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4 min-h-[44px]"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Voltar</span>
+        </button>
+
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-foreground mb-1">Consultas Médicas</h1>
+            <p className="text-muted-foreground">Acompanhamento de saúde</p>
           </div>
         </div>
 
-        <div className="px-4 pb-4">
-          <Progress
-            value={totalCount > 0 ? (completedCount / totalCount) * 100 : 0}
-            className="h-2"
-          />
-        </div>
-
-        <div className="px-4 pb-4 flex gap-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              filter === "all"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            Todas ({totalCount})
-          </button>
-          <button
-            onClick={() => setFilter("pending")}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              filter === "pending"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            Pendentes ({totalCount - completedCount})
-          </button>
-          <button
-            onClick={() => setFilter("completed")}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              filter === "completed"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            Realizadas ({completedCount})
-          </button>
+        <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-foreground">
+              {completedCount} de {totalCount} consultas realizadas
+            </span>
+            <span className="text-primary">{percentage}%</span>
+          </div>
+          <Progress value={percentage} className="h-2 mb-2" />
+          <p className="text-muted-foreground text-sm">
+            {pendingCount > 0
+              ? `${pendingCount} ${
+                  pendingCount === 1 ? "pendente" : "pendentes"
+                }`
+              : "Todas em dia!"}
+          </p>
         </div>
       </div>
 
-      <div className="p-4">
-        <div className="space-y-4">
-          {filteredTemplates.map((template, index) => (
-            <motion.div
-              key={template.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
+      <div className="px-4 pt-4">
+        <div className="flex gap-2 mb-4">
+          {(
+            [
+              { id: "all", label: "Todas", tone: "lavender" },
+              { id: "completed", label: "Realizadas", tone: "mint" },
+              { id: "pending", label: "Pendentes", tone: "babyBlue" },
+            ] satisfies {
+              id: ConsultationFilter;
+              label: string;
+              tone: HighlightTone;
+            }[]
+          ).map((option) => {
+            const isActive = filter === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => setFilter(option.id)}
+                className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
+                  isActive
+                    ? "shadow-soft"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
+                }`}
+                style={isActive ? getHighlightStyle(option.tone) : undefined}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {filteredTemplates.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              {filter === "completed"
+                ? "Nenhuma consulta registrada ainda."
+                : "Nenhuma consulta pendente!"}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {filteredTemplates.map((template) => (
               <MomentTemplateCard
-                template={{
-                  ...template,
-                  isCompleted: template.isCompleted,
-                }}
+                key={template.id}
+                template={template}
                 moment={template.moment}
                 chapter={chapter}
                 onOpenTemplate={() => onOpenTemplate(template, chapter)}
               />
-            </motion.div>
-          ))}
-        </div>
-
-        {filteredTemplates.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              {filter === "all"
-                ? "Nenhuma consulta encontrada"
-                : filter === "pending"
-                ? "Nenhuma consulta pendente"
-                : "Nenhuma consulta realizada"}
-            </p>
+            ))}
           </div>
         )}
       </div>
     </div>
   );
 }
-

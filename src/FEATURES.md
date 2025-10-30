@@ -53,6 +53,51 @@
 - ✅ **Salvar** - Publicar momento imediatamente
 - ✅ **Descartar** - Cancelar com confirmação se houver alterações
 
+## ✨ Momento em Branco (NOVO)
+
+### Descrição
+
+- ✅ Permite criar momentos personalizados fora dos templates predefinidos
+- ✅ Ideal para situações especiais, eventos únicos ou notas livres
+- ✅ Mesmo formulário que os templates, mas sem restrições de tipo/nome
+- ✅ Atualiza o progresso do capítulo selecionado
+
+### Acesso
+
+- ✅ Botão **"Criar Momento em Branco"** (✨) na tela de seleção de capítulo
+- ✅ Localizado após o card de informações do capítulo
+- ✅ Antes da lista de templates filtrável
+
+### Campos Disponíveis
+
+- ✅ **Título** (obrigatório) - Dê um nome customizado ao momento
+- ✅ **Data e Hora** - Qualquer data passada (validação de futuro)
+- ✅ **Idade Calculada** - Recalculada automaticamente para a data
+- ✅ **Local** - Onde o momento aconteceu
+- ✅ **Pessoas** - Quem estava presente
+- ✅ **Resumo** - Frase marcante (até 160 caracteres)
+- ✅ **Depoimento** - Descrição completa (até 2000 caracteres)
+- ✅ **Etiquetas** - Até 10 tags customizadas
+- ✅ **Privacidade** - Privado | Pessoas | Link
+- ✅ **Mídia** - Fotos e vídeos (placeholder)
+
+### Ações
+
+- ✅ **Publicar** - Salvar momento como publicado imediatamente
+- ✅ **Salvar Rascunho** - Salvar como draft para completar depois
+- ✅ **Cancelar** - Descartar com confirmação
+
+### Fluxo de Integração
+
+1. Usuário seleciona um capítulo na modal "Adicionar Momento"
+2. Vê lista de templates + botão "Criar Momento em Branco"
+3. Clica no botão e abre `BlankMomentForm`
+4. Preenche campos customizados
+5. Publica ou salva como rascunho
+6. Momento criado sem templateId
+7. Capítulo mostra progresso atualizado
+8. Momento aparece na galeria timeline
+
 ## 🔄 Funcionalidades Retroativas
 
 ### Criação de Momentos Retroativos
@@ -223,6 +268,7 @@
 - ✓ Navegação profunda funcional
 - ✓ Sistema de placeholders por idade (0-12m)
 - ✓ Formulários completos com validação
+- ✓ **Momento em Branco para criação de eventos customizados** (NOVO)
 - ✓ Salvamento local persistente
 - ✓ Recálculo automático de progresso
 - ✓ Interface responsiva e acessível

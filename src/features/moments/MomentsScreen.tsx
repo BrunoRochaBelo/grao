@@ -325,7 +325,7 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full shadow-xl"
+            className="bg-card border border-border rounded-2xl px-4 py-6 max-w-2xl w-full shadow-xl"
           >
             <h3 className="font-semibold text-foreground mb-2">
               Excluir momento?
@@ -371,5 +371,3 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
     </div>
   );
 }
-
-

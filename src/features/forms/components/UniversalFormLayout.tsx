@@ -301,7 +301,7 @@ export function UniversalFormLayout({
               exit={{ scale: 0.9, opacity: 0 }}
               className="fixed inset-0 flex items-center justify-center z-50"
             >
-              <div className="bg-background rounded-2xl p-6 max-w-sm mx-4 shadow-xl">
+              <div className="bg-background rounded-2xl px-4 py-6 max-w-2xl mx-4 shadow-xl">
                 <h2 className="font-bold text-lg mb-2">
                   Descartar formulário?
                 </h2>
@@ -338,4 +338,3 @@ export function UniversalFormLayout({
     </motion.div>
   );
 }
-

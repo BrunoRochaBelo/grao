@@ -204,7 +204,7 @@ export function FamilyTreeScreen({
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              className="bg-card rounded-t-3xl p-6 w-full max-h-[80vh] overflow-y-auto"
+              className="bg-card rounded-t-3xl px-4 py-6 w-full max-w-2xl mx-auto max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -348,5 +348,3 @@ export function FamilyTreeScreen({
     </div>
   );
 }
-
-

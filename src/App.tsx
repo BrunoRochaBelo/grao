@@ -96,6 +96,11 @@ const MomentsScreen = lazy(() =>
     default: m.MomentsScreen,
   }))
 );
+const BlankMomentForm = lazy(() =>
+  import("./features/moments/BlankMomentForm").then((m) => ({
+    default: m.BlankMomentForm,
+  }))
+);
 const GrowthScreen = lazy(() =>
   import("./features/health/GrowthScreen").then((m) => ({
     default: m.GrowthScreen,
@@ -203,6 +208,7 @@ type ViewState =
   | { type: "main"; screen: Screen }
   | { type: "chapter-detail"; chapter: Chapter }
   | { type: "moment-form"; template: PlaceholderTemplate; chapter: Chapter }
+  | { type: "blank-moment"; chapter: Chapter }
   | { type: "moment-detail"; moment: Moment }
   | { type: "growth" }
   | { type: "vaccines" }
@@ -318,8 +324,17 @@ function AppContent() {
     );
   };
 
-  const handleSelectChapter = (chapter: Chapter) => {
-    navigateTo({ type: "chapter-detail", chapter });
+  const handleSelectChapter = (
+    chapter: Chapter,
+    template?: PlaceholderTemplate
+  ) => {
+    if (template) {
+      // Se um template foi selecionado, abre o formulário diretamente
+      handleOpenTemplate(template, chapter);
+    } else {
+      // Caso contrário, vai para a view de detalhes do capítulo
+      navigateTo({ type: "chapter-detail", chapter });
+    }
   };
 
   const handleOpenTemplate = (
@@ -377,6 +392,13 @@ function AppContent() {
     // Handle FAB actions: 'note', 'moment', 'letter'
     if (action === "moment") {
       setShowAddMoment(true);
+    } else if (action === "note") {
+      // Abre o Momento em Branco com o primeiro capítulo
+      if (chapters.length > 0) {
+        navigateTo({ type: "blank-moment", chapter: chapters[0] });
+      } else {
+        toast.error("Nenhum capítulo disponível");
+      }
     } else {
       toast.info(`${action} em desenvolvimento`);
     }
@@ -640,77 +662,88 @@ function AppContent() {
             key={
               currentView.type === "main"
                 ? `main-${currentView.screen}`
-              : currentView.type
-          }
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
-          className="min-h-screen"
-        >
-          <ErrorBoundary>{renderCurrentView()}</ErrorBoundary>
-        </motion.div>
-      </AnimatePresence>
-
-      {currentView.type === "main" && (
-        <AnimatePresence mode="wait">
-          {isNavVisible && (
-            <motion.div
-              initial={{ y: "100%", opacity: 0, scale: 0.85 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: "100%", opacity: 0, scale: 0.85 }}
-              transition={{
-                y: { type: "spring", damping: 40, stiffness: 300, mass: 0.5 },
-                scale: {
-                  type: "spring",
-                  damping: 40,
-                  stiffness: 300,
-                  mass: 0.5,
-                },
-                opacity: { type: "tween", duration: 0.15 },
-              }}
-              style={{
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 30,
-                pointerEvents: "auto",
-                transformOrigin: "bottom center",
-              }}
-            >
-              <BottomNav
-                activeTab={getCurrentTab()}
-                onTabChange={handleTabChange}
-                onNewAction={handleNewAction}
-              />
-            </motion.div>
-          )}
+                : currentView.type
+            }
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="min-h-screen"
+          >
+            <ErrorBoundary>{renderCurrentView()}</ErrorBoundary>
+          </motion.div>
         </AnimatePresence>
-      )}
 
-      <AddMomentSheet
-        isOpen={showAddMoment}
-        onClose={() => setShowAddMoment(false)}
-        onSelectChapter={(chapter) => {
-          setShowAddMoment(false);
-          handleSelectChapter(chapter);
-        }}
-      />
+        {currentView.type === "main" && (
+          <AnimatePresence mode="wait">
+            {isNavVisible && (
+              <motion.div
+                initial={{ y: "100%", opacity: 0, scale: 0.85 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: "100%", opacity: 0, scale: 0.85 }}
+                transition={{
+                  y: { type: "spring", damping: 40, stiffness: 300, mass: 0.5 },
+                  scale: {
+                    type: "spring",
+                    damping: 40,
+                    stiffness: 300,
+                    mass: 0.5,
+                  },
+                  opacity: { type: "tween", duration: 0.15 },
+                }}
+                style={{
+                  position: "fixed",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 30,
+                  pointerEvents: "auto",
+                  transformOrigin: "bottom center",
+                }}
+              >
+                <BottomNav
+                  activeTab={getCurrentTab()}
+                  onTabChange={handleTabChange}
+                  onNewAction={handleNewAction}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
 
-      {currentView.type === "moment-form" && (
-        <Suspense fallback={<ScreenLoader />}>
-          <MomentForm
-            isOpen={true}
-            onClose={goBack}
-            template={currentView.template}
-            chapter={currentView.chapter}
-            onSave={handleMomentSaved}
-          />
-        </Suspense>
-      )}
+        <AddMomentSheet
+          isOpen={showAddMoment}
+          onClose={() => setShowAddMoment(false)}
+          onSelectChapter={(chapter, template) => {
+            setShowAddMoment(false);
+            handleSelectChapter(chapter, template);
+          }}
+        />
 
-      <Toaster />
+        {currentView.type === "moment-form" && (
+          <Suspense fallback={<ScreenLoader />}>
+            <MomentForm
+              isOpen={true}
+              onClose={goBack}
+              template={currentView.template}
+              chapter={currentView.chapter}
+              onSave={handleMomentSaved}
+            />
+          </Suspense>
+        )}
+
+        {currentView.type === "blank-moment" && (
+          <Suspense fallback={<ScreenLoader />}>
+            <BlankMomentForm
+              isOpen={true}
+              onClose={goBack}
+              chapter={currentView.chapter}
+              onSave={handleMomentSaved}
+            />
+          </Suspense>
+        )}
+
+        <Toaster />
       </div>
     </NavigationProvider>
   );

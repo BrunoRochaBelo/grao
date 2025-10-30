@@ -24,6 +24,7 @@ export function VaccinesScreen({
   onBack,
   onOpenTemplate,
 }: VaccinesScreenProps) {
+  // Carrega dados do capítulo "Saúde & Crescimento"
   const chapter = useMemo(() => chapters.find((item) => item.id === "3"), []);
 
   const babyAgeInDays = getBabyAgeInDays(currentBaby.birthDate);
@@ -167,4 +168,3 @@ export function VaccinesScreen({
     </div>
   );
 }
-

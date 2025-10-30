@@ -67,7 +67,7 @@ export function BabySelectorModal({
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 z-50 bg-background rounded-t-3xl shadow-2xl max-h-[90vh] overflow-hidden"
           >
-            <div className="max-w-md mx-auto">
+            <div className="max-w-2xl mx-auto">
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-border">
@@ -82,7 +82,7 @@ export function BabySelectorModal({
                 </div>
 
                 {/* Content */}
-                <div className="p-6 overflow-y-auto flex-1">
+                <div className="px-4 py-6 overflow-y-auto flex-1">
                   <div className="space-y-3">
                     {babies.map((baby, index) => (
                       <motion.button
@@ -153,4 +153,3 @@ export function BabySelectorModal({
     </AnimatePresence>
   );
 }
-
