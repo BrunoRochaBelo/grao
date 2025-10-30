@@ -508,91 +508,87 @@ export function NotificationsScreen() {
 
   return (
     <>
-      <div className="pb-24 max-w-2xl mx-auto">
-        {/* Sticky Header Container */}
-        <div className="sticky top-0 z-30 bg-background border-b border-border/50">
-          {/* Header Sticky com animação de altura */}
-          <div className={`px-4 pt-6 pb-4 ${showSubtitle ? "" : "pb-2"}`}>
+      <div className="pb-24 max-w-2xl mx-auto relative">
+        {/* Sticky Header + Filtros para evitar sobreposicao com cards */}
+        <div className="sticky top-0 z-50 bg-background border-b border-border/50">
+          {/* Header Sticky com anima��o de altura */}
+          <div className={`px-4 pt-6 ${showSubtitle ? "pb-4" : "pb-2"}`}>
             <h1 className="text-2xl font-bold text-foreground">Sussurros</h1>
             {showSubtitle && (
               <p className="text-xs text-muted-foreground mt-1">
-                Lembretes e sugestões
+                Lembretes e sugestoes
               </p>
             )}
           </div>
-        </div>
 
-        {/* Sticky Filter Bar */}
-        <div
-          className="sticky z-20 bg-background border-b border-border/50 px-4 py-3"
-          style={{ top: "73px" }}
-        >
-          {/* Filter Chips */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="flex flex-wrap gap-2 mb-3"
-          >
-            {filterOptions.map((option) => {
-              const isActive = activeFilter === option.id;
-              return (
-                <motion.button
-                  key={option.id}
-                  onClick={() => setActiveFilter(option.id)}
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
-                    isActive
-                      ? "shadow-soft"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
-                  }`}
-                  style={isActive ? getHighlightStyle(option.tone) : undefined}
-                >
-                  {option.label}
-                </motion.button>
-              );
-            })}
-          </motion.div>
+          <div className="border-t border-border/40 px-4 py-3 bg-background">
+            {/* Filter Chips */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="flex flex-wrap gap-2 mb-3"
+            >
+              {filterOptions.map((option) => {
+                const isActive = activeFilter === option.id;
+                return (
+                  <motion.button
+                    key={option.id}
+                    onClick={() => setActiveFilter(option.id)}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-4 py-2 rounded-xl text-sm transition-colors border ${
+                      isActive
+                        ? "shadow-soft"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80 border-transparent"
+                    }`}
+                    style={isActive ? getHighlightStyle(option.tone) : undefined}
+                  >
+                    {option.label}
+                  </motion.button>
+                );
+              })}
+            </motion.div>
 
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.15 }}
-            className="flex flex-wrap gap-2"
-          >
-            <Button
-              variant={mutedThemes ? "default" : "outline"}
-              size="sm"
-              className="gap-2 rounded-xl"
-              onClick={toggleMuteThemes}
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+              className="flex flex-wrap gap-2"
             >
-              <BellOff className="w-4 h-4" />
-              {mutedThemes ? "Reativar temas" : "Silenciar tema"}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 rounded-xl"
-              onClick={handleSnooze}
-            >
-              <Clock className="w-4 h-4" />
-              Adiar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-2 rounded-xl text-muted-foreground hover:text-foreground"
-              onClick={handleClearAll}
-              disabled={notifications.length === 0}
-            >
-              Limpar todas
-            </Button>
-          </motion.div>
+              <Button
+                variant={mutedThemes ? "default" : "outline"}
+                size="sm"
+                className="gap-2 rounded-xl"
+                onClick={toggleMuteThemes}
+              >
+                <BellOff className="w-4 h-4" />
+                {mutedThemes ? "Reativar temas" : "Silenciar tema"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 rounded-xl"
+                onClick={handleSnooze}
+              >
+                <Clock className="w-4 h-4" />
+                Adiar
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 rounded-xl text-muted-foreground hover:text-foreground"
+                onClick={handleClearAll}
+                disabled={notifications.length === 0}
+              >
+                Limpar todas
+              </Button>
+            </motion.div>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="px-4 py-4">
+        <div className="relative z-0 px-4 py-4">
           {filteredNotifications.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

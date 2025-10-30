@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import { getMoments, chapters } from "@/lib/mockData";
 import type { Moment } from "@/types";
 import {
@@ -154,6 +154,18 @@ export const GalleryScreen = memo(function GalleryScreen({
   const [mediaFilter, setMediaFilter] = useState<"all" | "photo" | "video">(
     "all"
   );
+  const [showSubtitle, setShowSubtitle] = useState(true);
+
+  // Controle de scroll para esconder subtítulo
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowSubtitle(scrollY < 40);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const availableFilters: FilterOption[] = [
     {
@@ -259,17 +271,25 @@ export const GalleryScreen = memo(function GalleryScreen({
 
   return (
     <div className="pb-24 max-w-2xl mx-auto">
-      {/* Header with title */}
-      <div className="px-4 pt-6 pb-3">
-        <h1 className="text-foreground mb-1">Galeria</h1>
-        <p className="text-muted-foreground text-sm">
-          {filteredMoments.length}{" "}
-          {filteredMoments.length === 1 ? "momento" : "momentos"}
-        </p>
+      {/* Sticky Header Container */}
+      <div className="sticky top-0 z-30 bg-background border-b border-border/50">
+        {/* Header */}
+        <div className={`px-4 pt-6 ${showSubtitle ? "pb-4" : "pb-2"}`}>
+          <h1 className="text-2xl font-bold text-foreground">Galeria</h1>
+          {showSubtitle && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {filteredMoments.length}{" "}
+              {filteredMoments.length === 1 ? "momento" : "momentos"}
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 px-4 py-3 border-b border-border">
+      {/* Filters - Positioned below sticky header */}
+      <div
+        className="sticky bg-background/95 backdrop-blur-sm z-20 px-4 py-3 border-b border-border"
+        style={{ top: "73px" }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
             {availableFilters.map((filterOption) => {
