@@ -386,10 +386,10 @@ export const HomeScreen = memo(function HomeScreen({
     }).length;
 
     const phrases = [
-      `${currentBaby?.name} sorriu ${smiles} vezes hoje 😊 — e ainda nem chegou o pôr do sol.`,
-      `Semana mágica com ${recentMoments} novos momentos ✨`,
-      `Crescendo forte: +${weightChange}kg este mês 💪`,
-      `Família crescendo junto: ${familyMembers.length} corações conectados 💖`,
+      `${currentBaby?.name} sorriu ${smiles} vezes hoje — e ainda nem chegou o pôr do sol.`,
+      `Semana especial com ${recentMoments} novos momentos registrados.`,
+      `Crescendo forte: +${weightChange} kg este mês.`,
+      `Família crescendo junto: ${familyMembers.length} pessoas conectadas.`,
     ];
     return phrases[Math.floor(Math.random() * phrases.length)];
   }, [currentBaby, sleepEntries, moments, weightChange, familyMembers]);
@@ -838,17 +838,17 @@ export const HomeScreen = memo(function HomeScreen({
                 </div>
                 <div className="flex-1">
                   <h3 className="text-foreground font-semibold mb-1">
-                    Comece a Árvore Familiar
+                    Comece a árvore familiar
                   </h3>
                   <p className="text-muted-foreground text-sm">
                     Convide pais, avós e familiares para acompanhar a jornada de{" "}
-                    {currentBaby?.name} 👨‍👩‍👧‍👦
+                    {currentBaby?.name}.
                   </p>
                 </div>
               </div>
               <div className="flex items-center justify-end pt-2">
                 <span className="text-pink-600 dark:text-pink-400 text-sm font-medium">
-                  Adicionar membros →
+                  Adicionar membros
                 </span>
               </div>
             </div>
@@ -947,19 +947,16 @@ export const HomeScreen = memo(function HomeScreen({
               {
                 id: "edit",
                 label: "Editar",
-                icon: "✏️",
                 onClick: () => handleEditMoment(contextMenu.moment),
               },
               {
                 id: "share",
                 label: "Compartilhar",
-                icon: "📤",
                 onClick: () => handleShareMoment(contextMenu.moment),
               },
               {
                 id: "delete",
                 label: "Excluir",
-                icon: "🗑️",
                 color: "text-red-600",
                 onClick: () => handleDeleteMoment(contextMenu.moment),
               },

@@ -4,7 +4,7 @@ import { useState } from "react";
 export interface ContextMenuAction {
   id: string;
   label: string;
-  icon: string;
+  icon?: string;
   color?: string;
   onClick: () => void;
 }
@@ -49,7 +49,9 @@ export function ContextMenu({ x, y, actions, onClose }: ContextMenuProps) {
             className="w-full text-left px-4 py-3 flex items-center gap-2 text-sm transition-colors"
             disabled={isClosing}
           >
-            <span className="text-base">{action.icon}</span>
+            {action.icon && (
+              <span className="text-base">{action.icon}</span>
+            )}
             <span className={action.color ? action.color : "text-foreground"}>
               {action.label}
             </span>

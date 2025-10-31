@@ -288,19 +288,16 @@ export function MomentsScreen({ onEditMoment }: MomentsScreenProps) {
             {
               id: "edit",
               label: "Editar",
-              icon: "✏️",
               onClick: () => handleEdit(contextMenu.moment),
             },
             {
               id: "share",
               label: "Compartilhar",
-              icon: "🔗",
               onClick: () => handleShare(contextMenu.moment),
             },
             {
               id: "delete",
               label: "Excluir",
-              icon: "🗑️",
               color: "text-red-600",
               onClick: () => handleDelete(contextMenu.moment),
             },
