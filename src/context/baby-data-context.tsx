@@ -34,6 +34,7 @@ import {
   getSleepRecords as getMockSleepRecords,
   getFamilyMembers as getMockFamilyMembers,
 } from "../lib/mockData";
+import type { PlaceholderQueryOptions } from "@/lib/catalog";
 
 type DataStatus = "idle" | "loading" | "ready" | "error";
 
@@ -197,7 +198,8 @@ interface BabyDataContextValue extends BabyDataState {
   getFamilyMembers: () => FamilyMember[];
   getPlaceholdersForChapter: (
     chapterId: string,
-    babyAgeInDaysOverride?: number
+    babyAgeInDaysOverride?: number,
+    options?: PlaceholderQueryOptions
   ) => PlaceholderTemplate[];
   calculateAge: typeof calculateAge;
   getBabyAgeInDays: typeof getBabyAgeInDays;
@@ -370,11 +372,15 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
   );
 
   const getPlaceholdersForChapter = useCallback(
-    (chapterId: string, babyAgeInDaysOverride?: number) => {
+    (
+      chapterId: string,
+      babyAgeInDaysOverride?: number,
+      options?: PlaceholderQueryOptions
+    ) => {
       const babyAge =
         babyAgeInDaysOverride ??
         (state.currentBaby ? getBabyAgeInDays(state.currentBaby.birthDate) : 0);
-      return getPlaceholdersForChapterSource(chapterId, babyAge);
+      return getPlaceholdersForChapterSource(chapterId, babyAge, options);
     },
     [state.currentBaby]
   );

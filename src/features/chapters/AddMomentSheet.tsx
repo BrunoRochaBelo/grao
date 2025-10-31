@@ -35,7 +35,9 @@ function ChapterCard({ chapter, onClick }: ChapterCardProps) {
   const { getPlaceholdersForChapter, getMoments } = useBabyData();
 
   const { completedCount, totalCount, percentage, pending } = useMemo(() => {
-    const placeholders = getPlaceholdersForChapter(chapter.id);
+    const placeholders = getPlaceholdersForChapter(chapter.id, undefined, {
+      includeAllAges: true,
+    });
     const moments = getMoments();
 
     const total = placeholders.length;
@@ -116,7 +118,11 @@ export function AddMomentSheet({
   const chapterTemplates = useMemo(() => {
     if (!selectedChapter) return [];
 
-    const allPlaceholders = getPlaceholdersForChapter(selectedChapter.id);
+    const allPlaceholders = getPlaceholdersForChapter(
+      selectedChapter.id,
+      undefined,
+      { includeAllAges: true }
+    );
     const moments = getMoments();
 
     return allPlaceholders.map((placeholder) => {
@@ -182,7 +188,9 @@ export function AddMomentSheet({
       return;
     }
 
-    const template = getPlaceholdersForChapter(chapterId).find(
+    const template = getPlaceholdersForChapter(chapterId, undefined, {
+      includeAllAges: true,
+    }).find(
       (item) => item.id === templateId
     );
     onSelectChapter(chapter, template);

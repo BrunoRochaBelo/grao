@@ -29,7 +29,9 @@ export function ChapterDetail({
   const [filter, setFilter] = useState<ChapterFilter>("all");
   const { getPlaceholdersForChapter, getMoments } = useBabyData();
 
-  const allPlaceholders = getPlaceholdersForChapter(chapter.id);
+  const allPlaceholders = getPlaceholdersForChapter(chapter.id, undefined, {
+    includeAllAges: true,
+  });
   const moments = getMoments();
   const chapterSeries = getChapterSeries(chapter.id);
 

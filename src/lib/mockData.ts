@@ -10,7 +10,12 @@ import {
   SleepRecord,
   VaccineRecord,
 } from "../types";
-import { catalogChapters, getCatalogPlaceholders } from "./catalog";
+import {
+  catalogChapters,
+  filterPlaceholdersByAge,
+  getCatalogPlaceholders,
+  type PlaceholderQueryOptions,
+} from "./catalog";
 
 // Store current baby selection
 export const babies: Baby[] = [
@@ -751,24 +756,16 @@ export function generateSeriesId(
 
 export function getPlaceholdersForChapter(
   chapterId: string,
-  babyAgeInDays: number = Number.MAX_SAFE_INTEGER
+  babyAgeInDays: number = 0,
+  options?: PlaceholderQueryOptions
 ): PlaceholderTemplate[] {
   const baseTemplates = getCatalogPlaceholders(chapterId).map((template) => ({
     ...template,
   }));
 
-  const filteredByAge = baseTemplates.filter((template) => {
-    if (babyAgeInDays < template.ageRangeStart) {
-      return false;
-    }
-    if (
-      typeof template.ageRangeEnd === "number" &&
-      babyAgeInDays > template.ageRangeEnd
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const filteredByAge = options?.includeAllAges
+    ? baseTemplates
+    : filterPlaceholdersByAge(baseTemplates, babyAgeInDays);
 
   const relevantMoments = getMoments().filter(
     (moment) => moment.chapterId === chapterId
@@ -799,7 +796,9 @@ export function getSeriesInfo(templateId: string, chapterId: string) {
   const seriesMoments = moments.filter(
     (moment) => moment.templateId === templateId && moment.seriesId
   );
-  const placeholders = getPlaceholdersForChapter(chapterId, 0);
+  const placeholders = getPlaceholdersForChapter(chapterId, 0, {
+    includeAllAges: true,
+  });
   const template = placeholders.find((item) => item.id === templateId);
 
   if (!template?.allowMultiple) {

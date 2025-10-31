@@ -23,7 +23,9 @@ function ChapterCard({ chapter, onClick }: ChapterCardProps) {
 
   // Memoizar cálculos para evitar re-computações
   const { completedCount, totalCount, percentage, pending } = useMemo(() => {
-    const placeholders = getPlaceholdersForChapter(chapter.id);
+    const placeholders = getPlaceholdersForChapter(chapter.id, undefined, {
+      includeAllAges: true,
+    });
     const moments = getMoments();
 
     const total = placeholders.length;
@@ -129,7 +131,9 @@ export function ChaptersScreen({ onSelectChapter, onBack }: ChaptersScreenProps)
       return;
     }
 
-    const template = getPlaceholdersForChapter(chapterId).find(
+    const template = getPlaceholdersForChapter(chapterId, undefined, {
+      includeAllAges: true,
+    }).find(
       (item: PlaceholderTemplate) => item.id === templateId
     );
     onSelectChapter(chapter, template);

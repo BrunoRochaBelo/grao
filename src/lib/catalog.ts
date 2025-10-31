@@ -165,7 +165,8 @@ const primeirasVezesPlaceholders: PlaceholderConfig[] = [
     id: "primeiras-primeira-vez",
     name: "Primeira Vez",
     icon: "✨",
-    description: "Use para qualquer primeira vez marcante. Escolha o tipo e conte a história.",
+    description:
+      "Use para qualquer primeira vez marcante. Escolha o tipo e conte a história.",
     templateType: "primeira-vez",
     ageRangeStart: days(0),
     allowMultiple: true,
@@ -295,12 +296,13 @@ const primeirasVezesPlaceholders: PlaceholderConfig[] = [
     ageRangeEnd: months(12),
   },
   {
-    id: "primeiras-brinquedo-favorito",
+    id: "primeiras-amizade-brinquedo",
     name: "Primeira Amizade / Brinquedo Favorito",
     icon: "🧸",
     description: "Registre o brinquedo ou amigo preferido.",
     templateType: "primeira-vez",
     ageRangeStart: months(6),
+    allowMultiple: true,
     metadata: { category: "Outro" },
   },
 ];
@@ -390,7 +392,8 @@ const consultasPlaceholders: PlaceholderConfig[] = [
     id: "saude-consulta-medica",
     name: "Consulta Médica",
     icon: "🩺",
-    description: "Registre consultas com pediatra, APS ou especialistas. Inclua motivos e condutas.",
+    description:
+      "Registre consultas com pediatra, APS ou especialistas. Inclua motivos e condutas.",
     templateType: "consulta",
     ageRangeStart: days(0),
     allowMultiple: true,
@@ -582,30 +585,81 @@ const vacinasPlaceholders: PlaceholderConfig[] = [
     metadata: { dependerRegional: true },
   },
   {
-    id: "vacina-reforcos-12m",
-    name: "Vacinas 12 meses",
+    id: "vacina-tríplice-viral",
+    name: "Tríplice Viral (SCR)",
     icon: "💉",
-    description: "Tríplice Viral (SCR), Pneumo 10 reforço, Meningo C reforço, Hepatite A.",
+    description: "Aos 12 meses - Sarampo, Caxumba, Rubéola.",
     templateType: "vacina",
     ageRangeStart: months(12),
     ageRangeEnd: months(12) + days(15),
-    metadata: { dose: "Reforços 12 meses" },
+    metadata: { dose: "1ª dose" },
   },
   {
-    id: "vacina-reforcos-15m",
-    name: "Vacinas 15 meses",
+    id: "vacina-pneumo10-reforco-12m",
+    name: "Pneumo 10 - Reforço",
     icon: "💉",
-    description: "DTP 1º reforço, Polio VOP 1º reforço, Tetraviral/Varicela conforme disponibilidade.",
+    description: "Reforço aos 12 meses.",
+    templateType: "vacina",
+    ageRangeStart: months(12),
+    ageRangeEnd: months(12) + days(15),
+    metadata: { dose: "Reforço" },
+  },
+  {
+    id: "vacina-meningo-c-reforco-12m",
+    name: "Meningo C - Reforço",
+    icon: "💉",
+    description: "Reforço aos 12 meses.",
+    templateType: "vacina",
+    ageRangeStart: months(12),
+    ageRangeEnd: months(12) + days(15),
+    metadata: { dose: "Reforço" },
+  },
+  {
+    id: "vacina-hepatite-a-12m",
+    name: "Hepatite A (1ª dose)",
+    icon: "💉",
+    description: "Primeira dose aos 12 meses.",
+    templateType: "vacina",
+    ageRangeStart: months(12),
+    ageRangeEnd: months(12) + days(15),
+    metadata: { dose: "1ª dose" },
+  },
+  {
+    id: "vacina-dtp-reforco-15m",
+    name: "DTP - 1º Reforço",
+    icon: "💉",
+    description: "Primeiro reforço aos 15 meses.",
     templateType: "vacina",
     ageRangeStart: months(15),
     ageRangeEnd: months(15) + days(20),
-    metadata: { dose: "Reforços 15 meses" },
+    metadata: { dose: "1º Reforço" },
+  },
+  {
+    id: "vacina-polio-vop-reforco-15m",
+    name: "Polio VOP - 1º Reforço",
+    icon: "💉",
+    description: "Primeiro reforço de Polio oral aos 15 meses.",
+    templateType: "vacina",
+    ageRangeStart: months(15),
+    ageRangeEnd: months(15) + days(20),
+    metadata: { dose: "1º Reforço" },
+  },
+  {
+    id: "vacina-tetraviral-varicela-15m",
+    name: "Tetraviral (SCRV) / Varicela",
+    icon: "💉",
+    description: "Aos 15 meses - conforme disponibilidade regional.",
+    templateType: "vacina",
+    ageRangeStart: months(15),
+    ageRangeEnd: months(15) + days(20),
+    metadata: { dose: "1ª dose ou reforço" },
   },
   {
     id: "vacina-reforcos-18m",
     name: "Avaliar Reforços / Atualizações",
     icon: "💉",
-    description: "Acompanhe esquemas de resgate e atualizações do calendário nacional.",
+    description:
+      "Acompanhe esquemas de resgate e atualizações do calendário nacional.",
     templateType: "vacina",
     ageRangeStart: months(18),
     ageRangeEnd: months(24),
@@ -843,6 +897,15 @@ const artePlaceholders: PlaceholderConfig[] = [
     ageRangeStart: months(18),
     allowMultiple: true,
   },
+  {
+    id: "arte-livre",
+    name: "Arte Livre",
+    icon: "🎭",
+    description: "Qualquer criação artística e expressão criativa.",
+    templateType: "arte",
+    ageRangeStart: months(0),
+    allowMultiple: true,
+  },
 ];
 const datasEspeciaisPlaceholders: PlaceholderConfig[] = [
   {
@@ -1014,7 +1077,8 @@ const catalogConfig: CatalogChapterConfig[] = [
     id: "4",
     name: "Saúde & Crescimento",
     description: "Consultas, vacinas, medidas e registros de saúde.",
-    objective: "Manter o acompanhamento em dia com o PNI e a puericultura brasileira.",
+    objective:
+      "Manter o acompanhamento em dia com o PNI e a puericultura brasileira.",
     viewer: "Dashboard + Lista",
     icon: "📈",
     color: "#BFDBFE",
@@ -1113,35 +1177,56 @@ const PLACEHOLDERS_BY_CHAPTER_INTERNAL: Record<string, PlaceholderTemplate[]> =
 
 export const PLACEHOLDERS_BY_CHAPTER = PLACEHOLDERS_BY_CHAPTER_INTERNAL;
 
-export const catalogChapters = catalogConfig.map(({ placeholders, ...chapter }) => ({
-  ...chapter,
-  totalPlaceholders: placeholders.length,
-}));
+export const catalogChapters = catalogConfig.map(
+  ({ placeholders, ...chapter }) => ({
+    ...chapter,
+    totalPlaceholders: placeholders.length,
+  })
+);
 
-export const chapters: Chapter[] = catalogConfig.map(({ placeholders, ...chapter }) => ({
-  id: chapter.id,
-  name: chapter.name,
-  description: chapter.description,
-  objective: chapter.objective,
-  viewer: chapter.viewer,
-  icon: chapter.icon,
-  color: chapter.color,
-  total: placeholders.length,
-  completed: placeholders.filter((item) => item.isCompleted).length,
-}));
+export const chapters: Chapter[] = catalogConfig.map(
+  ({ placeholders, ...chapter }) => ({
+    id: chapter.id,
+    name: chapter.name,
+    description: chapter.description,
+    objective: chapter.objective,
+    viewer: chapter.viewer,
+    icon: chapter.icon,
+    color: chapter.color,
+    total: placeholders.length,
+    completed: placeholders.filter((item) => item.isCompleted).length,
+  })
+);
 
 const chapterMap = new Map(catalogConfig.map((item) => [item.id, item]));
 
-export const getCatalogChapter = (chapterId: string) => chapterMap.get(chapterId);
+export const getCatalogChapter = (chapterId: string) =>
+  chapterMap.get(chapterId);
 
 export const getCatalogPlaceholders = (chapterId: string) =>
   PLACEHOLDERS_BY_CHAPTER[chapterId] ?? [];
 
+export interface PlaceholderQueryOptions {
+  includeAllAges?: boolean;
+}
+
 export const getPlaceholdersForChapter = (
   chapterId: string,
-  babyAgeInDays: number = Number.MAX_SAFE_INTEGER
+  babyAgeInDays: number = 0,
+  options?: PlaceholderQueryOptions
 ): PlaceholderTemplate[] => {
   const placeholders = getCatalogPlaceholders(chapterId);
+  if (options?.includeAllAges) {
+    return placeholders;
+  }
+  return filterPlaceholdersByAge(placeholders, babyAgeInDays);
+};
+
+// Função auxiliar para filtrar por idade (uso opcional na UI)
+export const filterPlaceholdersByAge = (
+  placeholders: PlaceholderTemplate[],
+  babyAgeInDays: number
+): PlaceholderTemplate[] => {
   return placeholders.filter((template) => {
     if (babyAgeInDays < template.ageRangeStart) {
       return false;
@@ -1157,4 +1242,3 @@ export const getPlaceholdersForChapter = (
 };
 
 export const allPlaceholders = Object.values(PLACEHOLDERS_BY_CHAPTER).flat();
-
