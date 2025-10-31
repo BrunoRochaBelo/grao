@@ -1,4 +1,12 @@
-import { useEffect, useState, lazy, Suspense, Component, useMemo } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  lazy,
+  Suspense,
+  Component,
+  useMemo,
+} from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./layout/BottomNav";
 import { Toaster } from "./components/ui/sonner";
@@ -15,7 +23,9 @@ import {
 } from "@/types";
 import { SplashScreen } from "./features/onboarding/SplashScreen";
 import { AuthScreen } from "./features/onboarding/AuthScreen";
-import { BabySelectorModal } from "./features/baby/BabySelectorModal";
+import type { Screen, ViewState } from "@/routes/types";
+import { useViewStack } from "@/routes/useViewStack";
+import { useBottomNavVisibility } from "@/routes/useBottomNavVisibility";
 
 // Lazy load todas as telas principais para melhor performance
 const HomeScreen = lazy(() =>
@@ -197,52 +207,15 @@ const preloadChunks = () => {
   }, 1000);
 };
 
-type Screen =
-  | "home"
-  | "gallery"
-  | "moments"
-  | "chapters"
-  | "notifications"
-  | "profile";
-type ViewState =
-  | { type: "main"; screen: Screen }
-  | { type: "chapter-detail"; chapter: Chapter }
-  | { type: "moment-form"; template: PlaceholderTemplate; chapter: Chapter }
-  | { type: "blank-moment"; chapter: Chapter }
-  | { type: "moment-detail"; moment: Moment }
-  | { type: "growth" }
-  | { type: "vaccines" }
-  | { type: "consultations" }
-  | { type: "sleep-humor" }
-  | { type: "family-tree" }
-  | { type: "family-member-detail"; member: FamilyMember }
-  | { type: "manage-babies" }
-  | { type: "edit-baby"; baby: Baby }
-  | { type: "add-baby" }
-  | { type: "export-album" }
-  | { type: "manage-account" }
-  | { type: "notifications-settings" }
-  | { type: "help-and-support" }
-  | { type: "splash" }
-  | { type: "auth" }
-  | { type: "baby-selector" };
-
 function AppContent() {
-  const [viewStack, setViewStack] = useState<ViewState[]>(
+  const initialViews: ViewState[] =
     process.env.NODE_ENV === "development"
       ? [{ type: "main", screen: "home" }]
-      : [{ type: "splash" }]
-  );
+      : [{ type: "splash" }];
+  const { stack: viewStack, current: currentView, push, pop, replaceMain } =
+    useViewStack(initialViews);
   const [showAddMoment, setShowAddMoment] = useState(false);
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [scrollVelocity, setScrollVelocity] = useState(0);
-  const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(
-    null
-  );
-  const [hideTimeout, setHideTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [accumulatedScroll, setAccumulatedScroll] = useState(0);
-
+  const { isVisible: isNavVisible } = useBottomNavVisibility(currentView);
   const {
     status,
     error,
@@ -253,58 +226,36 @@ function AppContent() {
     refreshMoments,
   } = useBabyData();
 
-  const currentView = viewStack[viewStack.length - 1];
-
   // Pré-carregar chunks críticos para melhor performance
   useEffect(() => {
     preloadChunks();
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.scrollTo({ top: 0, behavior: "auto" });
-    // Garante que a nav está visível ao mudar de tela
-    setIsNavVisible(true);
-  }, [currentView]);
+  const navigateTo = useCallback(
+    (view: ViewState) => {
+      push(view);
+    },
+    [push]
+  );
 
-  const navigateTo = (view: ViewState) => {
-    setViewStack((prev) => [...prev, view]);
-  };
+  const goBack = useCallback(() => {
+    pop();
+  }, [pop]);
 
-  const goBack = () => {
-    if (viewStack.length > 1) {
-      setViewStack((prev) => prev.slice(0, -1));
-    }
-  };
+  const navigateToMain = useCallback(
+    (screen: Screen) => {
+      replaceMain(screen);
+    },
+    [replaceMain]
+  );
 
-  const navigateToMain = (screen: Screen) => {
-    setViewStack([{ type: "main", screen }]);
-  };
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      if (tab === "chapters") {
+        setShowAddMoment(true);
+        return;
+      }
 
-  const openChapter = (chapterId: string) => {
-    const chapterData = chapters.find((chapter) => chapter.id === chapterId);
-    if (!chapterData) return;
-    navigateTo({ type: "chapter-detail", chapter: chapterData });
-  };
-
-  const openChapterTemplate = (chapterId: string, templateId: string) => {
-    const chapterData = chapters.find((chapter) => chapter.id === chapterId);
-    if (!chapterData) return;
-
-    const placeholders = getPlaceholdersForChapter(chapterId);
-    const template = placeholders.find((item) => item.id === templateId);
-
-    navigateTo({ type: "chapter-detail", chapter: chapterData });
-
-    if (template) {
-      navigateTo({ type: "moment-form", template, chapter: chapterData });
-    }
-  };
-
-  const handleTabChange = (tab: string) => {
-    if (tab === "chapters") {
-      setShowAddMoment(true);
-    } else {
       const screenMap: Record<string, Screen> = {
         home: "home",
         gallery: "gallery",
@@ -313,8 +264,9 @@ function AppContent() {
         profile: "profile",
       };
       navigateToMain(screenMap[tab] || "home");
-    }
-  };
+    },
+    [navigateToMain]
+  );
 
   const isNavigatedToChapters = () => {
     return (
@@ -324,25 +276,41 @@ function AppContent() {
     );
   };
 
-  const handleSelectChapter = (
-    chapter: Chapter,
-    template?: PlaceholderTemplate
-  ) => {
-    if (template) {
-      // Se um template foi selecionado, abre o formulário diretamente
-      handleOpenTemplate(template, chapter);
-    } else {
-      // Caso contrário, vai para a view de detalhes do capítulo
-      navigateTo({ type: "chapter-detail", chapter });
-    }
-  };
+  const handleOpenTemplate = useCallback(
+    (template: PlaceholderTemplate, chapter: Chapter) => {
+      navigateTo({ type: "moment-form", template, chapter });
+    },
+    [navigateTo]
+  );
 
-  const handleOpenTemplate = (
-    template: PlaceholderTemplate,
-    chapter: Chapter
-  ) => {
-    navigateTo({ type: "moment-form", template, chapter });
-  };
+  const handleSelectChapter = useCallback(
+    (chapter: Chapter, template?: PlaceholderTemplate) => {
+      if (template) {
+        handleOpenTemplate(template, chapter);
+      } else {
+        navigateTo({ type: "chapter-detail", chapter });
+      }
+    },
+    [handleOpenTemplate, navigateTo]
+  );
+
+  const openChapterTemplate = useCallback(
+    (chapterId: string, templateId: string) => {
+      const chapterData = chapters.find((chapter) => chapter.id === chapterId);
+      if (!chapterData) {
+        return;
+      }
+
+      navigateTo({ type: "chapter-detail", chapter: chapterData });
+
+      const placeholders = getPlaceholdersForChapter(chapterId);
+      const template = placeholders.find((item) => item.id === templateId);
+      if (template) {
+        handleOpenTemplate(template, chapterData);
+      }
+    },
+    [chapters, getPlaceholdersForChapter, handleOpenTemplate, navigateTo]
+  );
 
   const navigationActions = useMemo(
     () => ({
@@ -361,48 +329,55 @@ function AppContent() {
     [navigateTo, navigateToMain, openChapterTemplate, handleSelectChapter]
   );
 
-  const handleMomentSaved = async () => {
+  const handleMomentSaved = useCallback(async () => {
     await refreshMoments();
     goBack();
-  };
+  }, [goBack, refreshMoments]);
 
-  const handleSplashComplete = () => {
+  const handleSplashComplete = useCallback(() => {
     navigateTo({ type: "auth" });
-  };
+  }, [navigateTo]);
 
-  const handleLogin = async (email: string, password: string) => {
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Aguardar um pouco para a animação de saída completar
-    setTimeout(() => {
-      navigateToMain("home");
-    }, 100);
-  };
+  const handleLogin = useCallback(
+    async (_email: string, _password: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setTimeout(() => {
+        navigateToMain("home");
+      }, 100);
+    },
+    [navigateToMain]
+  );
 
-  const handleSignup = async (email: string, password: string) => {
-    // Simulate signup
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Aguardar um pouco para a animação de saída completar
-    setTimeout(() => {
-      navigateToMain("home");
-    }, 100);
-  };
+  const handleSignup = useCallback(
+    async (_email: string, _password: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setTimeout(() => {
+        navigateToMain("home");
+      }, 100);
+    },
+    [navigateToMain]
+  );
 
-  const handleNewAction = (action: string) => {
-    // Handle FAB actions: 'note', 'moment', 'letter'
-    if (action === "moment") {
-      setShowAddMoment(true);
-    } else if (action === "note") {
-      // Abre o Momento em Branco com o primeiro capítulo
-      if (chapters.length > 0) {
-        navigateTo({ type: "blank-moment", chapter: chapters[0] });
-      } else {
-        toast.error("Nenhum capítulo disponível");
+  const handleNewAction = useCallback(
+    (action: string) => {
+      if (action === "moment") {
+        setShowAddMoment(true);
+        return;
       }
-    } else {
+
+      if (action === "note") {
+        if (chapters.length > 0) {
+          navigateTo({ type: "blank-moment", chapter: chapters[0] });
+        } else {
+          toast.error("Nenhum capítulo disponível");
+        }
+        return;
+      }
+
       toast.info(`${action} em desenvolvimento`);
-    }
-  };
+    },
+    [chapters, navigateTo]
+  );
 
   // Helper para envolver componentes lazy em Suspense
   const renderWithSuspense = (
@@ -580,69 +555,6 @@ function AppContent() {
     }
     return "home";
   };
-
-  useEffect(() => {
-    let lastProcessedScrollY = 0;
-    let currentAccumulated = 0;
-    let hideTimeoutId: NodeJS.Timeout | null = null;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDifference = currentScrollY - lastProcessedScrollY;
-
-      // Ignora movimentos muito pequenos (<5px) para evitar jitter
-      if (Math.abs(scrollDifference) < 5) {
-        return;
-      }
-
-      // Acumula o scroll para detectar intenção clara
-      // Reset se mudar de direção
-      if (
-        (scrollDifference > 0 && currentAccumulated < 0) ||
-        (scrollDifference < 0 && currentAccumulated > 0)
-      ) {
-        currentAccumulated = scrollDifference;
-      } else {
-        currentAccumulated += scrollDifference;
-      }
-
-      // Limpa timeout anterior para não conflitar
-      if (hideTimeoutId) {
-        clearTimeout(hideTimeoutId);
-      }
-
-      // CRITÉRIO PARA ESCONDER (seguindo padrão iOS/Material Design):
-      // - Scroll para baixo acumulado > 30px
-      // - Além de 300px do topo (zona segura)
-      // - NÃO precisa ser rápido, apenas intencional
-      if (currentAccumulated > 30 && currentScrollY > 300 && isNavVisible) {
-        setIsNavVisible(false);
-        currentAccumulated = 0;
-      }
-
-      // CRITÉRIO PARA MOSTRAR:
-      // - Scroll para cima acumulado > 20px
-      // - OU está no topo (<300px)
-      if (
-        (currentAccumulated < -20 || currentScrollY <= 300) &&
-        !isNavVisible
-      ) {
-        setIsNavVisible(true);
-        currentAccumulated = 0;
-      }
-
-      lastProcessedScrollY = currentScrollY;
-      setAccumulatedScroll(currentAccumulated);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (hideTimeoutId) {
-        clearTimeout(hideTimeoutId);
-      }
-    };
-  }, [isNavVisible]);
 
   if (status !== "ready") {
     return (

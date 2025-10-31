@@ -87,37 +87,6 @@ function formatDateLabel(dateValue: string, timeValue: string): string {
   }
 }
 
-function calculateAge(babyBirthDate: string, momentDate: string): string {
-  try {
-    const birth = new Date(babyBirthDate);
-    const moment = new Date(momentDate);
-
-    let months = 0;
-    const tempDate = new Date(birth);
-
-    while (tempDate <= moment) {
-      tempDate.setMonth(tempDate.getMonth() + 1);
-      if (tempDate <= moment) {
-        months++;
-      }
-    }
-
-    if (months < 12) {
-      return `${months}m`;
-    }
-
-    const years = Math.floor(months / 12);
-    const remainingMonths = months % 12;
-
-    if (remainingMonths === 0) {
-      return `${years}a`;
-    }
-
-    return `${years}a ${remainingMonths}m`;
-  } catch {
-    return "—";
-  }
-}
 
 function normalizePeople(input: string): string[] {
   if (!input) return [];

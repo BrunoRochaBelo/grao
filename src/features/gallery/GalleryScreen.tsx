@@ -6,7 +6,6 @@ import {
   Video,
   ChevronDown,
   ChevronUp,
-  Filter,
   X,
   Calendar,
   Users,
@@ -148,7 +147,6 @@ function PhotoCard({ moment, chapter, onClick }: PhotoCardProps) {
 export const GalleryScreen = memo(function GalleryScreen({
   onSelectMoment,
 }: GalleryScreenProps) {
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
   const [mediaFilter, setMediaFilter] = useState<"all" | "photo" | "video">(

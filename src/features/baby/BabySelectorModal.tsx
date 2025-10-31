@@ -31,21 +31,6 @@ export function BabySelectorModal({
       .toUpperCase()
       .slice(0, 2);
   };
-  const getAge = (birthDate: string) => {
-    const birth = new Date(birthDate);
-    const now = new Date();
-    const totalDays = Math.floor(
-      (now.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const months = Math.floor(totalDays / 30);
-    const days = totalDays % 30;
-
-    if (months === 0) {
-      return `${days} ${days === 1 ? "dia" : "dias"}`;
-    }
-    return `${months} ${months === 1 ? "mês" : "meses"}`;
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (

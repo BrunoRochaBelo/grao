@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { motion } from "motion/react";
 import {
   chapters,
   currentBaby,

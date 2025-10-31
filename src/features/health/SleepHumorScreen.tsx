@@ -35,18 +35,11 @@ const moodLabels = {
   sleepy: "Sonolento",
 };
 
-const qualityColors = {
-  excellent: "#22C55E",
-  good: "#8B5CF6",
-  fair: "#F59E0B",
-  poor: "#EF4444",
-};
-
 export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
   const [records, setRecords] = useState(getSleepRecords());
   const [showForm, setShowForm] = useState(false);
 
-  const handleSaveRecord = (record: SleepRecord) => {
+  const handleSaveRecord = (_record: SleepRecord) => {
     setRecords(getSleepRecords());
   };
 
@@ -124,8 +117,12 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
               <Smile className="w-5 h-5" />
               <span className="text-sm">Bom Humor</span>
             </div>
-            <p className="text-2xl text-foreground">{sleepRecords.length}</p>
-            <p className="text-sm text-muted-foreground">registros</p>
+            <p className="text-2xl text-foreground">
+              {sleepRecords.length + napRecords.length}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {sleepRecords.length} noites · {napRecords.length} sestas
+            </p>
           </motion.div>
         </div>
 
@@ -138,22 +135,30 @@ export function SleepHumorScreen({ onBack }: SleepHumorScreenProps) {
         >
           <h3 className="text-foreground mb-3">Distribuição de Humor</h3>
           <div className="space-y-2">
-            {Object.entries(moodCounts).map(([mood, count]) => (
-              <div key={mood} className="flex items-center justify-between">
-                <span className="text-foreground capitalize">{mood}</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: `${(count / records.length) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-sm text-muted-foreground w-8 text-right">
-                    {count}
+            {Object.entries(moodCounts).map(([mood, count]) => {
+              const key = mood as keyof typeof moodLabels;
+              const label = moodLabels[key] ?? mood;
+              const emoji = moodEmojis[key] ?? "🙂";
+              return (
+                <div key={mood} className="flex items-center justify-between">
+                  <span className="text-foreground flex items-center gap-2">
+                    <span>{emoji}</span>
+                    <span>{label}</span>
                   </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary"
+                        style={{ width: `${(count / records.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm text-muted-foreground w-8 text-right">
+                      {count}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Plus, Users, Edit, Camera, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useBabyData } from "@/context/baby-data-context";
@@ -19,16 +19,13 @@ import { Textarea } from "@/components/ui/textarea";
 interface FamilyTreeScreenProps {
   onBack: () => void;
   onSelectMember?: (member: FamilyMember) => void;
-  onOpenTemplate?: (chapterId: string, templateId: string) => void;
 }
 
 export function FamilyTreeScreen({
   onBack,
   onSelectMember,
-  onOpenTemplate,
 }: FamilyTreeScreenProps) {
-  const { currentBaby, getFamilyMembers, getPlaceholdersForChapter } =
-    useBabyData();
+  const { currentBaby, getFamilyMembers } = useBabyData();
   const [members, setMembers] = useState<FamilyMember[]>(() =>
     getFamilyMembers()
   );
@@ -41,22 +38,6 @@ export function FamilyTreeScreen({
   useEffect(() => {
     setMembers(getFamilyMembers());
   }, [getFamilyMembers]);
-
-  const parents = useMemo(
-    () =>
-      members.filter(
-        (member) => member.relation === "Mãe" || member.relation === "Pai"
-      ),
-    [members]
-  );
-  const grandparents = useMemo(
-    () =>
-      members.filter(
-        (member) =>
-          member.relation.includes("Avó") || member.relation.includes("Avô")
-      ),
-    [members]
-  );
 
   const getInitials = (name: string) =>
     name
@@ -71,17 +52,6 @@ export function FamilyTreeScreen({
     const start = new Date(birthDate);
     const now = new Date();
     return now.getFullYear() - start.getFullYear();
-  };
-
-  const handleAddMember = () => {
-    const templates = getPlaceholdersForChapter("4");
-    const familyTreeTemplate = templates.find(
-      (template) => template.id === "p4-6"
-    );
-
-    if (familyTreeTemplate) {
-      onOpenTemplate?.("4", familyTreeTemplate.id);
-    }
   };
 
   const refreshMembers = () => {

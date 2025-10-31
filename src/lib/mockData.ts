@@ -12,8 +12,6 @@ import {
 } from "../types";
 
 // Store current baby selection
-let currentBabyId = "1";
-
 export const babies: Baby[] = [
   {
     id: "1",
@@ -52,7 +50,6 @@ export function initializeCurrentBaby(): void {
   if (typeof window !== "undefined") {
     const stored = localStorage.getItem("babybook_current_baby");
     if (stored) {
-      currentBabyId = stored;
     }
   }
 }
@@ -819,7 +816,7 @@ export function generateSeriesId(
 // Generate placeholders based on baby's age
 export function getPlaceholdersForChapter(
   chapterId: string,
-  babyAgeInDays: number
+  babyAgeInDays: number = Number.MAX_SAFE_INTEGER
 ): PlaceholderTemplate[] {
   const placeholdersByChapter: Record<string, PlaceholderTemplate[]> = {
     "1": [
@@ -2116,7 +2113,16 @@ export function getPlaceholdersForChapter(
     ],
   };
 
-  return placeholdersByChapter[chapterId] || [];
+  const templates = placeholdersByChapter[chapterId] || [];
+  return templates.filter((template) => {
+    if (typeof template.ageRangeStart === "number" && babyAgeInDays < template.ageRangeStart) {
+      return false;
+    }
+    if (typeof template.ageRangeEnd === "number" && babyAgeInDays > template.ageRangeEnd) {
+      return false;
+    }
+    return true;
+  });
 }
 
 // Group moments by series
@@ -2182,7 +2188,6 @@ import {
   expandWithSynonyms,
   matchesSearchTerms,
   highlightText,
-  normalizeText,
 } from "../utils/searchSynonyms";
 import type {
   SearchResult,
@@ -2192,7 +2197,7 @@ import type {
 } from "../types";
 
 /**
- * Search chapters and moments with unified query
+ * Search chapters && moments with unified query
  */
 export function searchChaptersAndMoments(
   query: string,

@@ -22,7 +22,6 @@ interface FilterChipsProps {
   onClearFilters: () => void;
   onToggleFavorite: () => void;
   availablePeople: FilterPersonOption[];
-  availableTags: string[];
   availableAgeRanges: AgeRange[];
 }
 
@@ -39,7 +38,6 @@ export function FilterChips({
   onClearFilters,
   onToggleFavorite,
   availablePeople,
-  availableTags,
   availableAgeRanges,
 }: FilterChipsProps) {
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);

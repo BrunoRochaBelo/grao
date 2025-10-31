@@ -92,7 +92,7 @@ export function FormSelectField({
                 exit={{ opacity: 0, y: -8 }}
                 className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
               >
-                {config.options?.map((option, index) => (
+                {config.options?.map((option) => (
                   <motion.button
                     key={option.value}
                     onClick={() => {
@@ -367,6 +367,7 @@ export function FormMultiSelectField({
     } else {
       onChange([...newValue, optionValue]);
     }
+    onBlur?.();
   };
 
   return (

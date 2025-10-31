@@ -178,9 +178,14 @@ export function AddMomentSheet({
   // Handle opening template
   const handleOpenTemplate = (chapterId: string, templateId: string) => {
     const chapter = chapters.find((c) => c.id === chapterId);
-    if (chapter) {
-      onSelectChapter(chapter);
+    if (!chapter) {
+      return;
     }
+
+    const template = getPlaceholdersForChapter(chapterId).find(
+      (item) => item.id === templateId
+    );
+    onSelectChapter(chapter, template);
   };
 
   // Handle opening chapter - navegar para detalhe

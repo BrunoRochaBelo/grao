@@ -6,7 +6,12 @@ import { useBabyData } from "@/context/baby-data-context";
 import { SearchBar } from "@/components/search/SearchBar";
 import { SearchResults } from "@/components/search/SearchResults";
 import { searchChaptersAndMoments } from "@/lib/mockData";
-import type { Chapter, SearchResult, SearchFilters } from "@/types";
+import type {
+  Chapter,
+  PlaceholderTemplate,
+  SearchResult,
+  SearchFilters,
+} from "@/types";
 
 interface ChapterCardProps {
   chapter: Chapter;
@@ -73,17 +78,13 @@ function ChapterCard({ chapter, onClick }: ChapterCardProps) {
 }
 
 interface ChaptersScreenProps {
-  onSelectChapter: (chapter: Chapter) => void;
+  onSelectChapter: (chapter: Chapter, template?: PlaceholderTemplate) => void;
   onBack?: () => void;
-  focusMomentId?: string;
 }
 
-export function ChaptersScreen({
-  onSelectChapter,
-  onBack,
-  focusMomentId,
-}: ChaptersScreenProps) {
-  const { chapters = [], status, getMoments } = useBabyData();
+export function ChaptersScreen({ onSelectChapter, onBack }: ChaptersScreenProps) {
+  const { chapters = [], status, getMoments, getPlaceholdersForChapter } =
+    useBabyData();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
@@ -124,10 +125,14 @@ export function ChaptersScreen({
   // Handle opening template
   const handleOpenTemplate = (chapterId: string, templateId: string) => {
     const chapter = chapters.find((c) => c.id === chapterId);
-    if (chapter) {
-      onSelectChapter(chapter);
-      // Could add focus parameter here for deep linking
+    if (!chapter) {
+      return;
     }
+
+    const template = getPlaceholdersForChapter(chapterId).find(
+      (item: PlaceholderTemplate) => item.id === templateId
+    );
+    onSelectChapter(chapter, template);
   };
 
   // Handle opening chapter

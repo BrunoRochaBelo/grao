@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ChevronLeft,
@@ -17,7 +17,6 @@ interface FullScreenViewerProps {
   moment: Moment;
   chapter?: Chapter;
   baby?: Baby;
-  allMoments?: Moment[];
   isOpen: boolean;
   onClose: () => void;
   onEdit?: () => void;
@@ -29,7 +28,6 @@ export function FullScreenViewer({
   moment,
   chapter,
   baby,
-  allMoments = [],
   isOpen,
   onClose,
   onEdit,

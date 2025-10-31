@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { toast } from "sonner";
 
 interface UseAutoSaveOptions {
   enabled?: boolean;

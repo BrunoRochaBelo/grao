@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
   Bell,
   BellOff,
@@ -509,14 +509,14 @@ export function NotificationsScreen() {
   return (
     <>
       <div className="pb-24 max-w-2xl mx-auto relative">
-        {/* Sticky Header + Filtros para evitar sobreposicao com cards */}
+        {/* Sticky Header + Filtros para evitar sobreposição com cards */}
         <div className="sticky top-0 z-50 bg-background border-b border-border/50">
-          {/* Header Sticky com anima��o de altura */}
+          {/* Header Sticky com animação de altura */}
           <div className={`px-4 pt-6 ${showSubtitle ? "pb-4" : "pb-2"}`}>
             <h1 className="text-2xl font-bold text-foreground">Sussurros</h1>
             {showSubtitle && (
               <p className="text-xs text-muted-foreground mt-1">
-                Lembretes e sugestoes
+                Lembretes e sugestões
               </p>
             )}
           </div>

@@ -42,11 +42,6 @@ export function BottomNav({
     setIsFabExpanded(!isFabExpanded);
   };
 
-  const handleFabOptionClick = (optionId: string) => {
-    setIsFabExpanded(false);
-    onNewAction?.(optionId);
-  };
-
   return (
     <>
       {/* Opções do FAB */}

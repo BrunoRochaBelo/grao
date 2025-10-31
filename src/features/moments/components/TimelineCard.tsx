@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  ChevronDown,
   MapPin,
   Users,
   ChevronLeft,
@@ -44,7 +43,7 @@ export function TimelineCard({
   onNavigateNext,
 }: TimelineCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [tapCount, setTapCount] = useState(0);
+  const [, setTapCount] = useState(0);
   const [swipeStart, setSwipeStart] = useState<number | null>(null);
   const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const longPressRef = useRef<NodeJS.Timeout | null>(null);

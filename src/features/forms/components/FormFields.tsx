@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { AlertCircle, Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -137,7 +137,7 @@ export function FormTextAreaField({
   disabled,
 }: FormFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const [rows, setRows] = useState(3);
+  const rows = 3;
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);

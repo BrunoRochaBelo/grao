@@ -1,6 +1,6 @@
 // Utilitários para organização e formatação da timeline de momentos
 
-import { Moment, Chapter, PlaceholderTemplate } from "@/types";
+import { Moment, PlaceholderTemplate } from "@/types";
 
 export interface TimelineGroup {
   monthYear: string;
@@ -138,6 +138,17 @@ export function getMomentTypeIcon(
     foto: "📸",
   };
 
+  const chapterIconMap: Record<string, string> = {
+    "1": "🌱",
+    "2": "🩺",
+    "3": "📸",
+    "4": "🩺",
+    "5": "🎉",
+    "6": "🎓",
+    "7": "💤",
+    "8": "🌙",
+  };
+
   if (templateId) {
     for (const [key, icon] of Object.entries(typeMap)) {
       if (templateId.includes(key)) {
@@ -147,6 +158,10 @@ export function getMomentTypeIcon(
   }
 
   // Default baseado no capítulo
+  if (chapterId && chapterIconMap[chapterId]) {
+    return chapterIconMap[chapterId];
+  }
+
   return "📸";
 }
 

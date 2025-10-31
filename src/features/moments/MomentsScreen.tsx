@@ -8,17 +8,16 @@ import { FilterChips } from "./components/FilterChips";
 import { TimelineGroupHeader } from "./components/TimelineGroupHeader";
 import { TimelineCard } from "./components/TimelineCard";
 import { EmptyPlaceholder } from "./components/EmptyPlaceholder";
-import { ContextMenu, ContextMenuAction } from "./components/ContextMenu";
+import { ContextMenu } from "./components/ContextMenu";
 import { FullScreenViewer } from "./components/FullScreenViewer";
 import { useFilters } from "./hooks/useFilters";
 import { useTimelineGroups } from "./hooks/useTimelineGroups";
 
 interface MomentsScreenProps {
-  onBack: () => void;
   onEditMoment?: (moment: Moment) => void;
 }
 
-export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
+export function MomentsScreen({ onEditMoment }: MomentsScreenProps) {
   const {
     chapters,
     currentBaby,
@@ -46,7 +45,6 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
   const timelineGroups = useTimelineGroups(filteredMoments);
 
   // Estados para interações
-  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -87,8 +85,8 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
 
   const handleShare = useCallback((moment: Moment) => {
     setContextMenu(null);
-    // TODO: Implementar compartilhamento
-    toast.info("Funcionalidade de compartilhamento em breve 🔗");
+    const hint = moment.title || moment.noteShort || "momento";
+    toast.info(`Compartilhamento de "${hint}" disponível em breve ✨`);
   }, []);
 
   const handleEdit = useCallback(
@@ -165,7 +163,6 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
           onClearFilters={handleClearFilters}
           onToggleFavorite={toggleFavorite}
           availablePeople={availableFilters.people}
-          availableTags={availableFilters.tags}
           availableAgeRanges={availableFilters.ageRanges}
         />
       </div>
@@ -192,7 +189,7 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
                         moment={moment}
                         chapter={chapter}
                         baby={currentBaby}
-                        onTap={() => setSelectedMoment(moment)}
+                        onTap={() => setFullScreenMoment(moment)}
                         onLongPress={(e) => handleContextMenu(e, moment)}
                         onDoubleTap={() => setFullScreenMoment(moment)}
                         onEdit={() => handleEdit(moment)}
@@ -360,7 +357,6 @@ export function MomentsScreen({ onBack, onEditMoment }: MomentsScreenProps) {
           moment={fullScreenMoment}
           chapter={chapters.find((c) => c.id === fullScreenMoment.chapterId)}
           baby={currentBaby}
-          allMoments={moments}
           isOpen={true}
           onClose={() => setFullScreenMoment(null)}
           onEdit={() => handleEdit(fullScreenMoment)}

@@ -7,10 +7,7 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
-import {
-  mockBackendAdapter,
-  bootstrapMockStorage,
-} from "../lib/adapters/mockBackend";
+import { mockBackendAdapter } from "../lib/adapters/mockBackend";
 import {
   Baby,
   Chapter,
@@ -30,12 +27,12 @@ import {
   babies as mockBabies,
   chapters as mockChapters,
   getCurrentBaby,
-  getMoments,
-  getGrowthMeasurements,
-  getVaccines,
-  getSleepHumorEntries,
-  getSleepRecords,
-  getFamilyMembers,
+  getMoments as getMockMoments,
+  getGrowthMeasurements as getMockGrowthMeasurements,
+  getVaccines as getMockVaccines,
+  getSleepHumorEntries as getMockSleepHumorEntries,
+  getSleepRecords as getMockSleepRecords,
+  getFamilyMembers as getMockFamilyMembers,
 } from "../lib/mockData";
 
 type DataStatus = "idle" | "loading" | "ready" | "error";
@@ -223,12 +220,12 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
         const babies = mockBabies;
         const chapters = mockChapters;
         const currentBaby = getCurrentBaby();
-        const moments = getMoments();
-        const growthMeasurements = getGrowthMeasurements();
-        const vaccines = getVaccines();
-        const sleepHumorEntries = getSleepHumorEntries();
-        const sleepRecords = getSleepRecords();
-        const familyMembers = getFamilyMembers();
+        const moments = getMockMoments();
+        const growthMeasurements = getMockGrowthMeasurements();
+        const vaccines = getMockVaccines();
+        const sleepHumorEntries = getMockSleepHumorEntries();
+        const sleepRecords = getMockSleepRecords();
+        const familyMembers = getMockFamilyMembers();
 
         dispatch({
           type: "INIT_SUCCESS",

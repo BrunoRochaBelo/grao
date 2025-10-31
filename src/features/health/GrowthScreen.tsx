@@ -27,7 +27,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
   const [showForm, setShowForm] = useState(false);
   const [measurements, setMeasurements] = useState(getGrowthMeasurements());
 
-  const handleSaveMeasurement = (measurement: GrowthMeasurement) => {
+  const handleSaveMeasurement = (_measurement: GrowthMeasurement) => {
     setMeasurements(getGrowthMeasurements());
   };
 
@@ -261,7 +261,7 @@ export function GrowthScreen({ onBack }: GrowthScreenProps) {
         >
           <h3 className="text-foreground mb-3">Histórico de Medições</h3>
           <div className="space-y-3">
-            {[...measurements].reverse().map((measurement, index) => (
+            {[...measurements].reverse().map((measurement) => (
               <div
                 key={measurement.id}
                 className="flex items-center justify-between py-3 border-b border-border last:border-0"

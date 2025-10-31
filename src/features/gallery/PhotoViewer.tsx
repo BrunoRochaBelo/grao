@@ -186,8 +186,9 @@ export function PhotoViewer({ isOpen, photos, currentIndex, onClose, onNext, onP
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 className="max-w-full max-h-full object-contain select-none"
-                style={{ 
-                  cursor: scale > 1 ? 'grab' : 'default',
+                style={{
+                  cursor:
+                    scale > 1 ? (isDragging ? "grabbing" : "grab") : "default",
                 }}
                 drag={scale > 1}
                 dragConstraints={containerRef}
