@@ -67,6 +67,8 @@ export interface Chapter {
   description: string;
   icon: string;
   color: string;
+  objective?: string;
+  viewer?: string;
   total: number;
   completed: number;
   cover?: string;
@@ -94,6 +96,7 @@ export interface PlaceholderTemplate {
   isCompleted: boolean;
   momentId?: string;
   allowMultiple?: boolean;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Moment {

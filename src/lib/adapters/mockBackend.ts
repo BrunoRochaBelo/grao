@@ -6,9 +6,9 @@ import {
   addSleepRecord,
   addVaccine,
   babies as mockBabies,
-  chapters as mockChapters,
   deleteMoment,
   getCurrentBaby,
+  getChapters,
   getFamilyMembers,
   getGrowthMeasurements,
   getMoments,
@@ -47,7 +47,7 @@ export async function fetchBabies(): Promise<Baby[]> {
 
 export async function fetchChapters(): Promise<Chapter[]> {
   await delay();
-  return clone(mockChapters);
+  return clone(getChapters());
 }
 
 export async function fetchCurrentBaby(): Promise<Baby> {
@@ -203,3 +203,4 @@ export const mockBackendAdapter: MockBackendAdapter = {
   fetchFamilyMembers,
   createFamilyMember,
 };
+

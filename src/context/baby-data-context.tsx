@@ -25,7 +25,7 @@ import {
   getAgeInMonths,
   getPlaceholdersForChapter as getPlaceholdersForChapterSource,
   babies as mockBabies,
-  chapters as mockChapters,
+  getChapters,
   getCurrentBaby,
   getMoments as getMockMoments,
   getGrowthMeasurements as getMockGrowthMeasurements,
@@ -218,9 +218,9 @@ export function BabyDataProvider({ children }: { children: ReactNode }) {
 
       try {
         const babies = mockBabies;
-        const chapters = mockChapters;
         const currentBaby = getCurrentBaby();
         const moments = getMockMoments();
+        const chapters = getChapters();
         const growthMeasurements = getMockGrowthMeasurements();
         const vaccines = getMockVaccines();
         const sleepHumorEntries = getMockSleepHumorEntries();
@@ -443,3 +443,4 @@ export function useBabyData(): BabyDataContextValue {
   }
   return context;
 }
+

@@ -5,7 +5,6 @@ import type { Chapter, Moment, PlaceholderTemplate } from "@/types";
 import {
   BookOpen,
   Calendar,
-  ChevronDown,
   ChevronRight,
   Moon,
   Syringe,
@@ -29,10 +28,6 @@ interface StatWidgetProps {
   subtitle?: string;
   color: string;
   onClick?: () => void;
-  showChart?: boolean;
-  chartData?: Array<Record<string, any>>;
-  chartType?: "line" | "bar";
-  emojiLine?: string[];
 }
 
 function StatWidget({
@@ -42,10 +37,6 @@ function StatWidget({
   subtitle,
   color,
   onClick,
-  showChart,
-  chartData,
-  chartType = "line",
-  emojiLine,
 }: StatWidgetProps) {
   return (
     <motion.button
@@ -137,14 +128,6 @@ export const HomeScreen = memo(function HomeScreen({
       return { chapter, completed, total, percentage };
     });
   }, [babyAgeInDays, moments]);
-
-  const totals = chapterSummaries.reduce(
-    (acc, item) => ({
-      completed: acc.completed + item.completed,
-      total: acc.total + item.total,
-    }),
-    { completed: 0, total: 0 }
-  );
 
   const growthMeasurements = getGrowthMeasurements();
   const latestGrowth = growthMeasurements[growthMeasurements.length - 1];
@@ -391,7 +374,6 @@ export const HomeScreen = memo(function HomeScreen({
 
   // Frase contextual simulada por IA
   const contextualPhrase = useMemo(() => {
-    const hour = new Date().getHours();
     const smiles = sleepEntries.filter(
       (e) => e.mood === "happy" || e.mood === "calm"
     ).length;
@@ -438,7 +420,6 @@ export const HomeScreen = memo(function HomeScreen({
 
       // Snap points otimizados para touch
       const CLOSE_THRESHOLD = 30; // Muito mais sensível para fechar
-      const REOPEN_THRESHOLD = 0; // Só abre quando scroll é zero
       const VELOCITY_THRESHOLD = 0.5; // Velocidade mínima para snap inercial
 
       scrollTimeout = setTimeout(() => {
@@ -775,13 +756,6 @@ export const HomeScreen = memo(function HomeScreen({
             subtitle={`+${weightChange} kg este mês`}
             color="#A346E5"
             onClick={handleNavigateToGrowth}
-            showChart
-            chartData={growthMeasurements.map((m) => ({
-              age: m.age,
-              weight: m.weight,
-              height: m.height,
-              headCircumference: m.headCircumference,
-            }))}
           />
           <StatWidget
             title="Sono & Humor"
@@ -790,31 +764,6 @@ export const HomeScreen = memo(function HomeScreen({
             subtitle="Média semanal"
             color="#7946E5"
             onClick={handleNavigateToSleepHumor}
-            showChart={true}
-            chartType="bar"
-            chartData={sleepEntries.slice(-7).map((entry, index) => ({
-              date: new Date(entry.date).toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-              }),
-              hours: entry.sleepHours,
-            }))}
-            emojiLine={sleepEntries.slice(-7).map((entry) => {
-              switch (entry.mood) {
-                case "happy":
-                  return "😄";
-                case "calm":
-                  return "😌";
-                case "fussy":
-                  return "😟";
-                case "crying":
-                  return "😭";
-                case "sleepy":
-                  return "😴";
-                default:
-                  return "😐";
-              }
-            })}
           />
           <StatWidget
             title="Consultas"
@@ -1021,3 +970,4 @@ export const HomeScreen = memo(function HomeScreen({
     </div>
   );
 });
+
