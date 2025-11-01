@@ -20,12 +20,12 @@ export function StatCard({
   loading = false,
 }: StatCardProps) {
   const baseClasses = cn(
-    "rounded-xl p-6 border-2 transition-all duration-200",
-    "touch-manipulation select-none min-h-[120px] flex items-center",
-    variant === "default" && "bg-card border-border shadow-md hover:shadow-lg",
-    variant === "elevated" && "bg-card border-border shadow-lg hover:shadow-xl",
+    "rounded-xl p-5 border transition-all duration-200",
+    "touch-manipulation select-none",
+    variant === "default" && "bg-card border-border shadow-sm hover:shadow-md",
+    variant === "elevated" && "bg-card border-border shadow-md hover:shadow-lg",
     variant === "highlighted" &&
-      "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/40 shadow-md hover:shadow-lg"
+      "bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-sm"
   );
 
   const interactive = onClick
@@ -43,21 +43,21 @@ export function StatCard({
       className={cn(
         baseClasses,
         onClick &&
-          "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary hover:scale-102 active:scale-98"
+          "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       )}
     >
-      <div className="flex items-center justify-between gap-4 w-full">
+      <div className="flex items-start justify-between gap-3">
         {icon && (
-          <div className="text-3xl flex-shrink-0 opacity-80">{icon}</div>
+          <div className="text-2xl flex-shrink-0 opacity-75">{icon}</div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1.5">
             {label}
           </p>
           {loading ? (
-            <div className="h-10 bg-muted rounded-md animate-pulse" />
+            <div className="h-8 bg-muted rounded-md animate-pulse" />
           ) : (
-            <p className="text-4xl font-extrabold text-foreground tracking-tight">{value}</p>
+            <p className="text-3xl font-bold text-foreground">{value}</p>
           )}
         </div>
       </div>

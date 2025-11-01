@@ -5,22 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3.5 gap-1.5 [&>svg]:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-all duration-200 overflow-hidden",
+  "inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3.5 gap-1.5 [&>svg]:pointer-events-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-all duration-150 overflow-hidden",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary-light shadow-sm hover:shadow-md hover:scale-105",
+          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary-light shadow-sm",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 shadow-sm hover:shadow-md hover:scale-105",
+          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 shadow-sm",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 shadow-sm hover:shadow-md hover:scale-105",
+          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 shadow-sm",
         outline:
-          "border-2 border-border bg-card text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground hover:border-primary/50",
+          "border border-border bg-card text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         success:
-          "border-transparent bg-success/15 text-success border-2 border-success/30 font-bold",
+          "border-transparent bg-success/20 text-success border border-success/40",
         warning:
-          "border-transparent bg-warning/15 text-warning-dark border-2 border-warning/30 font-bold dark:text-warning",
+          "border-transparent bg-warning/20 text-warning border border-warning/40",
       },
     },
     defaultVariants: {
