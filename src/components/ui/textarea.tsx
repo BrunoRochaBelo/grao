@@ -2,13 +2,23 @@ import * as React from "react";
 
 import { cn } from "./utils";
 
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+function Textarea({
+  className,
+  disabled,
+  ...props
+}: React.ComponentProps<"textarea">) {
   return (
     <textarea
+      disabled={disabled}
       data-slot="textarea"
       className={cn(
-        "resize-none border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-input-background px-3 py-2 text-base transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className,
+        "resize-none placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
+        "flex field-sizing-content min-h-24 w-full rounded-lg border border-border bg-input-background px-3.5 py-2.5 text-base transition-all duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted",
+        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+        "dark:bg-input-background dark:border-border/60 dark:placeholder:text-muted-foreground/70",
+        className
       )}
       {...props}
     />
