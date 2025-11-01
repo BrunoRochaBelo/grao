@@ -5,21 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-all duration-150 cubic-bezier(0.4, 0, 0.2, 1) disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive touch-manipulation active:scale-95",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-all duration-200 ease-out disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive touch-manipulation active:scale-[0.98] hover:scale-[1.02] active:brightness-95",
   {
     variants: {
       variant: {
         default:
-          "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg hover:shadow-blue-600/40 shadow-md dark:bg-blue-500 dark:hover:bg-blue-600 dark:hover:shadow-blue-500/30",
+          "bg-primary hover:bg-primary-light text-primary-foreground hover:shadow-lg hover:shadow-primary/30 shadow-md dark:bg-primary dark:hover:bg-primary-light dark:hover:shadow-primary/20 focus-visible:ring-2 focus-visible:ring-primary/50",
         destructive:
-          "bg-red-600 hover:bg-red-700 text-white hover:shadow-lg hover:shadow-red-600/40 shadow-md focus-visible:outline-red-600/50 dark:bg-red-500 dark:hover:bg-red-600 dark:hover:shadow-red-500/30",
+          "bg-destructive hover:bg-destructive/90 text-destructive-foreground hover:shadow-lg hover:shadow-destructive/30 shadow-md focus-visible:outline-destructive/50 focus-visible:ring-2 focus-visible:ring-destructive/50 dark:bg-destructive dark:hover:bg-destructive/90",
         outline:
-          "border-2 border-current text-foreground bg-transparent hover:bg-foreground/5 active:bg-foreground/10",
+          "border-2 border-primary text-primary bg-transparent hover:bg-primary/5 active:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/50",
         secondary:
-          "bg-purple-600 hover:bg-purple-700 text-white hover:shadow-lg hover:shadow-purple-600/40 shadow-md dark:bg-purple-500 dark:hover:bg-purple-600 dark:hover:shadow-purple-500/30",
+          "bg-secondary hover:bg-secondary/90 text-secondary-foreground hover:shadow-lg hover:shadow-secondary/30 shadow-md focus-visible:ring-2 focus-visible:ring-secondary/50 dark:bg-secondary dark:hover:bg-secondary/90",
         ghost:
-          "text-foreground hover:bg-foreground/10 active:bg-foreground/20 dark:text-foreground dark:hover:bg-foreground/5",
-        link: "text-blue-600 underline-offset-4 hover:underline active:opacity-75 text-base dark:text-blue-400",
+          "text-foreground hover:bg-muted active:bg-muted/80 dark:text-foreground dark:hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-primary/30",
+        link: "text-primary underline-offset-4 hover:underline active:opacity-75 text-base dark:text-primary-light focus-visible:ring-2 focus-visible:ring-primary/30",
       },
       size: {
         default: "h-11 px-6 py-3 text-sm min-h-11 min-w-11 has-[>svg]:px-4",
