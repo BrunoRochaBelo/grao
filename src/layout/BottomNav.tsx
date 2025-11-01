@@ -111,20 +111,7 @@ export function BottomNav({
       {/* Barra de navegação fixa na base */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 px-4 py-2">
         <div className="w-full max-w-2xl mx-auto">
-          <div
-            className="border border-border rounded-3xl shadow-lg px-4 py-2 backdrop-blur-md"
-            style={{
-              background: "rgba(255, 255, 255, 0.95)",
-              borderColor: "var(--border)",
-              WebkitBackdropFilter: "blur(12px)",
-            }}
-          >
-            <style>{`
-              .dark nav > div > div {
-                background: rgba(21, 19, 31, 0.95) !important;
-                border-color: var(--border);
-              }
-            `}</style>
+          <div className="glass-nav border rounded-3xl shadow-lg px-4 py-2">
             <div className="flex items-center justify-between">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
