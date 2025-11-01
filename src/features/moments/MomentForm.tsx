@@ -161,8 +161,8 @@ export function MomentForm({
 
       toast.success(
         values.status === "published"
-          ? `${template.icon} Lembrança guardada com carinho 🌸`
-          : "Rascunho salvo para depois."
+          ? `${template.icon} Momento adicionado à história 🌸`
+          : "Rascunho salvo com sucesso"
       );
 
       onSave?.();
@@ -214,14 +214,14 @@ export function MomentForm({
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 22, stiffness: 280 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-50 max-h-[90vh] overflow-hidden flex flex-col"
           >
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center gap-2">
                 <span className="text-2xl">{template.icon}</span>
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">{template.name}</h2>
+                  <h2 className="text-foreground">{template.name}</h2>
                   <p className="text-muted-foreground text-sm">
                     {chapter.name}
                   </p>
@@ -236,9 +236,9 @@ export function MomentForm({
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-              <div className="max-w-2xl mx-auto space-y-6">
-                <div className="space-y-2">
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="max-w-2xl mx-auto space-y-4">
+                <div>
                   <Label>Fotos e Vídeos</Label>
                   <button className="w-full h-40 border-2 border-dashed border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <Camera className="w-8 h-8" />
@@ -248,14 +248,14 @@ export function MomentForm({
 
                 <div>
                   <Label htmlFor="title">
-                    Dê um nome a esta lembrança <span className="text-destructive">*</span>
+                    Título <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="title"
-                    placeholder="Primeiro sorriso, dia na praia, etc."
+                    placeholder="Conte este momento em uma frase..."
                     className="mt-1"
                     {...register("title", {
-                      required: "Toda lembrança precisa de um nome.",
+                      required: "Informe um título para o momento.",
                       setValueAs: (value) => (value as string).trimStart(),
                     })}
                   />
@@ -327,7 +327,7 @@ export function MomentForm({
                     <Label htmlFor="location">Local</Label>
                     <Input
                       id="location"
-                      placeholder="Casa da vovó, no parque..."
+                      placeholder="Onde aconteceu?"
                       className="mt-1"
                       {...register("location", {
                         maxLength: {
@@ -343,10 +343,10 @@ export function MomentForm({
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="people">Quem estava presente?</Label>
+                    <Label htmlFor="people">Pessoas</Label>
                     <Input
                       id="people"
-                      placeholder="Vovô, titia, etc."
+                      placeholder="Separe os nomes com vírgula"
                       className="mt-1"
                       {...register("peopleRaw", {
                         maxLength: {
@@ -366,10 +366,10 @@ export function MomentForm({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label htmlFor="noteShort">Um pequeno resumo</Label>
+                    <Label htmlFor="noteShort">Resumo do momento</Label>
                     <Textarea
                       id="noteShort"
-                      placeholder="Uma frase ou citação especial..."
+                      placeholder="Escreva uma frase marcante..."
                       className="mt-1"
                       rows={3}
                       {...register("noteShort", {
@@ -387,10 +387,10 @@ export function MomentForm({
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="noteLong">Sua história completa</Label>
+                    <Label htmlFor="noteLong">Depoimento completo</Label>
                     <Textarea
                       id="noteLong"
-                      placeholder="Escreva com o coração... quais cheiros, sons e sentimentos tornaram este momento especial?"
+                      placeholder="Conte mais detalhes e sentimentos sobre este momento..."
                       className="mt-1"
                       rows={4}
                       {...register("noteLong", {
@@ -429,7 +429,7 @@ export function MomentForm({
                       variant="secondary"
                       onClick={handleAddTag}
                     >
-                      Add
+                      Adicionar
                     </Button>
                   </div>
                   {(tagError || errors.tags) && (
@@ -465,7 +465,7 @@ export function MomentForm({
                 </div>
 
                 <div className="space-y-3">
-                  <Label>Quem pode ver este momento?</Label>
+                  <Label>Privacidade</Label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {PRIVACY_OPTIONS.map((option) => {
                       const style = getHighlightStyle(option.tone);
@@ -510,7 +510,7 @@ export function MomentForm({
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 border-t border-border bg-background/90">
+            <div className="p-4 border-t border-border bg-background/90">
               <div className="max-w-2xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <button
                   type="button"
@@ -525,7 +525,7 @@ export function MomentForm({
                     disabled={isSubmitting}
                     onClick={handlePublish}
                   >
-                    Guardar na história
+                    Publicar momento
                   </Button>
                 </div>
               </div>

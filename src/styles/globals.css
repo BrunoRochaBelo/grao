@@ -1,6 +1,5 @@
 :root {
   /* === Typography === */
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-size: 16px;
   --font-weight-light: 300;
   --font-weight-normal: 400;
@@ -29,20 +28,19 @@
   --radius: 1rem;
 
   /* === Colors: Light Mode === */
-  --background: #f9f7ff; /* Slightly lighter lavender */
-  --foreground: #2a2347; /* Darker, softer purple */
+  --background: #f7f5ff;
+  --foreground: #241c3d;
   --card: #ffffff;
-  --card-foreground: #2a2347;
+  --card-foreground: #241c3d;
   --popover: #ffffff;
-  --popover-foreground: #2a2347;
-  --primary: #7e6cff; /* Softer, vibrant lilac */
+  --popover-foreground: #241c3d;
+  --primary: #5042d8;
   --primary-foreground: #ffffff;
-  --primary-light: #988cff;
-  --primary-lighter: #efebff;
-  --secondary: #ff85c0; /* Softer, pastel pink */
+  --primary-light: #6b5ce0;
+  --primary-lighter: #e8e5ff;
+  --secondary: #e63384;
   --secondary-foreground: #ffffff;
-  --primary-gradient: linear-gradient(120deg, #8A76FF 0%, #FF85C0 100%);
-  --muted: #f0ecf9;
+  --muted: #e8e5f5;
   --muted-foreground: #615b77;
   --accent: #e5f1ff;
   --accent-foreground: #233050;
@@ -99,19 +97,19 @@
 
 .dark {
   /* === Dark Mode Colors === */
-  --background: #120f1c; /* Softer, slightly lighter dark purple */
+  --background: #0a0810;
   --foreground: #f5f3ff;
-  --card: #1d1a2b;
+  --card: #15131f;
   --card-foreground: #f5f3ff;
-  --popover: #242139;
+  --popover: #1c1a2e;
   --popover-foreground: #f5f3ff;
-  --primary: #988cff; /* Brighter lilac for contrast */
-  --primary-foreground: #120f1c;
-  --primary-light: #b4a9ff;
-  --primary-lighter: #302b4a;
-  --secondary: #ff99ca; /* Brighter pastel pink for contrast */
-  --secondary-foreground: #120f1c;
-  --muted: #252238;
+  --primary: #5e7dff;
+  --primary-foreground: #0a0810;
+  --primary-light: #7a96ff;
+  --primary-lighter: #2b2640;
+  --secondary: #ff5fa3;
+  --secondary-foreground: #0a0810;
+  --muted: #1f1d2f;
   --muted-foreground: #c8c3e0;
   --accent: #1f2838;
   --accent-foreground: #dcd8f5;
@@ -169,7 +167,6 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
   background-image: radial-gradient(
       circle at 18% 18%,
       rgba(104, 85, 255, 0.16),
@@ -395,18 +392,6 @@ body {
     cursor: not-allowed;
     opacity: 0.5;
   }
-
-  /* === Glassmorphism Nav === */
-  .glass-nav {
-    background-color: var(--card-foreground / 0.02);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-color: var(--card-foreground / 0.1);
-  }
-
-  .dark .glass-nav {
-    background-color: var(--card-foreground / 0.05);
-  }
 }
 
 @layer utilities {
@@ -431,14 +416,74 @@ html {
 
 /* === Button Styles - Guaranteed Colors === */
 
+/* Default Button (Blue) */
+[data-slot="button"]:where(.bg-blue-600) {
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+[data-slot="button"]:where(.bg-blue-600):hover {
+  background-color: #1e40af;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-blue-500) {
+  background-color: #3b82f6;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-blue-500):hover {
+  background-color: #2563eb;
+}
+
+/* Destructive Button (Red) */
+[data-slot="button"]:where(.bg-red-600) {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+[data-slot="button"]:where(.bg-red-600):hover {
+  background-color: #b91c1c;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-red-500) {
+  background-color: #ef4444;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-red-500):hover {
+  background-color: #dc2626;
+}
+
+/* Secondary Button (Purple) */
+[data-slot="button"]:where(.bg-purple-600) {
+  background-color: #7c3aed;
+  color: #ffffff;
+}
+
+[data-slot="button"]:where(.bg-purple-600):hover {
+  background-color: #6d28d9;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-purple-500) {
+  background-color: #a78bfa;
+}
+
+.dark [data-slot="button"]:where(.dark\:bg-purple-500):hover {
+  background-color: #8b5cf6;
+}
+
 /* FAB Button (+) */
 .fab-button {
-  background-image: var(--primary-gradient);
-  color: var(--primary-foreground);
-  transition: all 0.2s ease-in-out;
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.dark .fab-button {
+  background-color: #3b82f6;
 }
 
 .fab-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px -5px rgba(126, 108, 255, 0.4);
+  background-color: #1e40af;
+}
+
+.dark .fab-button:hover {
+  background-color: #2563eb;
 }
