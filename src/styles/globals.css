@@ -6,8 +6,9 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
 
-  /* === Sizing & Spacing (4px base unit) === */
+  /* === Sizing & Spacing (8px base unit for comfort) === */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -19,70 +20,71 @@
   --space-16: 4rem;
   --space-20: 5rem;
 
-  /* === Border Radius === */
-  --radius-sm: 0.5rem;
+  /* === Border Radius (Suave, acolhedor: 10-12px) === */
+  --radius-sm: 0.625rem;
   --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
-  --radius: 1rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius: 0.875rem;
 
-  /* === Colors: Light Mode === */
-  --background: #f7f5ff;
-  --foreground: #241c3d;
+  /* === Colors: Light Mode (BabySoft Palette) === */
+  /* Inspirado em lavanda, areia, céu, creme e cinza leitoso */
+  --background: #faf8ff;
+  --foreground: #3d3652;
   --card: #ffffff;
-  --card-foreground: #241c3d;
+  --card-foreground: #3d3652;
   --popover: #ffffff;
-  --popover-foreground: #241c3d;
-  --primary: #5042d8;
+  --popover-foreground: #3d3652;
+  --primary: #7b68d8;
   --primary-foreground: #ffffff;
-  --primary-light: #6b5ce0;
-  --primary-lighter: #e8e5ff;
-  --secondary: #e63384;
+  --primary-light: #9b88e8;
+  --primary-lighter: #ede5ff;
+  --secondary: #d97fb8;
   --secondary-foreground: #ffffff;
-  --muted: #e8e5f5;
-  --muted-foreground: #615b77;
-  --accent: #e5f1ff;
-  --accent-foreground: #233050;
-  --destructive: #f25c6b;
+  --muted: #f0ecf5;
+  --muted-foreground: #6b6281;
+  --accent: #d4e5ff;
+  --accent-foreground: #2d4469;
+  --destructive: #e08a95;
   --destructive-foreground: #ffffff;
-  --success: #2fba88;
-  --success-light: #56d6a4;
-  --warning: #f8a94f;
-  --warning-light: #f4c56d;
-  --border: #d7d1f2;
+  --success: #5aca88;
+  --success-light: #7dd9a3;
+  --warning: #f4b56f;
+  --warning-light: #f9c98d;
+  --border: #e0d8f0;
   --input: transparent;
-  --input-background: #f0edff;
-  --switch-background: #c5bff0;
-  --ring: rgba(80, 66, 216, 0.45);
-  --chart-1: #5042d8;
-  --chart-2: #ff87c3;
-  --chart-3: #56d6a4;
-  --chart-4: #f8a94f;
-  --chart-5: #4f8df8;
+  --input-background: #f5f0ff;
+  --switch-background: #d4cce5;
+  --ring: rgba(123, 104, 216, 0.35);
+  --chart-1: #7b68d8;
+  --chart-2: #ff9dc9;
+  --chart-3: #5aca88;
+  --chart-4: #f4b56f;
+  --chart-5: #6fa3f8;
 
-  /* === Shadows === */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-soft: 0 12px 32px -18px rgba(60, 48, 120, 0.35);
-  --shadow-soft-hover: 0 16px 42px -18px rgba(60, 48, 120, 0.42);
+  /* === Shadows (Difusas, suaves e acolhedoras) === */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(60, 48, 120, 0.08),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 16px -4px rgba(60, 48, 120, 0.12),
+    0 4px 8px -2px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 28px -6px rgba(60, 48, 120, 0.14),
+    0 10px 12px -4px rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 12px 32px -18px rgba(60, 48, 120, 0.25);
+  --shadow-soft-hover: 0 16px 42px -18px rgba(60, 48, 120, 0.32);
 
   /* === Highlight Colors === */
-  --highlight-lavender: #5042d8;
-  --highlight-lavender-soft: rgba(80, 66, 216, 0.14);
-  --highlight-lavender-border: rgba(80, 66, 216, 0.35);
-  --highlight-mint: #56d6a4;
-  --highlight-mint-soft: rgba(86, 214, 164, 0.14);
-  --highlight-mint-border: rgba(86, 214, 164, 0.3);
-  --highlight-baby-blue: #4f8df8;
-  --highlight-baby-blue-soft: rgba(79, 141, 248, 0.14);
-  --highlight-baby-blue-border: rgba(79, 141, 248, 0.3);
+  --highlight-lavender: #7b68d8;
+  --highlight-lavender-soft: rgba(123, 104, 216, 0.1);
+  --highlight-lavender-border: rgba(123, 104, 216, 0.3);
+  --highlight-mint: #5aca88;
+  --highlight-mint-soft: rgba(90, 202, 136, 0.1);
+  --highlight-mint-border: rgba(90, 202, 136, 0.28);
+  --highlight-baby-blue: #6fa3f8;
+  --highlight-baby-blue-soft: rgba(111, 163, 248, 0.1);
+  --highlight-baby-blue-border: rgba(111, 163, 248, 0.28);
 
   /* === Sidebar (Legacy, kept for compatibility) === */
   --sidebar: #ffffff;
@@ -96,72 +98,72 @@
 }
 
 .dark {
-  /* === Dark Mode Colors === */
-  --background: #0a0810;
-  --foreground: #f5f3ff;
-  --card: #15131f;
-  --card-foreground: #f5f3ff;
-  --popover: #1c1a2e;
-  --popover-foreground: #f5f3ff;
-  --primary: #5e7dff;
-  --primary-foreground: #0a0810;
-  --primary-light: #7a96ff;
-  --primary-lighter: #2b2640;
-  --secondary: #ff5fa3;
-  --secondary-foreground: #0a0810;
-  --muted: #1f1d2f;
-  --muted-foreground: #c8c3e0;
-  --accent: #1f2838;
-  --accent-foreground: #dcd8f5;
-  --destructive: #ff8a95;
-  --destructive-foreground: #0a0810;
-  --success: #4dd8a4;
-  --success-light: #4dd8a4;
+  /* === Dark Mode Colors (BabySoft: Azul-noturno + Areia escura) === */
+  --background: #0f0d18;
+  --foreground: #f2f0ff;
+  --card: #1a1830;
+  --card-foreground: #f2f0ff;
+  --popover: #24223a;
+  --popover-foreground: #f2f0ff;
+  --primary: #a399e8;
+  --primary-foreground: #0f0d18;
+  --primary-light: #b8ace8;
+  --primary-lighter: #2d2646;
+  --secondary: #ff9dc9;
+  --secondary-foreground: #0f0d18;
+  --muted: #28253f;
+  --muted-foreground: #d0ccde;
+  --accent: #2d4472;
+  --accent-foreground: #e8e4f8;
+  --destructive: #f08a9f;
+  --destructive-foreground: #0f0d18;
+  --success: #6dd9a8;
+  --success-light: #6dd9a8;
   --warning: #ffc26d;
   --warning-light: #ffc26d;
-  --border: #3d3a52;
+  --border: #3d394f;
   --input: transparent;
-  --input-background: #1f1d2f;
-  --switch-background: #534d8f;
-  --ring: rgba(94, 125, 255, 0.5);
-  --chart-1: #5e7dff;
-  --chart-2: #ff88d4;
-  --chart-3: #4dd8a4;
+  --input-background: #24223a;
+  --switch-background: #5d5281;
+  --ring: rgba(163, 153, 232, 0.4);
+  --chart-1: #a399e8;
+  --chart-2: #ff9dc9;
+  --chart-3: #6dd9a8;
   --chart-4: #ffc26d;
-  --chart-5: #6fa3ff;
+  --chart-5: #8ab8ff;
 
-  /* === Dark Mode Shadows === */
-  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
-    0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4),
-    0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4),
-    0 10px 10px -5px rgba(0, 0, 0, 0.3);
-  --shadow-soft: 0 12px 40px -18px rgba(0, 0, 0, 0.7);
-  --shadow-soft-hover: 0 18px 46px -18px rgba(0, 0, 0, 0.75);
+  /* === Dark Mode Shadows (Difusas com profundidade suave) === */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.28), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.32),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 16px -4px rgba(0, 0, 0, 0.36),
+    0 4px 8px -2px rgba(0, 0, 0, 0.24);
+  --shadow-xl: 0 20px 28px -6px rgba(0, 0, 0, 0.4),
+    0 10px 12px -4px rgba(0, 0, 0, 0.28);
+  --shadow-soft: 0 12px 40px -18px rgba(0, 0, 0, 0.55);
+  --shadow-soft-hover: 0 18px 48px -18px rgba(0, 0, 0, 0.62);
 
   /* === Dark Mode Sidebar === */
-  --sidebar: #15131f;
-  --sidebar-foreground: #f4f0ff;
-  --sidebar-primary: #5e7dff;
-  --sidebar-primary-foreground: #0a0810;
-  --sidebar-accent: #23213a;
-  --sidebar-accent-foreground: #ebe8ff;
-  --sidebar-border: #3d3a52;
-  --sidebar-ring: rgba(94, 125, 255, 0.5);
+  --sidebar: #1a1830;
+  --sidebar-foreground: #f2f0ff;
+  --sidebar-primary: #a399e8;
+  --sidebar-primary-foreground: #0f0d18;
+  --sidebar-accent: #28253f;
+  --sidebar-accent-foreground: #f0ecff;
+  --sidebar-border: #3d394f;
+  --sidebar-ring: rgba(163, 153, 232, 0.4);
 
   /* === Dark Mode Highlights === */
-  --highlight-lavender: #5e7dff;
-  --highlight-lavender-soft: rgba(94, 125, 255, 0.14);
-  --highlight-lavender-border: rgba(94, 125, 255, 0.35);
-  --highlight-mint: #4dd8a4;
-  --highlight-mint-soft: rgba(77, 216, 164, 0.14);
-  --highlight-mint-border: rgba(77, 216, 164, 0.3);
-  --highlight-baby-blue: #6fa3ff;
-  --highlight-baby-blue-soft: rgba(111, 163, 255, 0.14);
-  --highlight-baby-blue-border: rgba(111, 163, 255, 0.3);
+  --highlight-lavender: #a399e8;
+  --highlight-lavender-soft: rgba(163, 153, 232, 0.12);
+  --highlight-lavender-border: rgba(163, 153, 232, 0.3);
+  --highlight-mint: #6dd9a8;
+  --highlight-mint-soft: rgba(109, 217, 168, 0.12);
+  --highlight-mint-border: rgba(109, 217, 168, 0.28);
+  --highlight-baby-blue: #8ab8ff;
+  --highlight-baby-blue-soft: rgba(138, 184, 255, 0.12);
+  --highlight-baby-blue-border: rgba(138, 184, 255, 0.28);
 }
 
 body {
@@ -217,67 +219,44 @@ body {
 }
 
 /**
- * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ * Base typography. Tipografia fluida com clamp() e pesos 400-500 para conforto e legibilidade.
+ * Line-height 1.4-1.6 para respiração visual.
  */
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     /* === Heading 1 === */
     h1 {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 5vw, 2.5rem);
       font-weight: var(--font-weight-bold);
       line-height: 1.2;
       letter-spacing: -0.02em;
       margin: var(--space-6) 0;
     }
 
-    @media (max-width: 640px) {
-      h1 {
-        font-size: 2rem;
-      }
-    }
-
     /* === Heading 2 === */
     h2 {
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
       font-weight: var(--font-weight-bold);
       line-height: 1.3;
       letter-spacing: -0.015em;
       margin: var(--space-6) 0;
     }
 
-    @media (max-width: 640px) {
-      h2 {
-        font-size: 1.5rem;
-      }
-    }
-
     /* === Heading 3 === */
     h3 {
-      font-size: 1.5rem;
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
       font-weight: var(--font-weight-semibold);
       line-height: 1.4;
       letter-spacing: -0.01em;
       margin: var(--space-4) 0;
     }
 
-    @media (max-width: 640px) {
-      h3 {
-        font-size: 1.25rem;
-      }
-    }
-
     /* === Heading 4 === */
     h4 {
-      font-size: 1.25rem;
+      font-size: clamp(1.125rem, 2.5vw, 1.25rem);
       font-weight: var(--font-weight-semibold);
       line-height: 1.4;
       margin: var(--space-4) 0;
-    }
-
-    @media (max-width: 640px) {
-      h4 {
-        font-size: 1.125rem;
-      }
     }
 
     /* === Paragraph (Body) === */
@@ -296,7 +275,7 @@ body {
       line-height: 1.5;
     }
 
-    /* === Label === */
+    /* === Label (Tipografia amigável, pesos 400-500) === */
     label {
       font-size: 0.9375rem;
       font-weight: var(--font-weight-medium);
@@ -322,14 +301,14 @@ body {
 }
 
 @layer components {
-  /* === Card Surface === */
+  /* === Card Surface (Branco leitoso, sombras difusas, bordas suaves) === */
   .card-surface {
     background-color: var(--card);
     color: var(--card-foreground);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-sm);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
   .card-surface:hover {
@@ -342,18 +321,20 @@ body {
   }
 
   .card-surface:focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(123, 104, 216, 0.15),
+      0 0 0 6px rgba(123, 104, 216, 0.1);
+    transition: all 0.2s ease-out;
   }
 
   /* === Elevated Card === */
   .card-elevated {
     background-color: var(--card);
     color: var(--card-foreground);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
   .card-elevated:hover {
@@ -361,36 +342,57 @@ body {
     transform: translateY(-2px);
   }
 
+  .card-elevated:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(123, 104, 216, 0.15), var(--shadow-lg);
+  }
+
   /* === Subtle Card === */
   .card-subtle {
-    background-color: rgba(104, 85, 255, 0.05);
-    border: 1px solid var(--highlight-lavender-soft);
+    background-color: rgba(123, 104, 216, 0.04);
+    border: 1.5px solid var(--highlight-lavender-soft);
     border-radius: var(--radius-lg);
     padding: var(--space-4);
+    transition: all 0.25s ease-out;
+  }
+
+  .card-subtle:hover {
+    background-color: rgba(123, 104, 216, 0.06);
   }
 
   .dark .card-subtle {
-    background-color: rgba(162, 157, 255, 0.08);
+    background-color: rgba(163, 153, 232, 0.06);
   }
 
-  /* === Interactive Button Base === */
+  .dark .card-subtle:hover {
+    background-color: rgba(163, 153, 232, 0.08);
+  }
+
+  /* === Interactive Button Base (Escala 1.01x hover, 0.99x press) === */
   .interactive {
     cursor: pointer;
     user-select: none;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
   .interactive:hover {
-    opacity: 0.95;
+    transform: scale(1.01);
+    opacity: 0.98;
   }
 
   .interactive:active {
-    transform: scale(0.98);
+    transform: scale(0.99);
   }
 
   .interactive:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+  }
+
+  .interactive:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(123, 104, 216, 0.15),
+      0 0 0 6px rgba(123, 104, 216, 0.1);
   }
 }
 
@@ -404,6 +406,57 @@ html {
   font-size: var(--font-size);
 }
 
+html {
+  font-size: var(--font-size);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Scrollbar Translúcida e Discreta === */
+/* WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(123, 104, 216, 0.3);
+  border-radius: 4px;
+  transition: background 0.25s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 104, 216, 0.5);
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: rgba(163, 153, 232, 0.25);
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(163, 153, 232, 0.4);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(123, 104, 216, 0.3) transparent;
+}
+
+.dark * {
+  scrollbar-color: rgba(163, 153, 232, 0.25) transparent;
+}
+
 /* Hide scrollbar for horizontal scroll containers */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -414,7 +467,115 @@ html {
   display: none;
 }
 
-/* === Button Styles - Guaranteed Colors === */
+/* === Foco Universal com Brilho Difuso === */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(123, 104, 216, 0.15),
+    0 0 0 6px rgba(123, 104, 216, 0.08);
+  transition: box-shadow 0.2s ease-out;
+}
+
+.dark *:focus-visible {
+  box-shadow: 0 0 0 3px rgba(163, 153, 232, 0.2),
+    0 0 0 6px rgba(163, 153, 232, 0.1);
+}
+
+/* === Seleção com Cores Suaves === */
+::selection {
+  background-color: rgba(123, 104, 216, 0.25);
+  color: var(--foreground);
+}
+
+.dark ::selection {
+  background-color: rgba(163, 153, 232, 0.3);
+  color: var(--foreground);
+}
+
+/* === Placeholder com Tom Neutro === */
+::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+
+/* === Animação Respirante (Pulso Suave) === */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* === Animação de Carregamento (Skeleton Gradient) === */
+@keyframes shimmer {
+  0% {
+    background-position: -1200px 0;
+  }
+  100% {
+    background-position: 1200px 0;
+  }
+}
+
+.skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(123, 104, 216, 0.1) 0%,
+    rgba(123, 104, 216, 0.2) 50%,
+    rgba(123, 104, 216, 0.1) 100%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+.dark .skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(163, 153, 232, 0.08) 0%,
+    rgba(163, 153, 232, 0.14) 50%,
+    rgba(163, 153, 232, 0.08) 100%
+  );
+  background-size: 1200px 100%;
+}
+
+/* === Animação de Sucesso (Check Suave) === */
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* === Animação de Erro (Shake Suave) === */
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.error-shake {
+  animation: errorShake 0.5s ease-out;
+}
 
 /* Default Button (Blue) */
 [data-slot="button"]:where(.bg-blue-600) {

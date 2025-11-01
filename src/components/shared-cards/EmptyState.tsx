@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import { cn } from "@/components/ui/utils";
-import { AlertCircle, Package } from "lucide-react";
+import { Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -10,8 +11,14 @@ interface EmptyStateProps {
   action?: {
     label: string;
     onClick: () => void;
+    variant?: "default" | "outline";
   };
-  variant?: "default" | "minimal";
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
+  variant?: "default" | "minimal" | "full";
+  fullScreen?: boolean;
 }
 
 export function EmptyState({
@@ -19,7 +26,9 @@ export function EmptyState({
   title,
   description,
   action,
+  secondaryAction,
   variant = "default",
+  fullScreen = false,
 }: EmptyStateProps) {
   const defaultIcon = <Package className="w-12 h-12 opacity-50" />;
 
@@ -27,30 +36,78 @@ export function EmptyState({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={cn(
         "flex flex-col items-center justify-center text-center",
         variant === "default" && "py-12 px-6",
-        variant === "minimal" && "py-8 px-4"
+        variant === "minimal" && "py-8 px-4",
+        variant === "full" && "py-16 px-6",
+        fullScreen && "min-h-screen"
       )}
     >
-      <div className="mb-4 text-4xl opacity-60">{icon || defaultIcon}</div>
+      {/* Animated Icon */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: "spring", damping: 20, stiffness: 200 }}
+        className="mb-4 p-4 rounded-full bg-primary/10"
+      >
+        <div className="text-4xl text-primary opacity-70">
+          {icon || defaultIcon}
+        </div>
+      </motion.div>
 
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+      {/* Title */}
+      <motion.h3
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="text-lg font-semibold text-foreground mb-2"
+      >
+        {title}
+      </motion.h3>
 
+      {/* Description */}
       {description && (
-        <p className="text-sm text-muted-foreground max-w-xs mb-6">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-sm text-muted-foreground max-w-xs mb-6"
+        >
           {description}
-        </p>
+        </motion.p>
       )}
 
-      {action && (
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={action.onClick}
-          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-all duration-200 hover:bg-primary-light"
+      {/* Actions */}
+      {(action || secondaryAction) && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="flex flex-col gap-2 sm:flex-row sm:gap-3"
         >
-          {action.label}
-        </motion.button>
+          {action && (
+            <Button
+              onClick={action.onClick}
+              variant={action.variant || "default"}
+              size="sm"
+              className="min-h-10"
+            >
+              {action.label}
+            </Button>
+          )}
+          {secondaryAction && (
+            <Button
+              onClick={secondaryAction.onClick}
+              variant="outline"
+              size="sm"
+              className="min-h-10"
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
+        </motion.div>
       )}
     </motion.div>
   );

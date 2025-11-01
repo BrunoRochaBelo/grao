@@ -1,10 +1,10 @@
 import React from "react";
 import { motion } from "motion/react";
-import { AlertCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/components/ui/utils";
 import { Button } from "@/components/ui/button";
 
-interface ErrorStateProps {
+interface SuccessStateProps {
   title: string;
   description?: string;
   action?: {
@@ -18,47 +18,47 @@ interface ErrorStateProps {
   };
   variant?: "card" | "inline" | "full";
   fullScreen?: boolean;
-  severity?: "error" | "warning";
 }
 
-export function ErrorState({
+export function SuccessState({
   title,
   description,
   action,
   secondaryAction,
   variant = "card",
   fullScreen = false,
-  severity = "error",
-}: ErrorStateProps) {
-  const isWarning = severity === "warning";
-  const baseColor = isWarning ? "warning" : "destructive";
-  const bgColor = isWarning
-    ? "border-warning/30 bg-warning/10"
-    : "border-destructive/30 bg-destructive/10";
-  const textColor = isWarning ? "text-warning" : "text-destructive";
-
+}: SuccessStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        `flex items-start gap-3 rounded-lg border ${bgColor} p-4`,
+        "flex items-start gap-3 rounded-lg border border-success/30 bg-success/10 p-4",
         variant === "card" && "flex-col",
         variant === "inline" && "flex-row",
         variant === "full" && "flex-col p-6 rounded-xl",
         fullScreen && "min-h-screen flex justify-center items-center"
       )}
     >
-      {/* Icon */}
+      {/* Icon with animation */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ delay: 0.1, type: "spring", damping: 20, stiffness: 200 }}
+        transition={{
+          delay: 0.1,
+          type: "spring",
+          damping: 15,
+          stiffness: 200,
+        }}
+        className="p-1"
       >
-        <AlertCircle
-          className={cn("w-5 h-5 flex-shrink-0 mt-0.5", textColor)}
-        />
+        <motion.div
+          animate={{ rotate: [0, 15, -10, 0] }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          <Check className="w-5 h-5 text-success flex-shrink-0" />
+        </motion.div>
       </motion.div>
 
       {/* Content */}
@@ -67,7 +67,7 @@ export function ErrorState({
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className={cn("font-semibold text-sm mb-1", textColor)}
+          className="font-semibold text-sm text-success mb-1"
         >
           {title}
         </motion.h3>
@@ -77,10 +77,7 @@ export function ErrorState({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className={cn(
-              "text-xs mb-3",
-              isWarning ? "text-warning/80" : "text-destructive/80"
-            )}
+            className="text-xs text-success/80 mb-3"
           >
             {description}
           </motion.p>
