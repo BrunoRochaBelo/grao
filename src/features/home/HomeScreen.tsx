@@ -40,26 +40,30 @@ function StatWidget({
 }: StatWidgetProps) {
   return (
     <motion.button
-      whileTap={{ scale: 0.97 }}
+      whileTap={{ scale: 0.96 }}
+      whileHover={{ scale: 1.02 }}
       onClick={onClick}
-      className="bg-card rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow text-left relative overflow-hidden"
-      style={{ backgroundColor: `${color}20` }}
+      className="bg-card rounded-2xl p-5 shadow-md border-2 border-border hover:shadow-lg hover:border-primary/30 transition-all duration-200 text-left relative overflow-hidden group"
+      style={{ backgroundColor: `${color}10` }}
     >
-      <div className="flex items-start justify-between mb-3">
+      {/* Background gradient on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <div className="relative z-10 flex items-start justify-between mb-3">
         <div
-          className="p-2 rounded-xl"
-          style={{ backgroundColor: `${color}40` }}
+          className="p-2.5 rounded-xl shadow-sm"
+          style={{ backgroundColor: `${color}30` }}
         >
           {icon}
         </div>
         {onClick && (
-          <ChevronRight className="w-5 h-5 text-muted-foreground absolute top-4 right-4" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
         )}
       </div>
 
-      <h3 className="text-muted-foreground mb-1">{title}</h3>
-      <p className="text-foreground mb-0.5">{value}</p>
-      {subtitle && <p className="text-muted-foreground text-xs">{subtitle}</p>}
+      <h3 className="text-sm font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">{title}</h3>
+      <p className="text-xl font-bold text-foreground mb-1">{value}</p>
+      {subtitle && <p className="text-xs text-muted-foreground leading-relaxed">{subtitle}</p>}
     </motion.button>
   );
 }
